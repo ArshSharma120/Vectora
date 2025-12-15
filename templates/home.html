@@ -8,6 +8,7 @@
   <style>
     /* --- 0. SYSTEM CORE --- */
     :root {
+      /* Dark Mode (Default) */
       --bg: #000000;
       --grid: #111111;
       --primary: #00f3ff;
@@ -20,8 +21,32 @@
       /* Truth Green */
       --text: #e0e0e0;
       --glass: rgba(255, 255, 255, 0.03);
+      --nav-bg: rgba(0, 0, 0, 0.8);
+      --nav-border: rgba(255, 255, 255, 0.1);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: #333;
       --font-head: 'Syncopate', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* Light Mode */
+    [data-theme="light"] {
+      --bg: #fafafa;
+      --grid: #e8e8e8;
+      --primary: #0066ff;
+      --secondary: #ff0055;
+      --tertiary: #ff9500;
+      --success: #00c853;
+      --text: #0a0a0a;
+      --glass: rgba(0, 0, 0, 0.03);
+      --nav-bg: rgba(255, 255, 255, 0.98);
+      --nav-border: rgba(0, 0, 0, 0.08);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: #e0e0e0;
+    }
+
+    * {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
 
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;700&family=Syncopate:wght@400;700&display=swap');
@@ -58,33 +83,151 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
-    /* Custom Cursor */
+    /* Custom Cursor - Inverted Blob */
     #cursor {
       position: fixed;
       top: 0;
       left: 0;
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--primary);
+      width: 40px;
+      height: 40px;
+      background: white;
       border-radius: 50%;
       pointer-events: none;
       z-index: 9999;
       transform: translate(-50%, -50%);
       mix-blend-mode: difference;
-      transition: width 0.3s, height 0.3s, border-color 0.3s;
+      transition: width 0.3s ease, height 0.3s ease;
+      will-change: transform;
     }
 
     #cursor-dot {
+      display: none;
+      /* Not needed for blob cursor */
+    }
+
+    /* --- NAVIGATION --- */
+    nav {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 4px;
-      background: var(--primary);
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9000;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      backdrop-filter: blur(40px) saturate(200%);
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E"),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 100px;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+      max-width: fit-content;
+    }
+
+    /* Light mode nav adjustment */
+    [data-theme="light"] nav {
+      background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-logo {
+      font-family: var(--font-head);
+      font-size: 1.3rem;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    .nav-logo::before {
+      content: '⚡';
+      font-size: 1.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border-radius: 50px;
+      position: relative;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    .nav-links a.active {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .nav-links a:not(.active):hover {
+      background: var(--glass);
+      color: var(--primary);
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
+      border: 1px solid var(--nav-border);
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.2rem;
+    }
+
+    .theme-toggle:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: rotate(180deg);
+    }
+
+    /* Get Started Button */
+    .nav-cta {
+      background: var(--text);
+      color: var(--bg);
+      padding: 10px 24px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .nav-cta:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(0, 243, 255, 0.4);
     }
 
     /* --- 1. LOADER --- */
@@ -124,30 +267,86 @@
       position: relative;
       z-index: 10;
       text-align: center;
-      mix-blend-mode: difference;
+      mix-blend-mode: normal;
     }
 
     h1 {
       font-family: var(--font-head);
-      font-size: clamp(3rem, 12vw, 15rem);
+      font-size: clamp(5rem, 18vw, 20rem);
       margin: 0;
-      line-height: 0.8;
+      line-height: 0.85;
       text-transform: uppercase;
-      font-weight: 700;
-      color: var(--text);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--tertiary) 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      position: relative;
       opacity: 0;
-      /* JS Reveal */
+      letter-spacing: -0.05em;
+      filter: drop-shadow(0 0 30px rgba(0, 243, 255, 0.3));
+      will-change: background-position;
+    }
+
+    h1::before {
+      content: 'VECTORA';
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      background: none;
+      -webkit-text-stroke: 2px rgba(0, 243, 255, 0.3);
+      -webkit-text-fill-color: transparent;
+      color: transparent;
     }
 
     .hero-subtitle {
       margin-top: 2rem;
-      font-size: 1rem;
-      color: var(--secondary);
-      letter-spacing: 2px;
+      font-size: 1.2rem;
+      color: var(--text);
+      letter-spacing: 3px;
       text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    /* Feature Badges */
+    .hero-features {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 30px;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .feature-badge {
+      background: var(--glass);
+      border: 1px solid var(--primary);
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-family: var(--font-mono);
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-badge::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .feature-badge:hover::before {
+      left: 100%;
     }
 
     /* Background Circuit SVG */
@@ -162,6 +361,34 @@
       pointer-events: none;
     }
 
+    /* Floating SVG Elements */
+    .floating-element {
+      position: absolute;
+      z-index: 2;
+      opacity: 0.6;
+    }
+
+    .floating-element.shield {
+      top: 15%;
+      left: 10%;
+      width: 100px;
+      height: 100px;
+    }
+
+    .floating-element.lock {
+      top: 20%;
+      right: 15%;
+      width: 80px;
+      height: 80px;
+    }
+
+    .floating-element.scan {
+      bottom: 20%;
+      left: 15%;
+      width: 120px;
+      height: 120px;
+    }
+
     /* --- 3. SCROLL SECTION: THE PROBLEM --- */
     .section-problem {
       height: 150vh;
@@ -171,7 +398,7 @@
       justify-content: center;
       align-items: center;
       position: relative;
-      background: #050505;
+      background: var(--bg);
     }
 
     .chaos-text {
@@ -187,16 +414,94 @@
       display: inline-block;
     }
 
+    /* --- GALLERY SECTION --- */
+    .section-gallery {
+      height: 200vh;
+      /* Reduced from 300vh - animation ends earlier */
+      position: relative;
+      background: var(--bg);
+      overflow: hidden;
+      /* Contain gallery within section */
+      z-index: 1;
+    }
+
+    .gallery-container {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      /* Allow top elements to show */
+    }
+
+    .gallery-grid {
+      --big-tile-size: 50vmin;
+      --tile-size: calc(var(--big-tile-size) / 3);
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 1vmin;
+      grid-template: repeat(9, var(--tile-size)) / repeat(9, var(--tile-size));
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .gallery-item {
+      padding: 0;
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      max-inline-size: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 243, 255, 0.2);
+    }
+
+    .gallery-item img {
+      height: 200%;
+      min-width: 200%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(0deg);
+      will-change: transform;
+    }
+
     /* --- 4. INTERACTIVE SECTION: THE LENS --- */
     .section-scanner {
       height: 100vh;
       width: 100%;
       position: relative;
       overflow: hidden;
-      border-top: 1px solid #333;
+      border-top: 1px solid var(--card-border);
       cursor: none;
-      /* Ensure system cursor is hidden */
-      background: #000;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    /* Scanner Window Container */
+    .scanner-window {
+      width: 90%;
+      max-width: 1400px;
+      height: 80%;
+      max-height: 700px;
+      background: var(--card-bg);
+      border: 2px solid var(--primary);
+      border-radius: 30px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
     }
 
     /* Text Containers */
@@ -219,7 +524,8 @@
 
     /* Background: Encrypted / Blurry */
     .layer-encrypted {
-      color: #333;
+      color: var(--text);
+      opacity: 0.2;
       z-index: 1;
       filter: blur(2px);
       /* Blur the noise */
@@ -273,84 +579,411 @@
       text-shadow: 0 0 8px var(--success);
     }
 
-    /* --- 5. CONTROL MODULE (TOGGLE) --- */
-    .control-module {
-      background: #080808;
-      padding: 60px 0;
-      border-bottom: 1px solid #333;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      z-index: 20;
+    /* System Status Display */
+    .scanner-status {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      z-index: 100;
+      text-align: right;
     }
 
-    #morph-svg {
-      width: 120px;
-      height: 120px;
+    .scanner-toggle {
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    #morph-svg-scanner {
+      width: 60px;
+      height: 60px;
       overflow: visible;
       cursor: pointer;
+      transition: transform 0.3s;
     }
 
-    .control-status {
-      margin-top: 20px;
+    #morph-svg-scanner:hover {
+      transform: scale(1.1);
+    }
+
+    .scanner-status-text {
       font-family: var(--font-head);
       letter-spacing: 2px;
       color: var(--text);
       text-transform: uppercase;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .status-indicator {
+    .scanner-status-indicator {
       display: inline-block;
       width: 10px;
       height: 10px;
       background: var(--secondary);
       border-radius: 50%;
-      margin-right: 10px;
       box-shadow: 0 0 10px var(--secondary);
+    }
+
+    .scanner-hint {
+      font-size: 0.7rem;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    /* --- 5. CONTROL MODULE (TOGGLE) --- */
+    .control-module {
+      display: none;
+      /* Moved to scanner section */
     }
 
     /* --- 6. OBSERVER SECTION --- */
     .section-features {
-      min-height: 100vh;
       padding: 100px 5vw;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 50px;
-      align-items: center;
-      perspective: 1000px;
-    }
-
-    .feature-card {
-      background: var(--glass);
-      border: 1px solid #333;
-      padding: 40px;
-      height: 400px;
+      background: var(--bg);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.1s;
-      /* Smooth observer update */
+      align-items: center;
+      gap: 4rem;
     }
 
-    .card-icon {
-      font-size: 3rem;
-      color: var(--tertiary);
-      margin-bottom: 20px;
+    .features-header {
+      text-align: center;
+      max-width: 800px;
     }
 
-    .card-title {
+    .features-title {
       font-family: var(--font-head);
-      font-size: 2rem;
-      margin-bottom: 10px;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      color: var(--primary);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .features-description {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    /* Hover Card System */
+    .features-list {
+      display: grid;
+      container-type: inline-size;
+      grid-template-columns: 10fr 1fr 1fr 1fr;
+      gap: 12px;
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      height: clamp(300px, 50vh, 500px);
+      width: 100%;
+      max-width: 1200px;
+      transition: grid-template-columns 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .feature-item {
+      background: var(--card-bg);
+      position: relative;
+      overflow: hidden;
+      min-width: 80px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+    }
+
+    .feature-article {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      font-family: var(--font-mono);
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding: 1.5rem;
+      overflow: hidden;
+    }
+
+    .feature-article h3 {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      transform-origin: 0 50%;
+      rotate: 90deg;
+      font-size: 0.9rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      font-family: var(--font-head);
+      color: var(--primary);
+      opacity: 0.6;
+      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+      white-space: nowrap;
+      margin: 0;
+    }
+
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      stroke: var(--primary);
+      fill: none;
+      stroke-width: 2;
+      opacity: 0.6;
+      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .feature-article p {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: var(--text);
+      opacity: 0;
+      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+      margin: 0;
+    }
+
+    .feature-link {
+      position: absolute;
+      bottom: 1.5rem;
+      height: 20px;
+      color: var(--primary);
+      text-decoration: none;
+      opacity: 0;
+      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .feature-link:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .feature-img {
+      position: absolute;
+      pointer-events: none;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(1) brightness(1.5);
+      scale: 1.1;
+      transition: filter 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+        scale 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+      mask: radial-gradient(100% 100% at 100% 0, #fff, #0000);
+    }
+
+    /* Active state */
+    .feature-item[data-active="true"] h3,
+    .feature-item[data-active="true"] .feature-icon {
+      opacity: 1;
+    }
+
+    .feature-item[data-active="true"] p,
+    .feature-item[data-active="true"] .feature-link {
+      opacity: 1;
+      transition-delay: 0.15s;
+    }
+
+    .feature-item[data-active="true"] .feature-img {
+      filter: grayscale(0) brightness(1);
+      scale: 1;
+      transition-delay: 0.15s;
+    }
+
+    /* --- BROWSER EXTENSION SECTION --- */
+    .section-extension {
+      min-height: 100vh;
+      padding: 100px 5vw;
+      background: var(--bg);
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 80px;
+    }
+
+    .extension-content {
+      flex: 1;
+      max-width: 600px;
+    }
+
+    .extension-title {
+      font-family: var(--font-head);
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: var(--primary);
+      margin-bottom: 30px;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .extension-description {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 40px;
+      opacity: 0.8;
+    }
+
+    .extension-features-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 40px;
+    }
+
+    .extension-features-list li {
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--success);
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .extension-features-list li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    .extension-visual {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cta-button {
+      background: var(--primary);
+      color: #000;
+      border: none;
+      padding: 18px 50px;
+      font-size: 1rem;
+      font-family: var(--font-head);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+
+    .cta-button:hover {
+      transform: scale(1.05);
+    }
+
+    .cta-button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .cta-button:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+
+    .extension-visual {
+      flex: 1;
+      position: relative;
+      min-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .browser-mockup {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      padding: 40px;
+      position: relative;
+      box-shadow: 0 0 50px rgba(0, 243, 255, 0.3);
+    }
+
+    .browser-mockup::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 12px;
+      height: 12px;
+      background: var(--secondary);
+      border-radius: 50%;
+      box-shadow: 20px 0 0 var(--tertiary), 40px 0 0 var(--success);
     }
 
     /* --- 7. FOOTER --- */
     footer {
-      padding: 50px 0;
+      padding: 80px 5vw 30px;
+      background: var(--bg);
+      border-top: 1px solid var(--card-border);
+      border-top-left-radius: 50px;
+      border-top-right-radius: 50px;
+      width: 80%;
+      /* Initial width for animation */
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 50px;
+      margin-bottom: 50px;
+    }
+
+    .footer-column h3 {
+      font-family: var(--font-head);
+      color: var(--primary);
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-links li {
+      margin-bottom: 15px;
+    }
+
+    .footer-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+      opacity: 0.7;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+      opacity: 1;
+    }
+
+    .footer-bottom {
+      padding-top: 30px;
+      border-top: 1px solid var(--card-border);
       text-align: center;
-      border-top: 1px solid #222;
     }
 
     .footer-credit {
@@ -373,10 +1006,193 @@
       width: 0%;
       z-index: 9000;
     }
+
+    /* --- MOBILE RESPONSIVE --- */
+    @media (max-width: 768px) {
+
+      /* Navigation */
+      nav {
+        padding: 10px 15px;
+        gap: 15px;
+        width: 95%;
+      }
+
+      .nav-logo {
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        gap: 5px;
+      }
+
+      .nav-links a {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+      }
+
+      .theme-toggle {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+      }
+
+      .nav-cta {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+      }
+
+      /* Hero */
+      h1 {
+        font-size: clamp(2.5rem, 15vw, 8rem) !important;
+        line-height: 0.9;
+      }
+
+      .hero-features {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .feature-badge {
+        padding: 12px 20px;
+        font-size: 0.8rem;
+      }
+
+      /* Gallery */
+      .section-gallery {
+        height: 150vh;
+      }
+
+      .gallery-grid {
+        --tile-size: calc(var(--big-tile-size) / 4);
+      }
+
+      /* Scanner */
+      .scanner-window {
+        width: 95%;
+        height: 70%;
+        border-radius: 20px;
+      }
+
+      .scanner-status {
+        top: 15px;
+        right: 15px;
+      }
+
+      #morph-svg-scanner {
+        width: 40px;
+        height: 40px;
+      }
+
+      .scanner-status-text {
+        font-size: 0.7rem;
+      }
+
+      .scanner-hint {
+        font-size: 0.6rem;
+      }
+
+      /* Features */
+      .features-list {
+        grid-template-columns: 1fr;
+        height: auto;
+        gap: 15px;
+      }
+
+      .feature-item {
+        min-height: 250px;
+      }
+
+      .feature-article h3 {
+        rotate: 0deg;
+        position: static;
+        margin-bottom: 1rem;
+      }
+
+      .feature-item p,
+      .feature-item .feature-link,
+      .feature-item .feature-icon,
+      .feature-item h3 {
+        opacity: 1 !important;
+      }
+
+      .feature-img {
+        opacity: 0.3;
+      }
+
+      /* Extension */
+      .extension-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .extension-title {
+        font-size: clamp(2rem, 8vw, 3rem);
+      }
+
+      .extension-description {
+        font-size: 1rem;
+      }
+
+      /* Footer */
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      footer {
+        width: 95%;
+        padding: 60px 5vw 20px;
+      }
+
+      /* CTA Button */
+      .cta-button {
+        padding: 14px 35px;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: clamp(2rem, 12vw, 5rem) !important;
+      }
+
+      nav {
+        gap: 8px;
+        padding: 8px 12px;
+      }
+
+      .nav-links a {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+      }
+
+      .nav-cta {
+        display: none;
+      }
+
+      .theme-toggle {
+        width: 28px;
+        height: 28px;
+      }
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-logo">VECTORA</div>
+    <ul class="nav-links">
+      <li><a href="#home" class="active">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#extension">Extension</a></li>
+    </ul>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+      <span id="theme-icon">🌙</span>
+    </button>
+    <a href="#contact" class="nav-cta">Get Started</a>
+  </nav>
 
   <!-- GLOBAL NOISE -->
   <div class="noise-overlay"></div>
@@ -397,7 +1213,31 @@
   <div class="progress-line"></div>
 
   <!-- HERO SECTION -->
-  <section class="hero">
+  <section class="hero" id="home">
+    <!-- Floating SVG Elements -->
+    <svg class="floating-element shield" viewBox="0 0 100 100">
+      <path id="shield-float" d="M50,10 L90,30 V60 C90,80 50,95 50,95 C50,95 10,80 10,60 V30 Z" fill="none"
+        stroke="var(--success)" stroke-width="2" />
+    </svg>
+
+    <svg class="floating-element lock" viewBox="0 0 100 100">
+      <rect id="lock-body" x="30" y="50" width="40" height="35" rx="5" fill="none" stroke="var(--primary)"
+        stroke-width="2" />
+      <path id="lock-shackle" d="M35,50 V35 C35,23 45,15 50,15 C55,15 65,23 65,35 V50" fill="none"
+        stroke="var(--primary)" stroke-width="2" />
+      <circle cx="50" cy="67" r="4" fill="var(--primary)" />
+    </svg>
+
+    <svg class="floating-element scan" viewBox="0 0 100 100">
+      <circle id="scan-outer" cx="50" cy="50" r="40" fill="none" stroke="var(--secondary)" stroke-width="2" />
+      <circle id="scan-mid" cx="50" cy="50" r="30" fill="none" stroke="var(--secondary)" stroke-width="2"
+        opacity="0.6" />
+      <circle id="scan-inner" cx="50" cy="50" r="20" fill="none" stroke="var(--secondary)" stroke-width="2"
+        opacity="0.3" />
+      <line id="scan-line" x1="50" y1="10" x2="50" y2="90" stroke="var(--tertiary)" stroke-width="2" />
+    </svg>
+
+    <!-- Background Circuit -->
     <svg class="circuit-bg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
       <path id="path-main" d="M0,540 C400,540 500,200 800,200 C1100,200 1200,900 1600,900 C1800,900 1920,540 2200,540"
         fill="none" stroke="#222" stroke-width="2" />
@@ -410,10 +1250,33 @@
 
     <div class="hero-title-wrapper">
       <h1 id="hero-h1">VECTORA</h1>
-      <div class="hero-subtitle">
-        <span class="scramble-sub">AI DETECTION</span> //
-        <span class="scramble-sub">FACT CHECKING</span> //
-        <span class="scramble-sub">TRUTH ENGINE</span>
+      <div class="hero-subtitle">Reality Defense Protocol</div>
+
+      <!-- Feature Badges -->
+      <div class="hero-features">
+        <div class="feature-badge" data-badge="ai">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4m0 4h.01" />
+          </svg>
+          AI Detection
+        </div>
+        <div class="feature-badge" data-badge="fact">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Fact Checking
+        </div>
+        <div class="feature-badge" data-badge="truth">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+          Truth Engine
+        </div>
       </div>
     </div>
   </section>
@@ -427,20 +1290,71 @@
     </div>
   </section>
 
+  <!-- GALLERY SECTION -->
+  <section class="section-gallery" id="gallery-sec">
+    <div class="gallery-container">
+      <ul class="gallery-grid" id="gallery-grid">
+        <li class="gallery-item" style="grid-column: 2 / 6; grid-row: 1 / 4;">
+          <img src="https://picsum.photos/600/600?random=1" alt="Misinformation Example 1">
+        </li>
+        <li class="gallery-item" style="grid-column: 6 / 8; grid-row: 2 / 4;">
+          <img src="https://picsum.photos/600/600?random=2" alt="Misinformation Example 2">
+        </li>
+        <li class="gallery-item" style="grid-column: 1 / 4; grid-row: 4 / 7;">
+          <img src="https://picsum.photos/600/600?random=3" alt="Misinformation Example 3">
+        </li>
+        <li class="gallery-item" style="grid-column: 4 / 7; grid-row: 4 / 7;">
+          <img src="https://picsum.photos/600/600?random=4" alt="Misinformation Example 4">
+        </li>
+        <li class="gallery-item" style="grid-column: 7 / 9; grid-row: 4 / 6;">
+          <img src="https://picsum.photos/600/600?random=5" alt="Misinformation Example 5">
+        </li>
+        <li class="gallery-item" style="grid-column: 2 / 4; grid-row: 7 / 9;">
+          <img src="https://picsum.photos/600/600?random=7" alt="Misinformation Example 7">
+        </li>
+        <li class="gallery-item" style="grid-column: 4 / 7; grid-row: 7 / 10;">
+          <img src="https://picsum.photos/600/600?random=8" alt="Misinformation Example 8">
+        </li>
+        <li class="gallery-item" style="grid-column: 7 / 10; grid-row: 6 / 9;">
+          <img src="https://picsum.photos/600/600?random=9" alt="Misinformation Example 9">
+        </li>
+      </ul>
+    </div>
+  </section>
+
   <!-- SECTION: THE SCANNER (UPDATED) -->
   <section class="section-scanner" id="scanner-sec">
 
-    <!-- Layer 1: Encrypted Noise (Visible Background) -->
-    <div class="code-container layer-encrypted" id="encrypted-grid">
-      <!-- Filled by JS -->
-    </div>
+    <div class="scanner-window">
 
-    <!-- The Lens (Follows Cursor) -->
-    <div class="truth-lens" id="lens">
-      <!-- Layer 2: Decrypted Truth (Inside Lens) -->
-      <div class="code-container lens-inner" id="decrypted-grid">
+      <!-- Layer 1: Encrypted Noise (Visible Background) -->
+      <div class="code-container layer-encrypted" id="encrypted-grid">
         <!-- Filled by JS -->
       </div>
+
+      <!-- The Lens (Follows Cursor) -->
+      <div class="truth-lens" id="lens">
+        <!-- Layer 2: Decrypted Truth (Inside Lens) -->
+        <div class="code-container lens-inner" id="decrypted-grid">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- System Status Toggle -->
+      <div class="scanner-status">
+        <div class="scanner-toggle">
+          <svg id="morph-svg-scanner" viewBox="0 0 100 100">
+            <path id="morph-path-scanner" d="M50,15 L90,85 L10,85 Z" fill="none" stroke="var(--secondary)"
+              stroke-width="2" />
+          </svg>
+        </div>
+        <div class="scanner-status-text" id="scanner-status-text">
+          <span class="scanner-status-indicator" id="scanner-status-dot"></span>
+          SYSTEM UNSECURED
+        </div>
+        <div class="scanner-hint">CLICK ICON TO ACTIVATE DEFENSE PROTOCOLS</div>
+      </div>
+
     </div>
 
   </section>
@@ -459,28 +1373,185 @@
 
   <!-- SECTION: FEATURES -->
   <section class="section-features" id="features">
-    <div class="feature-card tilt-card">
-      <div class="card-icon">01</div>
-      <div>
-        <h3 class="card-title">Manifest V3</h3>
-        <p>Chrome Extension architecture designed for stealth and speed.</p>
+    <div class="features-header">
+      <h2 class="features-title">Core Features</h2>
+      <p class="features-description">
+        VECTORA combines cutting-edge AI, advanced NLP, and real-time analysis to deliver truth in an age of
+        misinformation.
+      </p>
+    </div>
+
+    <ul class="features-list" id="features-list">
+      <li class="feature-item" data-active="true">
+        <article class="feature-article">
+          <h3>Manifest V3</h3>
+          <p>Chrome Extension architecture engineered for maximum stealth and velocity. Built on the latest web
+            standards.</p>
+          <svg class="feature-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M6 3h12l4 6-10 13L2 9Z" />
+            <path d="M11 3 8 9l4 13 4-13-3-6" />
+            <path d="M2 9h20" />
+          </svg>
+          <a href="#" class="feature-link">Learn more →</a>
+          <img class="feature-img" src="https://picsum.photos/720/720?random=12" alt="Manifest V3" />
+        </article>
+      </li>
+      <li class="feature-item">
+        <article class="feature-article">
+          <h3>Neural Scan</h3>
+          <p>Python Flask backend processing NLP patterns in real-time. Advanced AI models detect manipulation
+            instantly.</p>
+          <svg class="feature-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <path d="M7 3v18" />
+            <path d="M3 7.5h4" />
+            <path d="M3 12h18" />
+            <path d="M3 16.5h4" />
+            <path d="M17 3v18" />
+            <path d="M17 7.5h4" />
+            <path d="M17 16.5h4" />
+          </svg>
+          <a href="#" class="feature-link">Learn more →</a>
+          <img class="feature-img" src="https://picsum.photos/720/720?random=17" alt="Neural Scan" />
+        </article>
+      </li>
+      <li class="feature-item">
+        <article class="feature-article">
+          <h3>Real-Time Analysis</h3>
+          <p>Continuous monitoring and instant fact-checking as you browse. No delays, just immediate truth
+            verification.</p>
+          <svg class="feature-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+          </svg>
+          <a href="#" class="feature-link">Learn more →</a>
+          <img class="feature-img" src="https://picsum.photos/720/720?random=19" alt="Real-Time Analysis" />
+        </article>
+      </li>
+      <li class="feature-item">
+        <article class="feature-article">
+          <h3>Privacy Shield</h3>
+          <p>Zero data collection. All processing happens locally on your device. Your privacy is our foundation.</p>
+          <svg class="feature-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M19 17V5a2 2 0 0 0-2-2H4" />
+            <path
+              d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" />
+          </svg>
+          <a href="#" class="feature-link">Learn more →</a>
+          <img class="feature-img" src="https://picsum.photos/720/720?random=42" alt="Privacy Shield" />
+        </article>
+      </li>
+    </ul>
+  </section>
+
+  <!-- BROWSER EXTENSION SECTION -->
+  <section class="section-extension" id="extension">
+    <div class="extension-header">
+      <h2 class="extension-title">Truth Scanner Extension</h2>
+      <p class="extension-description">
+        Deploy VECTORA's AI-powered fact-checking directly in your browser. Real-time protection against misinformation.
+      </p>
+    </div>
+
+    <div class="extension-grid">
+      <div class="extension-card">
+        <div class="extension-card-icon">⚡</div>
+        <h3 class="extension-card-title">Real-Time Detection</h3>
+        <p class="extension-card-text">Instant AI-powered analysis of content as you browse. Immediate alerts for
+          suspicious information.</p>
+      </div>
+
+      <div class="extension-card">
+        <div class="extension-card-icon">🛡️</div>
+        <h3 class="extension-card-title">Privacy First</h3>
+        <p class="extension-card-text">Zero data collection. All processing done locally. Your browsing stays private.
+        </p>
+      </div>
+
+      <div class="extension-card">
+        <div class="extension-card-icon">🎯</div>
+        <h3 class="extension-card-title">Fact Verification</h3>
+        <p class="extension-card-text">Cross-reference claims with trusted sources. Get instant fact-check results.</p>
+      </div>
+
+      <div class="extension-card">
+        <div class="extension-card-icon">🚀</div>
+        <h3 class="extension-card-title">Lightning Fast</h3>
+        <p class="extension-card-text">Optimized algorithms process information in milliseconds. No browsing slowdown.
+        </p>
+      </div>
+
+      <div class="extension-card">
+        <div class="extension-card-icon">🔍</div>
+        <h3 class="extension-card-title">Deep Analysis</h3>
+        <p class="extension-card-text">Advanced NLP models analyze context, sources, and credibility patterns.</p>
+      </div>
+
+      <div class="extension-card">
+        <div class="extension-card-icon">✨</div>
+        <h3 class="extension-card-title">Clean Interface</h3>
+        <p class="extension-card-text">Minimal, non-intrusive design. View results only when you need them.</p>
       </div>
     </div>
-    <div class="feature-card tilt-card" style="margin-top: 100px;">
-      <div class="card-icon">02</div>
-      <div>
-        <h3 class="card-title">Neural Scan</h3>
-        <p>Python Flask backend analyzing NLP patterns in milliseconds.</p>
-      </div>
+
+    <div class="extension-cta">
+      <button class="cta-button">Install Extension</button>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer>
-    <div class="footer-credit">
-      ARCHITECTED BY <span>NAMAN DHAKAD</span> | ISC TOPPER 2025
+  <footer id="contact">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>VECTORA</h3>
+        <p style="color: var(--text); opacity: 0.7; line-height: 1.8;">
+          Advanced AI-powered reality defense system. Protecting truth in the digital age.
+        </p>
+      </div>
+
+      <div class="footer-column">
+        <h3>Navigation</h3>
+        <ul class="footer-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#extension">Extension</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Get Started</h3>
+        <ul class="footer-links">
+          <li><a href="#extension">Install Extension</a></li>
+          <li><a href="#docs">Documentation</a></li>
+          <li><a href="#api">API Access</a></li>
+          <li><a href="#support">Support</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Contact</h3>
+        <ul class="footer-links">
+          <li><a href="mailto:contact@vectora.ai">contact@vectora.ai</a></li>
+          <li><a href="#github">GitHub</a></li>
+          <li><a href="#twitter">Twitter</a></li>
+          <li><a href="#discord">Discord</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-credit">
+        ARCHITECTED BY <span>NAMAN DHAKAD</span> | @ 2025 VECTORA AI
+      </div>
     </div>
   </footer>
+
+  <!-- LENIS SMOOTH SCROLL -->
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
 
   <!-- GSAP LIBRARIES -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>
@@ -501,14 +1572,123 @@
       MorphSVGPlugin, MotionPathPlugin, SplitText, ScrambleTextPlugin, Observer
     );
 
-    // --- 1. CURSOR LOGIC ---
-    const cursor = document.getElementById("cursor");
+    // --- 0. LENIS SMOOTH SCROLL SETUP ---
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      smoothTouch: false,
+      touchMultiplier: 2
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Integrate Lenis with GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update);
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
+
+    // Smooth scroll for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          lenis.scrollTo(targetElement, {
+            offset: -80, // Account for fixed nav height
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+          });
+        }
+      });
+    });
+
+    // Active nav link tracking
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function () {
+        navLinks.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // --- THEME TOGGLE ---
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to 'dark'
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', currentTheme);
+    themeIcon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+
+    // Set cursor color after it's created
+    setTimeout(() => {
+      const cursorEl = document.getElementById("cursor");
+      if (cursorEl) {
+        cursorEl.style.background = currentTheme === 'dark' ? '#fff' : '#000';
+      }
+    }, 100);
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeIcon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+
+      // Update cursor color
+      const cursorElement = document.getElementById('cursor');
+      if (cursorElement) {
+        cursorElement.style.background = newTheme === 'dark' ? '#fff' : '#000';
+      }
+    });
+
+    // --- 1. CURSOR LOGIC - INERTIAL BLOB ---
     const dot = document.getElementById("cursor-dot");
 
+    // Mouse position tracking
+    let mouseX = 0;
+    let mouseY = 0;
+
+    // GSAP quickTo for ultra-smooth inertial movement
+    const cursorX = gsap.quickTo(cursor, "x", { duration: 0.5, ease: "power3.out" });
+    const cursorY = gsap.quickTo(cursor, "y", { duration: 0.5, ease: "power3.out" });
+
     window.addEventListener("mousemove", (e) => {
-      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.15, ease: "power2.out" });
-      gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0.05 });
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorX(mouseX);
+      cursorY(mouseY);
     });
+
+    // Hover effects - expand blob on interactive elements
+    const interactiveElements = document.querySelectorAll("a, button, .feature-card, #morph-svg-scanner");
+    interactiveElements.forEach(el => {
+      el.addEventListener("mouseenter", () => {
+        gsap.to(cursor, { width: 80, height: 80, duration: 0.3, ease: "power2.out" });
+      });
+      el.addEventListener("mouseleave", () => {
+        gsap.to(cursor, { width: 40, height: 40, duration: 0.3, ease: "power2.out" });
+      });
+    });
+
+    // Initialize cursor color based on theme
+    const currentDataTheme = document.documentElement.getAttribute('data-theme');
+    cursor.style.background = currentDataTheme === 'dark' ? '#fff' : '#000';
 
     // --- 2. TEXT GENERATOR FOR SCANNER ---
     const encryptedEl = document.getElementById("encrypted-grid");
@@ -570,18 +1750,18 @@
     populateGrid(encryptedEl, [], true); // Background noise
     populateGrid(decryptedEl, fakePhrases); // Lens shows Fake Data initially
 
-    // --- 3. SECURITY TOGGLE LOGIC ---
+    // --- 3. SECURITY TOGGLE LOGIC (IN SCANNER SECTION) ---
     let isSecured = false;
     const alertPath = "M50,15 L90,85 L10,85 Z"; // Triangle
     const shieldPath = "M50,10 L90,30 V60 C90,80 50,95 50,95 C50,95 10,80 10,60 V30 Z"; // Shield
-    const statusText = document.getElementById("control-status-text");
-    const statusDot = document.getElementById("status-dot");
+    const statusText = document.getElementById("scanner-status-text");
+    const statusDot = document.getElementById("scanner-status-dot");
 
-    document.getElementById("morph-svg").addEventListener("click", () => {
+    document.getElementById("morph-svg-scanner").addEventListener("click", () => {
       isSecured = !isSecured;
 
       // 1. Morph Icon
-      gsap.to("#morph-path", {
+      gsap.to("#morph-path-scanner", {
         morphSVG: isSecured ? shieldPath : alertPath,
         stroke: isSecured ? "#00ff9d" : "#ff0055",
         fill: isSecured ? "rgba(0, 255, 157, 0.1)" : "none",
@@ -591,8 +1771,8 @@
 
       // 2. Update Status Text
       statusText.innerHTML = isSecured ?
-        `<span class="status-indicator" style="background:#00ff9d; box-shadow:0 0 10px #00ff9d"></span> SYSTEM SECURED` :
-        `<span class="status-indicator" style="background:#ff0055; box-shadow:0 0 10px #ff0055"></span> SYSTEM UNSECURED`;
+        `<span class="scanner-status-indicator" style="background:#00ff9d; box-shadow:0 0 10px #00ff9d"></span> SYSTEM SECURED` :
+        `<span class="scanner-status-indicator" style="background:#ff0055; box-shadow:0 0 10px #ff0055"></span> SYSTEM UNSECURED`;
 
       // 3. Update Lens Border
       gsap.to(lensEl, {
@@ -602,7 +1782,6 @@
       });
 
       // 4. Update Lens Content (Re-populate with correct data)
-      // Use ScrambleText to transition cleanly
       gsap.to(decryptedEl, {
         opacity: 0, duration: 0.2, onComplete: () => {
           populateGrid(decryptedEl, isSecured ? realPhrases : fakePhrases);
@@ -611,34 +1790,69 @@
       });
     });
 
-    // --- 4. LENS TRACKING LOGIC ---
+    // --- 4. LENS TRACKING LOGIC (WITH INERTIA) ---
     const scannerSec = document.getElementById("scanner-sec");
 
-    scannerSec.addEventListener("mousemove", (e) => {
+    // GSAP quickTo for smooth inertial lens movement
+    const lensX = gsap.quickTo(lensEl, "x", { duration: 0.6, ease: "power3.out" });
+    const lensY = gsap.quickTo(lensEl, "y", { duration: 0.6, ease: "power3.out" });
+    const contentX = gsap.quickTo(decryptedEl, "x", { duration: 0.6, ease: "power3.out" });
+    const contentY = gsap.quickTo(decryptedEl, "y", { duration: 0.6, ease: "power3.out" });
+
+    // Track if mouse has entered scanner section
+    let hasEnteredScanner = false;
+
+    scannerSec.addEventListener("mouseenter", (e) => {
+      hasEnteredScanner = true;
       gsap.to(cursor, { opacity: 0, scale: 0 });
-      gsap.to(dot, { opacity: 0 });
+
+      // Smoothly move lens to cursor position on first enter
+      const rect = scannerSec.getBoundingClientRect();
+      const relX = e.clientX - rect.left;
+      const relY = e.clientY - rect.top;
+
+      gsap.set(lensEl, {
+        x: relX,
+        y: relY,
+        xPercent: -50,
+        yPercent: -50,
+        left: 0,
+        top: 0
+      });
+
+      gsap.set(decryptedEl, {
+        x: -relX + (150 / 2),
+        y: -relY + (150 / 2)
+      });
+    });
+
+    scannerSec.addEventListener("mousemove", (e) => {
+      if (!hasEnteredScanner) return;
 
       const rect = scannerSec.getBoundingClientRect();
       const relX = e.clientX - rect.left;
       const relY = e.clientY - rect.top;
 
-      gsap.to(lensEl, {
-        x: relX, y: relY, duration: 0.1, ease: "power2.out",
-        xPercent: -50, yPercent: -50, left: 0, top: 0
+      // Use quickTo for smooth inertial movement
+      lensX(relX);
+      lensY(relY);
+
+      // Sync lens positioning
+      gsap.set(lensEl, {
+        xPercent: -50,
+        yPercent: -50,
+        left: 0,
+        top: 0
       });
 
-      // Move Inner Content OPPOSITE to lens
-      gsap.to(decryptedEl, {
-        x: -relX + (150 / 2),
-        y: -relY + (150 / 2),
-        duration: 0.1,
-        ease: "power2.out"
-      });
+      // Move inner content opposite to lens (with same inertia)
+      contentX(-relX + (150 / 2));
+      contentY(-relY + (150 / 2));
     });
 
     scannerSec.addEventListener("mouseleave", () => {
+      hasEnteredScanner = false;
       gsap.to(cursor, { opacity: 1, scale: 1 });
-      gsap.to(dot, { opacity: 1 });
     });
 
     // --- 5. BOOT SEQUENCE ---
@@ -649,14 +1863,29 @@
         duration: 1
       })
       .to("#preloader", { yPercent: -100, duration: 0.8, ease: "expo.inOut" }, "+=0.2")
-      .from("#hero-h1", { opacity: 0, scale: 0.8, duration: 1, ease: "back.out(1.7)" }, "-=0.4");
+      .fromTo("#hero-h1",
+        {
+          opacity: 0,
+          scale: 0.5,
+          rotationX: -90
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          rotationX: 0,
+          transformOrigin: "50% 50%",
+          duration: 1.5,
+          ease: "back.out(1.7)"
+        },
+        "-=0.4")
+      .from(".hero-subtitle", { opacity: 0, y: 20, duration: 0.8, ease: "power2.out" }, "==0.8");
 
-    gsap.utils.toArray(".scramble-sub").forEach((el, i) => {
-      gsap.to(el, {
-        scrambleText: { text: el.innerText, chars: "upperCase" },
-        duration: 1.5,
-        delay: 2 + (i * 0.2)
-      });
+    // Animate gradient background position for shimmer effect
+    gsap.to("#hero-h1", {
+      backgroundPosition: "200% center",
+      duration: 3,
+      repeat: -1,
+      ease: "linear"
     });
 
     // --- 6. HERO ANIMATION ---
@@ -672,6 +1901,164 @@
         repeat: -1,
         ease: "linear"
       });
+    });
+
+    // --- FLOATING SVG ELEMENTS ANIMATION ---
+    // Shield floating animation
+    gsap.to(".floating-element.shield", {
+      y: "+=20",
+      rotation: "+=5",
+      duration: 3,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+    // Lock floating animation
+    gsap.to(".floating-element.lock", {
+      y: "-=25",
+      rotation: "-=3",
+      duration: 4,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+    // Scan rotating animation
+    gsap.to("#scan-line", {
+      rotation: 360,
+      transformOrigin: "50% 50%",
+      duration: 3,
+      repeat: -1,
+      ease: "linear"
+    });
+
+    gsap.to(".floating-element.scan", {
+      scale: 1.1,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+    // Pulsing effect on scan circles
+    gsap.to("#scan-outer", {
+      opacity: 0.3,
+      duration: 1.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+    // --- FEATURE BADGES ANIMATION ---
+    gsap.from(".feature-badge", {
+      scrollTrigger: {
+        trigger: ".hero-features",
+        start: "top 80%",
+      },
+      y: 50,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: "back.out(1.7)"
+    });
+
+    // Continuous subtle glow animation
+    gsap.to(".feature-badge", {
+      boxShadow: "0 0 20px rgba(0, 243, 255, 0.4)",
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      stagger: 0.3
+    });
+
+    // --- NAVIGATION ANIMATION ---
+    gsap.from("nav", {
+      y: -100,
+      opacity: 0,
+      duration: 1,
+      delay: 2.5,
+      ease: "power3.out"
+    });
+
+    // --- EXTENSION SECTION ANIMATION ---
+    gsap.from(".extension-content", {
+      scrollTrigger: {
+        trigger: ".section-extension",
+        start: "top 80%",
+      },
+      x: -100,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out"
+    });
+
+    gsap.from(".extension-visual", {
+      scrollTrigger: {
+        trigger: ".section-extension",
+        start: "top 80%",
+      },
+      x: 100,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out"
+    });
+
+    // Animate SVG elements in browser mockup
+    gsap.from(".browser-mockup circle, .browser-mockup rect, .browser-mockup path", {
+      scrollTrigger: {
+        trigger: ".browser-mockup",
+        start: "top 80%",
+      },
+      scale: 0,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: "back.out(2)"
+    });
+
+    // Animated data flow in extension visual
+    gsap.to(".browser-mockup line", {
+      strokeDashoffset: -10,
+      duration: 1,
+      repeat: -1,
+      ease: "linear"
+    });
+
+    // --- CTA BUTTON PULSE ---
+    gsap.to(".cta-button", {
+      boxShadow: "0 0 30px rgba(0, 243, 255, 0.6)",
+      duration: 1.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+    // --- FOOTER EMERGENCE ANIMATION ---
+    gsap.from("footer", {
+      scrollTrigger: {
+        trigger: "footer",
+        start: "top 90%",
+        end: "top 60%",
+        scrub: 1,
+      },
+      width: "60%",
+      borderTopLeftRadius: "100px",
+      borderTopRightRadius: "100px",
+      ease: "power2.out"
+    });
+
+    gsap.from(".footer-column", {
+      scrollTrigger: {
+        trigger: "footer",
+        start: "top 90%",
+      },
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: "power2.out"
     });
 
     // --- 7. SCROLL SPLIT TEXT ---
@@ -702,17 +2089,88 @@
       });
     });
 
-    // --- 8. OBSERVER CARDS ---
-    const cards = document.querySelectorAll(".tilt-card");
-    Observer.create({
-      target: window,
-      type: "pointer",
-      onMove: (self) => {
-        const xVel = self.velocityX * 0.02;
-        const yVel = self.velocityY * 0.02;
-        gsap.to(cards, { rotationY: xVel, rotationX: -yVel, duration: 0.5, ease: "power2.out" });
+    // --- GALLERY SCROLL ANIMATION ---
+    const galleryGrid = document.getElementById("gallery-grid");
+    const galleryImages = document.querySelectorAll(".gallery-item img");
+
+    // Animate the grid scaling and rotation
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: "#gallery-sec",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1,
       }
+    })
+      .to(galleryGrid, {
+        scale: 2, // Scale from 0.5 to 1.0 (2x zoom - less extreme)
+        rotation: 270,
+        ease: "none"
+      });
+
+    // Counter-rotate images so they stay upright
+    gsap.to(galleryImages, {
+      scrollTrigger: {
+        trigger: "#gallery-sec",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1,
+      },
+      rotation: -270,
+      ease: "none"
     });
+
+    // Fade in gallery items with stagger
+    gsap.from(".gallery-item", {
+      scrollTrigger: {
+        trigger: "#gallery-sec",
+        start: "top 80%",
+        end: "top 20%",
+        scrub: 1,
+      },
+      opacity: 0,
+      scale: 0.5,
+      stagger: 0.1,
+      ease: "none"
+    });
+
+    // Scanner Status Display Animation
+    gsap.from(".scanner-status", {
+      scrollTrigger: {
+        trigger: "#scanner-sec",
+        start: "top 70%",
+      },
+      opacity: 0,
+      x: 50,
+      duration: 1,
+      ease: "power3.out"
+    });
+
+    // --- 8. OBSERVER CARDS ---
+    // Removed - replaced with hover card system
+
+    // --- HOVER EXPANDING FEATURES CARDS ---
+    const featuresList = document.getElementById('features-list');
+    const featureItems = featuresList.querySelectorAll('.feature-item');
+
+    const setFeatureActive = (event) => {
+      const closest = event.target.closest('.feature-item');
+      if (closest) {
+        const index = [...featureItems].indexOf(closest);
+        const cols = new Array(featuresList.children.length)
+          .fill()
+          .map((_, i) => {
+            featureItems[i].dataset.active = (index === i).toString();
+            return index === i ? '10fr' : '1fr';
+          })
+          .join(' ');
+        featuresList.style.setProperty('grid-template-columns', cols);
+      }
+    };
+
+    featuresList.addEventListener('click', setFeatureActive);
+    featuresList.addEventListener('pointermove', setFeatureActive);
+    featuresList.addEventListener('focus', setFeatureActive, true);
 
     gsap.to(".progress-line", {
       width: "100%",
