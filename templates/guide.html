@@ -1582,7 +1582,7 @@
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
       <span id="theme-icon">🌙</span>
     </button>
-        <a href="/contact" class="nav-cta">Contact Us</a>
+        <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
   <!-- GLOBAL NOISE -->
@@ -1615,27 +1615,77 @@
   </section>
 
   
+  
   <!-- GUIDE CONTENT -->
   <section class="content-section" style="padding: 120px 5vw; background: var(--bg); position: relative; z-index: 5;">
     <div style="max-width: 900px; margin: 0 auto;">
-      <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 50px; border-radius: 20px; text-align: left;">
-        
-        <div style="margin-bottom: 40px;">
-          <h2 style="font-family: var(--font-head); color: white; font-size: 2rem; margin-bottom: 15px;">01. Active Scanning</h2>
-          <p style="color: #ccc; line-height: 1.6;">VECTORA runs passively in the background. When it detects a claim, image, or video on your feed, it initiates a Neural Scan. Safe content gets a green check. Suspicious content gets a red warning.</p>
-        </div>
-
-        <div style="margin-bottom: 40px;">
-          <h2 style="font-family: var(--font-head); color: white; font-size: 2rem; margin-bottom: 15px;">02. Truth Lens</h2>
-          <p style="color: #ccc; line-height: 1.6;">Hover your cursor over any Red Flagged content to activate the Lens. This decrypts the misinformation and overlays the verified context, sources, and truth probability score.</p>
-        </div>
-
-        <div>
-          <h2 style="font-family: var(--font-head); color: white; font-size: 2rem; margin-bottom: 15px;">03. Reporting</h2>
-          <p style="color: #ccc; line-height: 1.6;">You can manually flag content for review. The community consensus feeds back into the global neural weights, improving the system for everyone.</p>
-        </div>
-
+      
+      <!-- HERO CARD -->
+      <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 50px; border-radius: 20px; margin-bottom: 50px;">
+        <h2 style="font-family: var(--font-head); color: var(--primary); font-size: 2.2rem; margin-bottom: 20px;">Manual Installation Guide</h2>
+        <p style="color: var(--text); font-size: 1.1rem; line-height: 1.6;">
+          VECTORA is currently in <strong>Developer Preview</strong>. To install it, you will need to load it manually into your browser using "Developer Mode". This works on Chrome, Edge, Brave, and other Chromium browsers (Windows & MacOS).
+        </p>
       </div>
+
+      <!-- STEP 1 -->
+      <div style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; margin-bottom: 40px; align-items: start;">
+        <div style="font-family: var(--font-head); font-size: 3rem; color: var(--secondary); opacity: 0.5;">01</div>
+        <div>
+          <h3 style="font-family: var(--font-head); color: white; font-size: 1.5rem; margin-bottom: 10px;">Download & Extract</h3>
+          <p style="color: #ccc; line-height: 1.6; margin-bottom: 15px;">
+            Download the <code>vectora-extension.zip</code> file from the Extension page or GitHub.
+          </p>
+          <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px dashed #444;">
+             📂 <strong>Right-click</strong> the zip file > <strong>Extract All...</strong> <br>
+             (You should see a folder containing <code>manifest.json</code>).
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; margin-bottom: 40px; align-items: start;">
+        <div style="font-family: var(--font-head); font-size: 3rem; color: var(--secondary); opacity: 0.5;">02</div>
+        <div>
+          <h3 style="font-family: var(--font-head); color: white; font-size: 1.5rem; margin-bottom: 10px;">Open Extensions Management</h3>
+          <p style="color: #ccc; line-height: 1.6; margin-bottom: 15px;">
+            Open your browser and navigate to the extensions page:
+          </p>
+          <ul style="color: #ccc; line-height: 1.8; list-style-type: none; padding: 0;">
+            <li>🌐 <strong>Chrome:</strong> Type <code>chrome://extensions</code> in search bar.</li>
+            <li>🌐 <strong>Edge:</strong> Type <code>edge://extensions</code> in search bar.</li>
+            <li>🌐 <strong>Brave:</strong> Type <code>brave://extensions</code> in search bar.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; margin-bottom: 40px; align-items: start;">
+        <div style="font-family: var(--font-head); font-size: 3rem; color: var(--secondary); opacity: 0.5;">03</div>
+        <div>
+          <h3 style="font-family: var(--font-head); color: white; font-size: 1.5rem; margin-bottom: 10px;">Enable Developer Mode</h3>
+          <p style="color: #ccc; line-height: 1.6;">
+            Look for a toggle switch named <strong>"Developer mode"</strong> in the top-right corner of the page. <br>
+            <span style="color: var(--primary);">Turn it ON.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; margin-bottom: 40px; align-items: start;">
+        <div style="font-family: var(--font-head); font-size: 3rem; color: var(--secondary); opacity: 0.5;">04</div>
+        <div>
+          <h3 style="font-family: var(--font-head); color: white; font-size: 1.5rem; margin-bottom: 10px;">Load Unpacked</h3>
+          <p style="color: #ccc; line-height: 1.6; margin-bottom: 15px;">
+            Click the <strong>"Load unpacked"</strong> button that appeared (top left).
+          </p>
+          <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--success);">
+             ✅ Select the <strong>extracted folder</strong> from Step 1.<br>
+             (The VECTORA icon should now appear in your list).
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -1653,10 +1703,10 @@
       <div class="footer-column">
         <h3>Navigation</h3>
         <ul class="footer-links">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#extension">Extension</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/extension">Extension</a></li>
+          <li><a href="/guide">Guide</a></li>
         </ul>
       </div>
 
@@ -1853,7 +1903,7 @@
     ];
 
     // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) {
+    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
       let content = "";
       for (let i = 0; i < 300; i++) {
         if (isEncryptedLayer) {
@@ -1884,7 +1934,7 @@
     const statusText = document.getElementById("scanner-status-text");
     const statusDot = document.getElementById("scanner-status-dot");
 
-    document.getElementById("morph-svg-scanner").addEventListener("click", () => {
+    if (document.getElementById("morph-svg-scanner")) document.getElementById("morph-svg-scanner").addEventListener("click", () => {
       isSecured = !isSecured;
 
       // 1. Morph Icon
@@ -1932,7 +1982,7 @@
     // Track if mouse has entered scanner section
     let hasEnteredScanner = false;
 
-    scannerSec.addEventListener("mouseenter", (e) => {
+    if (scannerSec) scannerSec.addEventListener("mouseenter", (e) => {
       hasEnteredScanner = true;
       gsap.to(cursor, { opacity: 0, scale: 0 });
 
@@ -1956,7 +2006,7 @@
       });
     });
 
-    scannerSec.addEventListener("mousemove", (e) => {
+    if (scannerSec) scannerSec.addEventListener("mousemove", (e) => {
       if (!hasEnteredScanner) return;
 
       const rect = scannerSec.getBoundingClientRect();
@@ -1980,7 +2030,7 @@
       contentY(-relY + (150 / 2));
     });
 
-    scannerSec.addEventListener("mouseleave", () => {
+    if (scannerSec) scannerSec.addEventListener("mouseleave", () => {
       hasEnteredScanner = false;
       gsap.to(cursor, { opacity: 1, scale: 1 });
     });
@@ -2290,9 +2340,9 @@
       }
     };
 
-    featuresList.addEventListener('click', setFeatureActive);
-    featuresList.addEventListener('pointermove', setFeatureActive);
-    featuresList.addEventListener('focus', setFeatureActive, true);
+    if (featuresList) featuresList.addEventListener('click', setFeatureActive);
+    if (featuresList) featuresList.addEventListener('pointermove', setFeatureActive);
+    if (featuresList) featuresList.addEventListener('focus', setFeatureActive, true);
 
     gsap.to(".progress-line", {
       width: "100%",

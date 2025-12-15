@@ -1582,7 +1582,7 @@
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
       <span id="theme-icon">🌙</span>
     </button>
-        <a href="/contact" class="nav-cta">Contact Us</a>
+        <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
   <!-- GLOBAL NOISE -->
@@ -1615,23 +1615,45 @@
   </section>
 
   
+  
   <!-- EXTENSION CONTENT -->
   <section class="content-section" style="padding: 120px 5vw; background: var(--bg); position: relative; z-index: 5;">
-    <div style="max-width: 1000px; margin: 0 auto; display: grid; gap: 40px;">
+    <div style="max-width: 1100px; margin: 0 auto;">
       
-      <div style="text-align: center; margin-bottom: 40px;">
-        <a href="#" class="nav-cta" style="padding: 20px 50px; font-size: 1.2rem;">ADD TO CHROME - FREE</a>
-        <p style="margin-top: 20px; color: #888; font-family: var(--font-mono);">Version 2.4.0 | Manifest V3 | 1.2MB</p>
+      <!-- CTA HEADER -->
+      <div style="text-align: center; margin-bottom: 60px;">
+        <h2 style="font-family: var(--font-head); font-size: 3rem; color: white; margin-bottom: 20px;">VECTORA v2.4</h2>
+        <p style="color: #888; font-family: var(--font-mono); margin-bottom: 30px;">Gemini 2.0 Flash • Local Processing • Real-time OCR</p>
+        <a href="/static/vectora-extension.zip" download class="nav-cta" style="padding: 18px 40px; font-size: 1.1rem; text-decoration: none;">DOWNLOAD .ZIP PACKAGE</a>
+        <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.6;">(Requires Developer Mode installation - See Guide)</p>
       </div>
 
-      <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 40px; border-radius: 20px; text-align: left;">
-        <h3 style="font-family: var(--font-head); color: white; font-size: 1.8rem; margin-bottom: 30px;">Installation Protocol</h3>
-        <ol style="color: var(--text); padding-left: 20px; line-height: 2;">
-           <li>Click the "Add to Chrome" button above.</li>
-           <li>Confirm the installation permission securely.</li>
-           <li>Pin the VECTORA shield icon to your toolbar.</li>
-           <li>Browse with active protection overlay.</li>
-        </ol>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        
+        <!-- Feature 1 -->
+        <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
+          <h3 style="color: var(--primary); font-family: var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">AI Truth Score</h3>
+          <p style="color: #ccc; line-height: 1.6;">
+            Every article you visit is analyzed by our Gemini-powered engine. We assign a <strong>0-100% Truth Probability</strong> score based on cross-referencing claims with verified global databases.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
+          <h3 style="color: var(--secondary); font-family: var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">Visual Decryption (OCR)</h3>
+          <p style="color: #ccc; line-height: 1.6;">
+            Right-click any suspicious image to activate the <strong>Neural Lens</strong>. VECTORA extracts text from memes and screenshots to verify their context and origin.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
+          <h3 style="color: var(--tertiary); font-family: var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">Political Bias Check</h3>
+          <p style="color: #ccc; line-height: 1.6;">
+            Detects hidden political framing and emotional manipulation. The sidebar reveals the <strong>Targeted Sentiment</strong> (Fear, Anger, Hope) used by the author.
+          </p>
+        </div>
+
       </div>
     </div>
   </section>
@@ -1650,10 +1672,10 @@
       <div class="footer-column">
         <h3>Navigation</h3>
         <ul class="footer-links">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#extension">Extension</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/extension">Extension</a></li>
+          <li><a href="/guide">Guide</a></li>
         </ul>
       </div>
 
@@ -1850,7 +1872,7 @@
     ];
 
     // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) {
+    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
       let content = "";
       for (let i = 0; i < 300; i++) {
         if (isEncryptedLayer) {
@@ -1881,7 +1903,7 @@
     const statusText = document.getElementById("scanner-status-text");
     const statusDot = document.getElementById("scanner-status-dot");
 
-    document.getElementById("morph-svg-scanner").addEventListener("click", () => {
+    if (document.getElementById("morph-svg-scanner")) document.getElementById("morph-svg-scanner").addEventListener("click", () => {
       isSecured = !isSecured;
 
       // 1. Morph Icon
@@ -1929,7 +1951,7 @@
     // Track if mouse has entered scanner section
     let hasEnteredScanner = false;
 
-    scannerSec.addEventListener("mouseenter", (e) => {
+    if (scannerSec) scannerSec.addEventListener("mouseenter", (e) => {
       hasEnteredScanner = true;
       gsap.to(cursor, { opacity: 0, scale: 0 });
 
@@ -1953,7 +1975,7 @@
       });
     });
 
-    scannerSec.addEventListener("mousemove", (e) => {
+    if (scannerSec) scannerSec.addEventListener("mousemove", (e) => {
       if (!hasEnteredScanner) return;
 
       const rect = scannerSec.getBoundingClientRect();
@@ -1977,7 +1999,7 @@
       contentY(-relY + (150 / 2));
     });
 
-    scannerSec.addEventListener("mouseleave", () => {
+    if (scannerSec) scannerSec.addEventListener("mouseleave", () => {
       hasEnteredScanner = false;
       gsap.to(cursor, { opacity: 1, scale: 1 });
     });
@@ -2287,9 +2309,9 @@
       }
     };
 
-    featuresList.addEventListener('click', setFeatureActive);
-    featuresList.addEventListener('pointermove', setFeatureActive);
-    featuresList.addEventListener('focus', setFeatureActive, true);
+    if (featuresList) featuresList.addEventListener('click', setFeatureActive);
+    if (featuresList) featuresList.addEventListener('pointermove', setFeatureActive);
+    if (featuresList) featuresList.addEventListener('focus', setFeatureActive, true);
 
     gsap.to(".progress-line", {
       width: "100%",

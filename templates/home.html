@@ -1582,7 +1582,7 @@
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
       <span id="theme-icon">🌙</span>
     </button>
-        <a href="/contact" class="nav-cta">Contact Us</a>
+        <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
   <!-- GLOBAL NOISE -->
@@ -1889,10 +1889,10 @@
       <div class="footer-column">
         <h3>Navigation</h3>
         <ul class="footer-links">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#extension">Extension</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/extension">Extension</a></li>
+          <li><a href="/guide">Guide</a></li>
         </ul>
       </div>
 
@@ -2089,7 +2089,7 @@
     ];
 
     // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) {
+    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
       let content = "";
       for (let i = 0; i < 300; i++) {
         if (isEncryptedLayer) {
@@ -2120,7 +2120,7 @@
     const statusText = document.getElementById("scanner-status-text");
     const statusDot = document.getElementById("scanner-status-dot");
 
-    document.getElementById("morph-svg-scanner").addEventListener("click", () => {
+    if (document.getElementById("morph-svg-scanner")) document.getElementById("morph-svg-scanner").addEventListener("click", () => {
       isSecured = !isSecured;
 
       // 1. Morph Icon
@@ -2168,7 +2168,7 @@
     // Track if mouse has entered scanner section
     let hasEnteredScanner = false;
 
-    scannerSec.addEventListener("mouseenter", (e) => {
+    if (scannerSec) scannerSec.addEventListener("mouseenter", (e) => {
       hasEnteredScanner = true;
       gsap.to(cursor, { opacity: 0, scale: 0 });
 
@@ -2192,7 +2192,7 @@
       });
     });
 
-    scannerSec.addEventListener("mousemove", (e) => {
+    if (scannerSec) scannerSec.addEventListener("mousemove", (e) => {
       if (!hasEnteredScanner) return;
 
       const rect = scannerSec.getBoundingClientRect();
@@ -2216,7 +2216,7 @@
       contentY(-relY + (150 / 2));
     });
 
-    scannerSec.addEventListener("mouseleave", () => {
+    if (scannerSec) scannerSec.addEventListener("mouseleave", () => {
       hasEnteredScanner = false;
       gsap.to(cursor, { opacity: 1, scale: 1 });
     });
@@ -2526,9 +2526,9 @@
       }
     };
 
-    featuresList.addEventListener('click', setFeatureActive);
-    featuresList.addEventListener('pointermove', setFeatureActive);
-    featuresList.addEventListener('focus', setFeatureActive, true);
+    if (featuresList) featuresList.addEventListener('click', setFeatureActive);
+    if (featuresList) featuresList.addEventListener('pointermove', setFeatureActive);
+    if (featuresList) featuresList.addEventListener('focus', setFeatureActive, true);
 
     gsap.to(".progress-line", {
       width: "100%",

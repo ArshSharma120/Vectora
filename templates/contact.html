@@ -1582,7 +1582,7 @@
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
       <span id="theme-icon">🌙</span>
     </button>
-        <a href="/contact" class="nav-cta">Contact Us</a>
+        <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
   <!-- GLOBAL NOISE -->
@@ -1615,26 +1615,48 @@
   </section>
 
   
+  
   <!-- CONTACT CONTENT -->
   <section class="content-section" style="padding: 120px 5vw; background: var(--bg); position: relative; z-index: 5;">
-    <div style="max-width: 600px; margin: 0 auto;">
-      <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 50px; border-radius: 20px;">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 50px;">
+      
+      <!-- Info Side -->
+      <div>
+         <h2 style="font-family: var(--font-head); color: white; font-size: 3rem; margin-bottom: 20px;">Establish Uplink</h2>
+         <p style="color: #aaa; line-height: 1.6; margin-bottom: 40px;">
+           Have a feature request, bug report, or want to contribute to the codebase? The channel is open.
+         </p>
+         
+         <div style="margin-bottom: 30px;">
+           <h4 style="color: var(--primary); margin-bottom: 5px;">DIRECT CHANNEL</h4>
+           <a href="mailto:contact@vectora.ai" style="color: white; text-decoration: none; font-size: 1.2rem;">contact@vectora.ai</a>
+         </div>
+
+         <div style="margin-bottom: 30px;">
+           <h4 style="color: var(--secondary); margin-bottom: 5px;">HQ COORDINATES</h4>
+           <p style="color: white;">Indore, Madhya Pradesh, India</p>
+         </div>
+      </div>
+
+      <!-- Form Side -->
+      <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 40px; border-radius: 20px;">
         <form style="display: flex; flex-direction: column; gap: 20px;">
            <div>
-             <label style="color: var(--primary); font-family: var(--font-mono); font-size: 0.8rem; margin-bottom: 10px; display: block;">IDENTITY</label>
-             <input type="text" placeholder="Enter Name" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); color: white; border-radius: 8px;">
+             <label style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">NAME / ALIAS</label>
+             <input type="text" placeholder="e.g. Neo" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none;">
            </div>
            <div>
-             <label style="color: var(--primary); font-family: var(--font-mono); font-size: 0.8rem; margin-bottom: 10px; display: block;">FREQUENCY</label>
-             <input type="email" placeholder="Enter Email" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); color: white; border-radius: 8px;">
+             <label style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">CONTACT FREQUENCY</label>
+             <input type="email" placeholder="email@server.com" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none;">
            </div>
            <div>
-             <label style="color: var(--primary); font-family: var(--font-mono); font-size: 0.8rem; margin-bottom: 10px; display: block;">TRANSMISSION</label>
-             <textarea placeholder="Enter Message" rows="5" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); color: white; border-radius: 8px; font-family: inherit;"></textarea>
+             <label style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">TRANSMISSION DATA</label>
+             <textarea placeholder="Message content..." rows="4" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none; font-family: inherit;"></textarea>
            </div>
-           <button class="nav-cta" style="margin-top: 10px; width: 100%; text-align: center; justify-content: center;">ESTABLISH LINK</button>
+           <button class="nav-cta" style="margin-top: 10px; width: 100%; text-align: center; justify-content: center; border: none; font-size: 1rem;">SEND MESSAGE</button>
         </form>
       </div>
+
     </div>
   </section>
 
@@ -1652,10 +1674,10 @@
       <div class="footer-column">
         <h3>Navigation</h3>
         <ul class="footer-links">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#extension">Extension</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/extension">Extension</a></li>
+          <li><a href="/guide">Guide</a></li>
         </ul>
       </div>
 
@@ -1852,7 +1874,7 @@
     ];
 
     // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) {
+    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
       let content = "";
       for (let i = 0; i < 300; i++) {
         if (isEncryptedLayer) {
@@ -1883,7 +1905,7 @@
     const statusText = document.getElementById("scanner-status-text");
     const statusDot = document.getElementById("scanner-status-dot");
 
-    document.getElementById("morph-svg-scanner").addEventListener("click", () => {
+    if (document.getElementById("morph-svg-scanner")) document.getElementById("morph-svg-scanner").addEventListener("click", () => {
       isSecured = !isSecured;
 
       // 1. Morph Icon
@@ -1931,7 +1953,7 @@
     // Track if mouse has entered scanner section
     let hasEnteredScanner = false;
 
-    scannerSec.addEventListener("mouseenter", (e) => {
+    if (scannerSec) scannerSec.addEventListener("mouseenter", (e) => {
       hasEnteredScanner = true;
       gsap.to(cursor, { opacity: 0, scale: 0 });
 
@@ -1955,7 +1977,7 @@
       });
     });
 
-    scannerSec.addEventListener("mousemove", (e) => {
+    if (scannerSec) scannerSec.addEventListener("mousemove", (e) => {
       if (!hasEnteredScanner) return;
 
       const rect = scannerSec.getBoundingClientRect();
@@ -1979,7 +2001,7 @@
       contentY(-relY + (150 / 2));
     });
 
-    scannerSec.addEventListener("mouseleave", () => {
+    if (scannerSec) scannerSec.addEventListener("mouseleave", () => {
       hasEnteredScanner = false;
       gsap.to(cursor, { opacity: 1, scale: 1 });
     });
@@ -2289,9 +2311,9 @@
       }
     };
 
-    featuresList.addEventListener('click', setFeatureActive);
-    featuresList.addEventListener('pointermove', setFeatureActive);
-    featuresList.addEventListener('focus', setFeatureActive, true);
+    if (featuresList) featuresList.addEventListener('click', setFeatureActive);
+    if (featuresList) featuresList.addEventListener('pointermove', setFeatureActive);
+    if (featuresList) featuresList.addEventListener('focus', setFeatureActive, true);
 
     gsap.to(".progress-line", {
       width: "100%",
