@@ -90,6 +90,11 @@ def patent_page():
     return render_template('patent.html')
 
 
+@app.route('/guide')
+def guide_page():
+    return render_template('guide.html')
+
+
 @app.route("/process", methods=["POST"])
 def process():
     try:
