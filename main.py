@@ -4,12 +4,17 @@ import requests
 import re
 import sys
 
-app = Flask(__name__)
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
 
 
-# ✅ Configure your Gemini API Key
-GEMINI_API_KEY = "AIzaSyAvzL_13CNVzpP0KVeGiwUEvdEWl3Ro5NU"
+# ✅ Configure your Gemini API Key via Environment Variable
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 
