@@ -4,583 +4,932 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VECTORA - Fact Detection Terminal</title>
-
-  <!-- Google Fonts -->
+  <title>VECTORA | TERMINAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
     rel="stylesheet">
 
-  <!-- GSAP + Plugins -->
   <style>
-    /* --- 0. SYSTEM CORE --- */
     :root {
-      /* Dark Mode (Default) */
-      --bg: #000000;
-      --grid: #111111;
+      /* DARK MODE (Default) */
+      --bg: #0b0b0b;
+      --surface: #0a0a0a;
       --primary: #00f3ff;
       --secondary: #ff0055;
-      --tertiary: #00ff9d;
-      --success: #00ff9d;
-      --warning: #ffaa00;
       --text: #e0e0e0;
-      --glass: rgba(255, 255, 255, 0.05);
-      --nav-bg: rgba(0, 0, 0, 0.6);
-      --nav-border: rgba(255, 255, 255, 0.1);
-      --card-bg: rgba(20, 20, 20, 0.6);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-head: 'Funnel Display', 'Inter', sans-serif;
-      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+      --muted: #555;
+      --border: rgba(255, 255, 255, 0.1);
+      --console-bg: rgba(0, 0, 0, 0.5);
+      --nav-bg: rgba(0, 0, 0, 0.8);
+      --modal-bg: rgba(10, 10, 10, 0.95);
+
+      --font-head: 'Funnel Display', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-body: 'Inter', sans-serif;
     }
 
-    /* Light Mode */
     [data-theme="light"] {
-      --bg: #fafafa;
-      --grid: #e8e8e8;
-      --primary: #0066ff;
+      --bg: #f4f4f5;
+      --surface: #ffffff;
+      --primary: #0051ff;
       --secondary: #ff0055;
-      --tertiary: #ff9500;
-      --success: #00c853;
-      --text: #0a0a0a;
-      --glass: rgba(0, 0, 0, 0.03);
-      --nav-bg: rgba(255, 255, 255, 0.98);
-      --nav-border: rgba(0, 0, 0, 0.08);
-      --card-bg: rgba(255, 255, 255, 0.9);
-      --card-border: #e0e0e0;
+      --text: #111;
+      --muted: #555;
+      --border: rgba(0, 0, 0, 0.1);
+      --console-bg: rgba(255, 255, 255, 0.8);
+      --nav-bg: rgba(255, 255, 255, 0.9);
+      --modal-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    @font-face {
+      font-family: 'AquireFont';
+      src: url('/static/aquire.woff') format('woff');
     }
 
     * {
-      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
       cursor: none;
     }
 
     body {
-      margin: 0;
-      background-color: var(--bg);
+      background: var(--bg);
       color: var(--text);
-      font-family: var(--font-mono);
-      overflow-x: hidden;
-      background-image:
-        linear-gradient(var(--grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-
-    /* NOISE GRAIN OVERLAY */
-    .noise-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
+      font-family: var(--font-body);
+      overflow: hidden;
       height: 100vh;
-      pointer-events: none;
-      z-index: 9998;
-      opacity: 0.07;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      transition: background 0.5s, color 0.5s;
     }
 
-    /* Custom Cursor */
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.04;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    [data-theme="light"] .noise {
+      mix-blend-mode: multiply;
+      opacity: 0.03;
+    }
+
     #cursor {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 40px;
-      height: 40px;
-      background: white;
+      width: 20px;
+      height: 20px;
+      background: var(--text);
       border-radius: 50%;
       pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
       mix-blend-mode: difference;
-      transition: width 0.3s ease, height 0.3s ease;
-      will-change: transform;
-    }
-
-    [data-theme="light"] #cursor {
-      background: transparent;
-      border: 2px solid #000;
-      mix-blend-mode: normal;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
     }
 
     /* --- NAVIGATION --- */
     nav {
       position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translate(-50%, 0);
-      z-index: 9000;
-      padding: 12px 24px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px 5vw;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 30px;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      z-index: 900;
       background: var(--nav-bg);
-      border: 1px solid var(--nav-border);
-      border-radius: 100px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      transition: 0.3s;
     }
 
-    .nav-logo {
-      font-family: var(--font-head);
-      font-size: 1.3rem;
+    .nav-brand {
+      font-family: 'AquireFont', var(--font-head);
+      font-size: 1.5rem;
       color: var(--text);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 700;
+      letter-spacing: 2px;
+      text-decoration: none;
     }
 
-    .nav-links {
+    .nav-menu {
       display: flex;
-      gap: 8px;
+      gap: 40px;
       list-style: none;
-      margin: 0;
-      padding: 0;
-      align-items: center;
     }
 
-    .nav-links a {
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
       color: var(--text);
       text-decoration: none;
-      font-size: 0.9rem;
-      padding: 8px 16px;
-      border-radius: 50px;
-      transition: all 0.3s;
-      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      padding-bottom: 5px;
+      opacity: 0.7;
+      transition: 0.3s;
     }
 
-    .nav-links a.active {
-      background: var(--primary);
-      color: #000;
-      font-weight: 600;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
-    }
-
-    .nav-links a:hover:not(.active) {
-      background: var(--glass);
+    .nav-link:hover,
+    .nav-link.active {
+      opacity: 1;
       color: var(--primary);
     }
 
-    .theme-toggle {
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--primary);
+      transition: 0.3s;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    .theme-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: 1px solid var(--nav-border);
-      background: var(--glass);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1.2rem;
-      color: var(--text);
+      margin-left: 20px;
     }
 
-    .nav-cta {
+    /* MOB NAV */
+    .mobile-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .bar {
+      width: 25px;
+      height: 2px;
       background: var(--text);
-      color: var(--bg);
-      padding: 10px 24px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      border: none;
+      transition: 0.3s;
     }
 
-    /* --- HERO --- */
-    .hero {
-      height: 40vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      position: relative;
+    @media(max-width: 900px) {
+      .nav-menu {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        padding: 20px;
+        gap: 20px;
+        transform: translateY(-150%);
+        transition: 0.5s ease;
+      }
+
+      .nav-menu.active {
+        transform: translateY(0);
+      }
+
+      .mobile-toggle {
+        display: flex;
+      }
     }
 
-    h1 {
-      font-family: var(--font-head);
-      font-size: clamp(3rem, 8vw, 6rem);
-      margin: 0;
-      line-height: 1;
-      text-transform: uppercase;
-      color: var(--primary);
-      text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+    /* --- TERMINAL LAYOUT --- */
+    .terminal-container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      padding: 120px 20px 20px;
+      height: 100vh;
     }
 
-    .subtitle {
-      font-family: var(--font-mono);
-      color: var(--text);
-      letter-spacing: 2px;
-      margin-top: 1rem;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      opacity: 0.8;
-    }
-
-    /* --- SCANNER INTERFACE --- */
-    .interface-container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 5vw 100px;
-    }
-
-    .scanner-panel {
-      background: var(--card-bg);
-      border: 1px solid var(--primary);
-      border-radius: 20px;
-      padding: 40px;
-      position: relative;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
-    }
-
-    .scanner-panel::before {
-      content: 'SYSTEM ACTIVE';
-      position: absolute;
-      top: -12px;
-      left: 40px;
-      background: var(--bg);
-      padding: 0 10px;
-      color: var(--primary);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      border: 1px solid var(--primary);
-      border-radius: 4px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 200px;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--card-border);
+    /* SIDEBAR (STATS) */
+    .sidebar {
+      border: 1px solid var(--border);
       border-radius: 10px;
       padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: var(--surface);
+    }
+
+    .stat-block {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .stat-val {
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .sidebar-foot {
+      color: var(--text);
+      font-size: 0.8rem;
+    }
+
+    /* CONFIG BUTTON */
+    .config-btn {
+      background: transparent;
+      border: 1px solid var(--border);
       color: var(--text);
       font-family: var(--font-mono);
-      font-size: 1rem;
-      resize: vertical;
-      outline: none;
-      margin-bottom: 20px;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      padding: 10px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      margin-top: auto;
+      transition: 0.3s;
+      text-transform: uppercase;
+      font-size: 0.8rem;
     }
 
-    textarea:focus {
+    .config-btn:hover {
+      background: var(--primary);
+      color: #000;
       border-color: var(--primary);
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
     }
 
-    .controls {
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: var(--modal-bg);
+      border: 1px solid var(--primary);
+      padding: 40px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 10px;
+      box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+    }
+
+    .modal-title {
+      font-family: 'AquireFont';
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-label {
+      font-family: var(--font-mono);
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .form-select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 15px;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .form-select option {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .modal-actions {
       display: flex;
       justify-content: flex-end;
       gap: 15px;
     }
 
-    .btn-action {
+    .btn-close {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 10px 20px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+    }
+
+    .btn-save {
       background: var(--primary);
       color: #000;
       border: none;
-      padding: 12px 30px;
-      font-family: var(--font-head);
-      font-weight: bold;
-      font-size: 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .btn-action:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px var(--primary);
-    }
-
-    .btn-clear {
-      background: transparent;
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      padding: 12px 30px;
-      font-family: var(--font-head);
-      font-weight: bold;
-      font-size: 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-      text-transform: uppercase;
-    }
-
-    .btn-clear:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    /* RESULT AREA */
-    .result-area {
-      margin-top: 40px;
-      border-top: 1px solid var(--card-border);
-      padding-top: 30px;
-      min-height: 100px;
-    }
-
-    .result-label {
-      font-family: var(--font-head);
-      color: var(--primary);
-      font-size: 1.2rem;
-      margin-bottom: 15px;
-      opacity: 0.7;
-    }
-
-    .result-content {
+      padding: 10px 20px;
       font-family: var(--font-mono);
-      line-height: 1.6;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* MAIN CONSOLE */
+    .console-wrapper {
+      border: 1px solid var(--border);
       border-radius: 10px;
-      border-left: 3px solid var(--card-border);
-      min-height: 80px;
+      background: var(--console-bg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+    }
+
+    .console-header {
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--secondary);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--secondary);
+    }
+
+    .status-dot.active {
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .console-body {
+      flex-grow: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    /* INPUT AREA */
+    .input-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 15px;
+      color: var(--primary);
+      font-family: var(--font-mono);
+      outline: none;
+      font-size: 1rem;
+    }
+
+    [data-theme="light"] textarea {
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    textarea::placeholder {
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      background: rgba(0, 243, 255, 0.02);
+    }
+
+    .file-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed var(--muted);
+      padding: 10px 20px;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      transition: 0.3s;
+    }
+
+    .file-btn:hover,
+    .file-btn.has-file {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* TOGGLE SWITCH */
+    .switch-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--muted);
+      transition: .4s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: var(--primary);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(20px);
+    }
+
+    .btn-analyze {
+      align-self: flex-end;
+      padding: 10px 30px;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      font-family: var(--font-mono);
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-analyze:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* OUTPUT LOG */
+    .output-log {
+      margin-top: 20px;
+      border-top: 1px dashed var(--border);
+      padding-top: 20px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
       white-space: pre-wrap;
     }
 
-    .result-content.success {
-      border-left-color: var(--success);
-      color: var(--success);
+    .log-entry {
+      margin-bottom: 10px;
     }
 
-    .result-content.error {
-      border-left-color: var(--secondary);
+    .log-entry.error {
       color: var(--secondary);
     }
 
-    /* --- FOOTER --- */
-    footer {
-      width: 100%;
-      padding: 60px 5vw;
-      border-top: 1px solid var(--card-border);
-      background: var(--glass);
-      margin-top: 50px;
+    .log-entry.success {
+      color: #00aa00;
     }
 
-    .footer-content {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 40px;
-      max-width: 1200px;
-      margin: 0 auto;
+    [data-theme="dark"] .log-entry.success {
+      color: #0f0;
     }
 
-    .footer-bottom {
-      text-align: center;
-      margin-top: 60px;
-      padding-top: 20px;
-      border-top: 1px solid var(--card-border);
-      font-size: 0.8rem;
-      opacity: 0.5;
+    @media(max-width: 900px) {
+      .terminal-container {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+        height: auto;
+      }
+
+      body {
+        overflow: auto;
+        height: auto;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- GLOBAL EFFECTS -->
-  <div class="noise-overlay"></div>
+  <div class="noise"></div>
   <div id="cursor"></div>
 
-  <!-- NAVIGATION -->
-  <nav>
-    <div class="nav-logo">VECTORA</div>
-    <ul class="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="/about">About</a></li>
-      <li><a href="/extension">Extension</a></li>
-      <li><a href="/guide">Guide</a></li>
-    </ul>
-    <button class="theme-toggle" id="theme-toggle">🌙</button>
-    <a href="/contact" class="nav-cta">Get Started</a>
-  </nav>
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-box">
+      <h2 class="modal-title">SYSTEM CONFIGURATION</h2>
 
-  <!-- HERO SECTION -->
-  <section class="hero">
-    <div>
-      <h1>Fact Check</h1>
-      <div class="subtitle">Enter text or URL to verify content authenticity</div>
-    </div>
-  </section>
-
-  <!-- SCANNER SECTION -->
-  <div class="interface-container">
-    <div class="scanner-panel">
-
-      <form id="check-form">
-        <textarea id="user_input" name="user_input" placeholder="Paste article text or URL here for analysis..."
-          spellcheck="false"></textarea>
-        <!-- Language Hidden Input - Default to English for now -->
-        <input type="hidden" id="lang" name="lang" value="en" />
-
-        <div class="controls">
-          <button type="button" id="clear-btn" class="btn-clear">Clear Data</button>
-          <button type="submit" id="submit-btn" class="btn-action">Analyze Content</button>
-        </div>
-      </form>
-
-      <div class="result-area">
-        <div class="result-label">ANALYSIS RESULT:</div>
-        <div class="result-content" id="result">
-          <span style="opacity: 0.5;">Waiting for input stream...</span>
-        </div>
+      <div class="form-group">
+        <label class="form-label">AI_PROVIDER</label>
+        <select class="form-select" id="provider-select">
+          <option value="gemini">Google Gemini</option>
+          <option value="groq">Groq (Llama/Mixtral)</option>
+        </select>
       </div>
 
+      <div class="form-group">
+        <label class="form-label">MODEL_VERSION</label>
+        <select class="form-select" id="model-select">
+          <option value="" disabled selected>Loading models...</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-close" id="close-modal">CANCEL</button>
+        <button class="btn-save" id="save-config">APPLY CONFIG</button>
+      </div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-content">
-      <div>
-        <h3>VECTORA</h3>
-        <p style="opacity: 0.7;">Advanced Reality Defense System.</p>
+  <nav>
+    <a href="/" class="nav-brand">VECTORA</a>
+    <button class="mobile-toggle" onclick="toggleMenu()">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </button>
+    <ul class="nav-menu">
+      <li><a href="/about" class="nav-link">About</a></li>
+      <li><a href="/extension" class="nav-link">Extension</a></li>
+      <li><a href="/guide" class="nav-link">Guide</a></li>
+      <li><a href="/check" class="nav-link active">Terminal</a></li>
+      <li><a href="/contact" class="nav-link">Contact</a></li>
+      <li><button class="theme-btn" id="theme-toggle">☀</button></li>
+    </ul>
+  </nav>
+
+  <main class="terminal-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="stat-block">
+        <div class="stat-label">SYSTEM_STATUS</div>
+        <div class="stat-val" id="sys-status" style="color: var(--primary);">ONLINE</div>
       </div>
-      <div>
-        <h3>Links</h3>
-        <p><a href="/" style="color:var(--text); text-decoration: none;">Home</a></p>
-        <p><a href="/extension" style="color:var(--text); text-decoration: none;">Extension</a></p>
-        <p><a href="https://github.com/namandhakad712/Vectora" target="_blank"
-            style="color:var(--text); text-decoration: none;">GitHub</a></p>
+      <div class="stat-block">
+        <div class="stat-label">SECURITY_LEVEL</div>
+        <div class="stat-val">MAXIMUM</div>
       </div>
-    </div>
-    <div class="footer-bottom">
-      &copy; 2025 VECTORA AI. ARCHITECTED BY NAMAN DHAKAD.
-    </div>
-  </footer>
+      <div class="stat-block">
+        <div class="stat-label">active_config</div>
+        <div class="stat-val" style="font-size: 1rem; color: var(--text);" id="current-config">Gemini / Flash</div>
+      </div>
 
+      <button class="config-btn" id="open-settings">[ CHANGE CONFIG ]</button>
 
-  <!-- GSAP & LENIS -->
-  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/ScrollTrigger.min.js"></script>
-  <!-- Text Plugin for Typing Effect if needed (optional) -->
+      <div class="stat-block" style="margin-top: auto; border:none; padding:0;">
+        <div class="stat-label">SESSION_ID</div>
+        <div class="stat-val sidebar-foot">0x4F92A8</div>
+      </div>
+    </aside>
 
+    <!-- MAIN CONSOLE -->
+    <section class="console-wrapper">
+      <div class="console-header">
+        <span
+          style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted);">root@vectora-core:~/analysis</span>
+        <div class="status-dot active"></div>
+      </div>
+
+      <div class="console-body">
+        <form id="check-form" class="input-zone">
+          <label style="font-family: var(--font-mono); color: var(--text); font-size: 0.8rem;">INPUT_STREAM
+            (TEXT/URL/DOC):</label>
+          <textarea id="user_input" name="user_input" spellcheck="false"
+            placeholder="// Awaiting data packet..."></textarea>
+
+          <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+            <!-- FILE UPLOAD -->
+            <input type="file" id="file-upload" name="file" style="display: none;">
+            <label for="file-upload" class="file-btn" id="file-label">
+              <span>[ UPLOAD DOC/IMG ]</span>
+            </label>
+
+            <!-- WEB SEARCH TOGGLE -->
+            <div class="switch-wrapper">
+              <label class="switch">
+                <input type="checkbox" id="web-search" name="web_search">
+                <span class="slider"></span>
+              </label>
+              <span>ENABLE WEB SEARCH</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <button type="button" id="clear-btn"
+              style="background:none; border:none; color: var(--muted); cursor: pointer; font-family: var(--font-mono);">[
+              CLEAR BUFFER ]</button>
+            <button type="submit" id="submit-btn" class="btn-analyze">EXECUTE ANALYSIS</button>
+          </div>
+        </form>
+
+        <div class="output-log" id="result-log">
+          <div class="log-entry">// System ready. Waiting for input...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script>
-    // --- SETUP ---
-    gsap.registerPlugin(ScrollTrigger);
-    const lenis = new Lenis();
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
+    // --- APP STATE ---
+    let availableModels = { gemini: [], groq: [] };
+    let selectedProvider = 'gemini';
+    let selectedModel = 'gemini-2.0-flash';
+    let isLoadingModels = true;
 
-    // --- NAV ANIMATION ---
-    gsap.from("nav", {
-      y: -100,
-      opacity: 0,
-      duration: 1,
-      ease: "power3.out",
-      delay: 0.2
-    });
+    // --- THEME LOGIC ---
+    const themeBtn = document.getElementById('theme-toggle');
+    const root = document.documentElement;
 
-    // --- THEME TOGGLE ---
-    const themeToggle = document.getElementById('theme-toggle');
-    const html = document.documentElement;
-    themeToggle.addEventListener('click', () => {
-      const current = html.getAttribute('data-theme') || 'dark';
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    root.setAttribute('data-theme', savedTheme);
+    themeBtn.textContent = savedTheme === 'dark' ? '☀' : '☾';
+
+    themeBtn.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', next);
-      themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      themeBtn.textContent = next === 'dark' ? '☀' : '☾';
     });
 
-    // --- CURSOR ---
-    const cursor = document.getElementById("cursor");
-    const cursorX = gsap.quickTo(cursor, "x", { duration: 0.4, ease: "power3.out" });
-    const cursorY = gsap.quickTo(cursor, "y", { duration: 0.4, ease: "power3.out" });
+    // --- MOBILE NAV ---
+    function toggleMenu() {
+      document.querySelector('.nav-menu').classList.toggle('active');
+    }
 
-    window.addEventListener("mousemove", (e) => {
-      cursorX(e.clientX);
-      cursorY(e.clientY);
+    gsap.from(".terminal-container", { scale: 0.95, opacity: 0, duration: 1, ease: "power2.out", delay: 0.2 });
+
+    const cursor = document.getElementById('cursor');
+    window.addEventListener('mousemove', (e) => {
+      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+    });
+    document.querySelectorAll('a, button, textarea, .file-btn').forEach(el => {
+      el.addEventListener('mouseenter', () => gsap.to(cursor, { scale: 3 }));
+      el.addEventListener('mouseleave', () => gsap.to(cursor, { scale: 1 }));
     });
 
-    // Hover effects
-    document.querySelectorAll("a, button, textarea").forEach(el => {
-      el.addEventListener("mouseenter", () => gsap.to(cursor, {
-        width: 80,
-        height: 80,
-        duration: 0.3,
-        ease: "power2.out",
-        mixBlendMode: 'difference'
-      }));
-      el.addEventListener("mouseleave", () => gsap.to(cursor, {
-        width: 40,
-        height: 40,
-        duration: 0.3,
-        ease: "power2.out",
-        mixBlendMode: 'difference'
-      }));
+    // --- MODAL & SETTINGS LOGIC ---
+    const modal = document.getElementById('settings-modal');
+    const openBtn = document.getElementById('open-settings');
+    const closeBtn = document.getElementById('close-modal');
+    const saveBtn = document.getElementById('save-config');
+    const providerSelect = document.getElementById('provider-select');
+    const modelSelect = document.getElementById('model-select');
+    const configDisplay = document.getElementById('current-config');
+
+    // Fetch models on load
+    async function fetchModels() {
+      isLoadingModels = true;
+      updateLoadingState();
+      try {
+        const res = await fetch('/api/models');
+        availableModels = await res.json();
+        isLoadingModels = false;
+        updateModelDropdown();
+      } catch (e) {
+        console.error("Failed to fetch models", e);
+        isLoadingModels = false;
+        modelSelect.innerHTML = '<option disabled>Error loading models</option>';
+      }
+    }
+    fetchModels();
+
+    function updateLoadingState() {
+      modelSelect.innerHTML = '<option disabled selected>Loading models from API...</option>';
+    }
+
+    function updateModelDropdown() {
+      if (isLoadingModels) {
+        updateLoadingState();
+        return;
+      }
+      // Clear existing
+      modelSelect.innerHTML = '';
+      const provider = providerSelect.value;
+      const models = availableModels[provider] || [];
+
+      models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        modelSelect.appendChild(opt);
+      });
+
+      // Set default if current selection is invalid for new provider
+      if (models.length > 0) {
+        modelSelect.value = models[0];
+      } else {
+        modelSelect.innerHTML = '<option disabled>No models available</option>';
+      }
+    }
+
+    providerSelect.addEventListener('change', updateModelDropdown);
+
+    openBtn.addEventListener('click', () => {
+      modal.classList.add('open');
+      providerSelect.value = selectedProvider;
+      updateModelDropdown();
+      if (availableModels[selectedProvider].includes(selectedModel)) {
+        modelSelect.value = selectedModel;
+      }
     });
 
-    // --- FORM HANDLING ---
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+
+    saveBtn.addEventListener('click', () => {
+      selectedProvider = providerSelect.value;
+      selectedModel = modelSelect.value || (selectedProvider === 'gemini' ? 'gemini-2.0-flash' : 'llama3-70b-8192');
+
+      let label = selectedModel;
+      if (label && label.length > 15) label = label.substring(0, 15) + '...';
+
+      configDisplay.textContent = `${selectedProviderName(selectedProvider)} / ${label}`;
+      modal.classList.remove('open');
+      addLog(`System Config Updated: ${selectedProvider.toUpperCase()} [${selectedModel}]`);
+    });
+
+    function selectedProviderName(val) {
+      return val === 'gemini' ? 'Gemini' : 'Groq';
+    }
+
+
+    // --- FORM LOGIC ---
     const form = document.getElementById('check-form');
-    const resultElement = document.getElementById('result');
+    const log = document.getElementById('result-log');
     const clearBtn = document.getElementById('clear-btn');
     const submitBtn = document.getElementById('submit-btn');
+    const fileInput = document.getElementById('file-upload');
+    const fileLabel = document.getElementById('file-label');
+
+    // File selection UI
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        fileLabel.classList.add('has-file');
+        fileLabel.querySelector('span').textContent = `[ ${fileInput.files[0].name} ]`;
+        addLog(`File buffer loaded: ${fileInput.files[0].name}`);
+      } else {
+        fileLabel.classList.remove('has-file');
+        fileLabel.querySelector('span').textContent = `[ UPLOAD DOC/IMG ]`;
+      }
+    });
+
+    function addLog(msg, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `log-entry ${type}`;
+      div.textContent = `> ${msg}`;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
 
     clearBtn.addEventListener('click', () => {
       document.getElementById('user_input').value = '';
-      resultElement.innerHTML = '<span style="opacity: 0.5;">Waiting for input stream...</span>';
-      resultElement.className = 'result-content';
+      fileInput.value = ''; // Clear file
+      fileLabel.classList.remove('has-file');
+      fileLabel.querySelector('span').textContent = `[ UPLOAD DOC/IMG ]`;
+      log.innerHTML = '<div class="log-entry">// Buffer cleared.</div>';
     });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const inputVal = document.getElementById('user_input').value.trim();
+      const file = fileInput.files[0];
+      const useWebSearch = document.getElementById('web-search').checked;
 
-      if (!inputVal) {
-        resultElement.innerHTML = "Error: Input stream empty. Please provide data for analysis.";
-        resultElement.classList.add('error');
+      if (!inputVal && !file) {
+        addLog("Error: Input stream is empty (Text or File required).", 'error');
         return;
       }
 
-      // UI Feedback - Processing
-      submitBtn.textContent = "ANALYZING...";
-      resultElement.innerHTML = "Connecting to neural engine...<br>Processing linguistic patterns...";
-      resultElement.className = 'result-content';
+      submitBtn.textContent = "PROCESSING...";
+      submitBtn.style.opacity = "0.5";
+      addLog(`Initiating neural handshake with ${selectedProvider.toUpperCase()}...`);
+      if (useWebSearch) addLog("Active Protocols: WEB_SEARCH enabled.");
+      addLog("Streaming data...");
+
+      // Prepare UI for stream
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'log-entry success';
+      resultDiv.style.marginTop = "10px";
+      resultDiv.style.borderLeft = "2px solid #00aa00";
+      resultDiv.style.paddingLeft = "10px";
+      resultDiv.textContent = "";
+      log.appendChild(resultDiv);
 
       try {
         const formData = new FormData();
         formData.append('user_input', inputVal);
-        formData.append('lang', 'en'); // Force English for now or add toggle later if needed
+        formData.append('lang', 'en');
+        formData.append('provider', selectedProvider);
+        formData.append('model', selectedModel);
+        formData.append('web_search', useWebSearch);
+        if (file) {
+          formData.append('file', file);
+        }
 
-        const response = await fetch('/process', {
-          method: 'POST',
-          body: formData
-        });
+        const response = await fetch('/process', { method: 'POST', body: formData });
 
         if (!response.ok) {
-          const errorText = await response.text();
-          resultElement.textContent = "Analysis Failed: " + errorText;
-          resultElement.classList.add('error');
-        } else {
-          const data = await response.json();
-          // Display the result
-          // If the logic returns 'reply' key
-          const output = data.reply || JSON.stringify(data, null, 2);
-          resultElement.textContent = output;
-          resultElement.classList.add('success');
+          const errText = await response.text();
+          addLog(`System Error: ${errText}`, 'error');
+          return;
         }
-      } catch (err) {
-        resultElement.textContent = "System Error: Network connection failed. " + String(err);
-        resultElement.classList.add('error');
-      } finally {
-        submitBtn.textContent = "ANALYZE CONTENT";
-      }
-    });
 
-    // Animate Panel Entry
-    gsap.from(".scanner-panel", {
-      y: 100,
-      opacity: 0,
-      duration: 1,
-      ease: "power3.out",
-      delay: 0.5
+        // Handle Streaming
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          resultDiv.textContent += chunk;
+          log.scrollTop = log.scrollHeight;
+        }
+
+        addLog("Transmission Complete.", 'success');
+
+      } catch (err) {
+        addLog(`Network Error: ${err}`, 'error');
+      } finally {
+        submitBtn.textContent = "EXECUTE ANALYSIS";
+        submitBtn.style.opacity = "1";
+      }
     });
 
   </script>

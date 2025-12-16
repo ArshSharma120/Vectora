@@ -11,3 +11,5 @@ extension.crx
 .env*.local
 temp.md
 tmp.md
+GEMINI-DOCS
+GROQ-DOCS
