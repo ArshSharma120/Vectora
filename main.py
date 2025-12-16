@@ -22,7 +22,9 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
 
 # DATA DIRS
-UPLOAD_FOLDER = 'tmp_uploads'
+# DATA DIRS
+# In Vercel (Lambda), only /tmp is writable
+UPLOAD_FOLDER = '/tmp/vectora_uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ✅ API Keys
