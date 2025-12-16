@@ -543,9 +543,10 @@
     }
 
     .nav-links a.active {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      color: #fff;
+      background: var(--primary);
+      color: #000;
       font-weight: 600;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
     }
 
     .nav-links a:not(.active):hover {
@@ -677,7 +678,9 @@
 
     /* Apply Aquire Font */
     .feature-article h3,
-    .extension-cta-title {
+    .extension-cta-title,
+    .features-title,
+    .scanner-title {
       font-family: 'AquireFont', var(--font-head);
     }
 
@@ -1573,7 +1576,7 @@
   <!-- NAVIGATION -->
   <nav>
     <div class="nav-logo">VECTORA</div>
-        <ul class="nav-links">
+    <ul class="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/extension">Extension</a></li>
@@ -1582,7 +1585,7 @@
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
       <span id="theme-icon">🌙</span>
     </button>
-        <a href="/contact" class="nav-cta">Get Started</a>
+    <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
   <!-- GLOBAL NOISE -->
@@ -1656,7 +1659,10 @@
   </section>
 
   <!-- SECTION: THE SCANNER (UPDATED) -->
-  <section class="section-scanner" id="scanner-sec">
+  <section class="section-scanner" id="scanner-sec" style="flex-direction: column; gap: 2rem;">
+    <h2 class="scanner-title"
+      style="font-size: clamp(2rem, 5vw, 3.5rem); color: var(--primary); text-transform: uppercase; margin: 0; text-align: center;">
+      Fact Detection Lens</h2>
 
     <div class="scanner-window">
 
@@ -1910,7 +1916,7 @@
         <h3>Contact</h3>
         <ul class="footer-links">
           <li><a href="mailto:contact@vectora.ai">contact@vectora.ai</a></li>
-          <li><a href="#github">GitHub</a></li>
+          <li><a href="https://github.com/namandhakad712/Vectora" target="_blank">GitHub</a></li>
           <li><a href="#twitter">Twitter</a></li>
           <li><a href="#discord">Discord</a></li>
         </ul>
@@ -2089,7 +2095,8 @@
     ];
 
     // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
+    function populateGrid(element, phraseArray, isEncryptedLayer = false) {
+      if (!element) return;
       let content = "";
       for (let i = 0; i < 300; i++) {
         if (isEncryptedLayer) {

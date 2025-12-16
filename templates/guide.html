@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VECTORA - Reality Defense System</title>
+  <title>VECTORA - Installation Guide</title>
 
-  <!-- Google Fonts - Inter (Professional, Modern) -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -21,7 +21,6 @@
       --bg: #000000;
       --grid: #111111;
       --primary: #00f3ff;
-      /* Cyber Cyan */
       --secondary: #ff0055;
       --tertiary: #00ff9d;
       --success: #00ff9d;
@@ -55,14 +54,8 @@
 
     * {
       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    }
-
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;700&family=Syncopate:wght@400;700&display=swap');
-
-    * {
       box-sizing: border-box;
       cursor: none;
-      /* Custom Cursor Mode */
     }
 
     body {
@@ -86,12 +79,11 @@
       height: 100vh;
       pointer-events: none;
       z-index: 9998;
-      /* Just below cursor */
       opacity: 0.07;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
-    /* Custom Cursor - Inverted Blob */
+    /* Custom Cursor */
     #cursor {
       position: fixed;
       top: 0;
@@ -108,368 +100,10 @@
       will-change: transform;
     }
 
-    /* Light mode cursor - use border instead of blend mode */
     [data-theme="light"] #cursor {
       background: transparent;
       border: 2px solid #000;
       mix-blend-mode: normal;
-    }
-
-    #cursor-dot {
-      display: none;
-      /* Not needed for blob cursor */
-    }
-
-    /* --- REPLACED CTA BUTTON STYLES (from aas.md) --- */
-    /* From Uiverse.io by dexter-st */
-    .btn-wrapper {
-      position: relative;
-      display: inline-block;
-      scale: 1.2;
-      /* Making it slightly larger */
-    }
-
-    .btn {
-      --border-radius: 24px;
-      --padding: 4px;
-      --transition: 0.4s;
-      --button-color: #101010;
-      /* Same as background */
-      --highlight-color-hue: 160deg;
-      /* Adjusted to Match Vector Green/Cyan */
-
-      user-select: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0.8em 1.5em;
-      font-family: var(--font-head);
-      font-size: 1rem;
-      font-weight: 600;
-
-      background-color: var(--button-color);
-
-      box-shadow:
-        /* inset */
-        inset 0px 1px 1px rgba(255, 255, 255, 0.2),
-        inset 0px 2px 2px rgba(255, 255, 255, 0.15),
-        inset 0px 4px 4px rgba(255, 255, 255, 0.1),
-        inset 0px 8px 8px rgba(255, 255, 255, 0.05),
-        inset 0px 16px 16px rgba(255, 255, 255, 0.05),
-        /* drop */
-        0px -1px 1px rgba(0, 0, 0, 0.02),
-        0px -2px 2px rgba(0, 0, 0, 0.03),
-        0px -4px 4px rgba(0, 0, 0, 0.05),
-        0px -8px 8px rgba(0, 0, 0, 0.06),
-        0px -16px 16px rgba(0, 0, 0, 0.08);
-
-      border: solid 1px #fff2;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-
-      transition:
-        box-shadow var(--transition),
-        border var(--transition),
-        background-color var(--transition);
-    }
-
-    .btn::before {
-      content: "";
-      position: absolute;
-      top: calc(0px - var(--padding));
-      left: calc(0px - var(--padding));
-      width: calc(100% + var(--padding) * 2);
-      height: calc(100% + var(--padding) * 2);
-      border-radius: calc(var(--border-radius) + var(--padding));
-      pointer-events: none;
-      background-image: linear-gradient(0deg, #0004, #000a);
-
-      z-index: -1;
-      transition:
-        box-shadow var(--transition),
-        filter var(--transition);
-      box-shadow:
-        0 -8px 8px -6px #0000 inset,
-        0 -16px 16px -8px #00000000 inset,
-        1px 1px 1px #fff2,
-        2px 2px 2px #fff1,
-        -1px -1px 1px #0002,
-        -2px -2px 2px #0001;
-    }
-
-    .btn::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: inherit;
-      pointer-events: none;
-      background-image: linear-gradient(0deg,
-          #fff,
-          hsl(var(--highlight-color-hue), 100%, 70%),
-          hsla(var(--highlight-color-hue), 100%, 70%, 50%),
-          8%,
-          transparent);
-      background-position: 0 0;
-      opacity: 0;
-      transition:
-        opacity var(--transition),
-        filter var(--transition);
-    }
-
-    .btn-letter {
-      position: relative;
-      display: inline-block;
-      color: #fff5;
-      animation: letter-anim 2s ease-in-out infinite;
-      transition:
-        color var(--transition),
-        text-shadow var(--transition),
-        opacity var(--transition);
-    }
-
-    @keyframes letter-anim {
-      50% {
-        text-shadow: 0 0 3px #fff8;
-        color: #fff;
-      }
-    }
-
-    .btn-svg {
-      flex-grow: 1;
-      height: 24px;
-      width: 24px;
-      margin-right: 0.5rem;
-      fill: #e8e8e8;
-      animation: flicker 2s linear infinite;
-      animation-delay: 0.5s;
-      filter: drop-shadow(0 0 2px #fff9);
-      transition:
-        fill var(--transition),
-        filter var(--transition),
-        opacity var(--transition);
-    }
-
-    @keyframes flicker {
-      50% {
-        opacity: 0.3;
-      }
-    }
-
-    /* Focus state */
-    .txt-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-      min-width: 9em;
-      /* Increased for longer text */
-    }
-
-    .txt-1,
-    .txt-2 {
-      position: absolute;
-      word-spacing: -1em;
-      white-space: nowrap;
-    }
-
-    .txt-1 {
-      animation: appear-anim 1s ease-in-out forwards;
-    }
-
-    .txt-2 {
-      opacity: 0;
-    }
-
-    @keyframes appear-anim {
-      0% {
-        opacity: 0;
-      }
-
-      100% {
-        opacity: 1;
-      }
-    }
-
-    .btn:focus .txt-1 {
-      animation: opacity-anim 0.3s ease-in-out forwards;
-      animation-delay: 1s;
-    }
-
-    .btn:focus .txt-2 {
-      animation: opacity-anim 0.3s ease-in-out reverse forwards;
-      animation-delay: 1s;
-    }
-
-    @keyframes opacity-anim {
-      0% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0;
-      }
-    }
-
-    .btn:focus .btn-letter {
-      animation:
-        focused-letter-anim 1s ease-in-out forwards,
-        letter-anim 1.2s ease-in-out infinite;
-      animation-delay: 0s, 1s;
-    }
-
-    @keyframes focused-letter-anim {
-
-      0%,
-      100% {
-        filter: blur(0px);
-      }
-
-      50% {
-        transform: scale(2);
-        filter: blur(10px) brightness(150%) drop-shadow(-36px 12px 12px hsl(var(--highlight-color-hue), 100%, 70%));
-      }
-    }
-
-    .btn:focus .btn-svg {
-      animation-duration: 1.2s;
-      animation-delay: 0.2s;
-    }
-
-    .btn:focus::before {
-      box-shadow:
-        0 -8px 12px -6px #fff3 inset,
-        0 -16px 16px -8px hsla(var(--highlight-color-hue), 100%, 70%, 20%) inset,
-        1px 1px 1px #fff3,
-        2px 2px 2px #fff1,
-        -1px -1px 1px #0002,
-        -2px -2px 2px #0001;
-    }
-
-    .btn:focus::after {
-      opacity: 0.6;
-      mask-image: linear-gradient(0deg, #fff, transparent);
-      filter: brightness(100%);
-    }
-
-    /* Animation delays for .btn-letter elements */
-    .btn-letter:nth-child(1),
-    .btn:focus .btn-letter:nth-child(1) {
-      animation-delay: 0s;
-    }
-
-    .btn-letter:nth-child(2),
-    .btn:focus .btn-letter:nth-child(2) {
-      animation-delay: 0.08s;
-    }
-
-    .btn-letter:nth-child(3),
-    .btn:focus .btn-letter:nth-child(3) {
-      animation-delay: 0.16s;
-    }
-
-    .btn-letter:nth-child(4),
-    .btn:focus .btn-letter:nth-child(4) {
-      animation-delay: 0.24s;
-    }
-
-    .btn-letter:nth-child(5),
-    .btn:focus .btn-letter:nth-child(5) {
-      animation-delay: 0.32s;
-    }
-
-    .btn-letter:nth-child(6),
-    .btn:focus .btn-letter:nth-child(6) {
-      animation-delay: 0.4s;
-    }
-
-    .btn-letter:nth-child(7),
-    .btn:focus .btn-letter:nth-child(7) {
-      animation-delay: 0.48s;
-    }
-
-    .btn-letter:nth-child(8),
-    .btn:focus .btn-letter:nth-child(8) {
-      animation-delay: 0.56s;
-    }
-
-    .btn-letter:nth-child(9),
-    .btn:focus .btn-letter:nth-child(9) {
-      animation-delay: 0.64s;
-    }
-
-    .btn-letter:nth-child(10),
-    .btn:focus .btn-letter:nth-child(10) {
-      animation-delay: 0.72s;
-    }
-
-    .btn-letter:nth-child(11),
-    .btn:focus .btn-letter:nth-child(11) {
-      animation-delay: 0.8s;
-    }
-
-    .btn-letter:nth-child(12),
-    .btn:focus .btn-letter:nth-child(12) {
-      animation-delay: 0.88s;
-    }
-
-    .btn-letter:nth-child(13),
-    .btn:focus .btn-letter:nth-child(13) {
-      animation-delay: 0.96s;
-    }
-
-    /* Active state */
-    .btn:active {
-      border: solid 1px hsla(var(--highlight-color-hue), 100%, 80%, 70%);
-      background-color: hsla(var(--highlight-color-hue), 50%, 20%, 0.5);
-    }
-
-    .btn:active::before {
-      box-shadow:
-        0 -8px 12px -6px #fffa inset,
-        0 -16px 16px -8px hsla(var(--highlight-color-hue), 100%, 70%, 80%) inset,
-        1px 1px 1px #fff4,
-        2px 2px 2px #fff2,
-        -1px -1px 1px #0002,
-        -2px -2px 2px #0001;
-    }
-
-    .btn:active::after {
-      opacity: 1;
-      mask-image: linear-gradient(0deg, #fff, transparent);
-      filter: brightness(200%);
-    }
-
-    .btn:active .btn-letter {
-      text-shadow: 0 0 1px hsla(var(--highlight-color-hue), 100%, 90%, 90%);
-      animation: none;
-    }
-
-    /* Hover state */
-    .btn:hover {
-      border: solid 1px hsla(var(--highlight-color-hue), 100%, 80%, 40%);
-    }
-
-    .btn:hover::before {
-      box-shadow:
-        0 -8px 8px -6px #fffa inset,
-        0 -16px 16px -8px hsla(var(--highlight-color-hue), 100%, 70%, 30%) inset,
-        1px 1px 1px #fff2,
-        2px 2px 2px #fff1,
-        -1px -1px 1px #0002,
-        -2px -2px 2px #0001;
-    }
-
-    .btn:hover::after {
-      opacity: 1;
-      mask-image: linear-gradient(0deg, #fff, transparent);
-    }
-
-    .btn:hover .btn-svg {
-      fill: #fff;
-      filter: drop-shadow(0 0 3px hsl(var(--highlight-color-hue), 100%, 70%)) drop-shadow(0 -4px 6px #0009);
-      animation: none;
     }
 
     /* --- NAVIGATION --- */
@@ -477,8 +111,8 @@
       position: fixed;
       top: 20px;
       left: 50%;
-      /* Hidden initially */
       transform: translate(-50%, -150px);
+      /* Hidden initially */
       transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 9000;
       padding: 12px 24px;
@@ -487,21 +121,10 @@
       gap: 30px;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: var(--nav-bg);
+      border: 1px solid var(--nav-border);
       border-radius: 100px;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
-    }
-
-    nav.scrolled {
-      transform: translate(-50%, 0) !important;
-    }
-
-    /* Light mode nav */
-    [data-theme="light"] nav {
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     }
 
     .nav-logo {
@@ -510,16 +133,7 @@
       color: var(--text);
       letter-spacing: 1px;
       text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 8px;
       font-weight: 700;
-    }
-
-    .nav-logo::before {
-      content: '';
-      display: none;
-      font-size: 1.5rem;
     }
 
     .nav-links {
@@ -537,23 +151,22 @@
       font-size: 0.9rem;
       padding: 8px 16px;
       border-radius: 50px;
-      position: relative;
       transition: all 0.3s;
       font-weight: 500;
     }
 
     .nav-links a.active {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      color: #fff;
+      background: var(--primary);
+      color: #000;
       font-weight: 600;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
     }
 
-    .nav-links a:not(.active):hover {
+    .nav-links a:hover:not(.active) {
       background: var(--glass);
       color: var(--primary);
     }
 
-    /* Theme Toggle Button */
     .theme-toggle {
       width: 40px;
       height: 40px;
@@ -564,17 +177,10 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.3s;
       font-size: 1.2rem;
+      color: var(--text);
     }
 
-    .theme-toggle:hover {
-      background: var(--primary);
-      color: #fff;
-      transform: rotate(180deg);
-    }
-
-    /* Get Started Button */
     .nav-cta {
       background: var(--text);
       color: var(--bg);
@@ -583,1807 +189,349 @@
       text-decoration: none;
       font-weight: 600;
       font-size: 0.9rem;
-      transition: all 0.3s;
       border: none;
-      cursor: pointer;
     }
 
-    .nav-cta:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 20px rgba(0, 243, 255, 0.4);
-    }
-
-    /* --- 1. LOADER --- */
-    #preloader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--bg);
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .loader-text {
-      color: var(--primary);
-      font-size: 1.5rem;
-      text-transform: uppercase;
-      letter-spacing: 5px;
-    }
-
-    /* --- CUSTOM FONTS --- */
-    @font-face {
-      font-family: 'HeroFont';
-      src: url('/static/hero.ttf') format('truetype');
-    }
-
-    @font-face {
-      font-family: 'AquireFont';
-      src: url('/static/aquire.woff') format('woff');
-    }
-
-    /* --- 2. HERO SECTION --- */
+    /* --- HERO --- */
     .hero {
-      height: 100vh;
-      width: 100%;
-      position: relative;
+      height: 60vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
-      /* Background handled by Vanta.js */
-      background: transparent;
-    }
-
-    .hero-title-wrapper {
-      position: relative;
-      z-index: 10;
       text-align: center;
-      mix-blend-mode: normal;
+      position: relative;
     }
 
     h1 {
-      font-family: 'HeroFont', 'Funnel Display', sans-serif !important;
-      font-size: clamp(5rem, 18vw, 20rem);
+      font-family: var(--font-head);
+      font-size: clamp(3rem, 10vw, 8rem);
       margin: 0;
-      line-height: 0.85;
+      line-height: 1;
       text-transform: uppercase;
-      font-weight: 800;
-
-      /* Glass Noise Effect on Text */
       color: transparent;
-      background:
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E"),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.1) 100%);
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.1) 100%);
       background-clip: text;
       -webkit-background-clip: text;
-
-      position: relative;
-      opacity: 0;
-      letter-spacing: -0.05em;
-      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
-
-      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
     }
 
-    h1::before {
-      /* Remove content overlay to avoid conflict */
-      content: none;
-    }
-
-    /* Apply Aquire Font */
-    .feature-article h3,
-    .extension-cta-title {
-      font-family: 'AquireFont', var(--font-head);
-    }
-
-    .hero-subtitle {
-      margin-top: 2rem;
+    .subtitle {
+      font-family: var(--font-mono);
+      color: var(--primary);
+      letter-spacing: 2px;
+      margin-top: 1rem;
       font-size: 1.2rem;
-      color: var(--text);
-      letter-spacing: 3px;
       text-transform: uppercase;
-      opacity: 0.7;
     }
 
-    /* Feature Badges */
-    .hero-features {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin-top: 3rem;
-      flex-wrap: wrap;
+    /* --- GUIDE STEPS --- */
+    .guide-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 5vw 100px;
     }
 
-    .feature-badge {
+    .step-card {
       background: var(--glass);
-      border: 1px solid var(--primary);
-      padding: 15px 30px;
-      border-radius: 50px;
-      font-size: 0.9rem;
-      font-family: var(--font-mono);
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-badge::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-
-    .feature-badge:hover::before {
-      left: 100%;
-    }
-
-    /* Background Circuit SVG */
-    .circuit-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      opacity: 0.4;
-      pointer-events: none;
-    }
-
-    /* Floating SVG Elements */
-    .floating-element {
-      position: absolute;
-      z-index: 2;
-      opacity: 0.6;
-    }
-
-    .floating-element.shield {
-      top: 15%;
-      left: 10%;
-      width: 100px;
-      height: 100px;
-    }
-
-    .floating-element.lock {
-      top: 20%;
-      right: 15%;
-      width: 80px;
-      height: 80px;
-    }
-
-    .floating-element.scan {
-      bottom: 20%;
-      left: 15%;
-      width: 120px;
-      height: 120px;
-    }
-
-    /* --- 3. SCROLL SECTION: THE PROBLEM --- */
-    .section-problem {
-      height: 150vh;
-      /* Long scroll */
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      background: var(--bg);
-    }
-
-    .chaos-text {
-      font-family: var(--font-head);
-      font-size: clamp(2rem, 5vw, 4rem);
-      max-width: 80%;
-      text-align: center;
-      line-height: 1.2;
-    }
-
-    .highlight-bad {
-      color: var(--secondary);
-      display: inline-block;
-    }
-
-    /* --- GALLERY SECTION --- */
-    .section-gallery {
-      height: 200vh;
-      position: relative;
-      background: var(--bg);
-      overflow: visible;
-      /* Allow gallery to extend beyond section */
-      z-index: 1;
-      padding: 100px 0;
-      /* Add padding for more space */
-    }
-
-    .gallery-container {
-      position: sticky;
-      top: 0;
-      height: 120vh;
-      /* Increased for more vertical space */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: visible;
-      /* Allow top items to show */
-    }
-
-    .gallery-grid {
-      --big-tile-size: 50vmin;
-      --tile-size: calc(var(--big-tile-size) / 3);
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: 1vmin;
-      grid-template: repeat(9, var(--tile-size)) / repeat(9, var(--tile-size));
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
-      transform-origin: center center;
-      will-change: transform;
-    }
-
-    .gallery-item {
-      padding: 0;
-      position: relative;
-      background: rgba(255, 255, 255, 0.05);
-      max-inline-size: 100%;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid rgba(0, 243, 255, 0.2);
-    }
-
-    .gallery-item img {
-      height: 200%;
-      min-width: 200%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(0deg);
-      will-change: transform;
-    }
-
-    /* --- 4. INTERACTIVE SECTION: THE LENS --- */
-    .section-scanner {
-      height: 100vh;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-      border-top: 1px solid var(--card-border);
-      cursor: none;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
       padding: 40px;
-      z-index: 10;
-      /* Ensure it sits above gallery */
-    }
-
-    /* Scanner Window Container */
-    .scanner-window {
-      width: 90%;
-      max-width: 1400px;
-      height: 80%;
-      max-height: 700px;
-      background: var(--card-bg);
-      border: 2px solid var(--primary);
-      border-radius: 30px;
+      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 30px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+      transition: border-color 0.3s;
     }
 
-    /* Text Containers */
-    .code-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      padding: 50px;
-      font-family: var(--font-mono);
-      font-size: 14px;
-      line-height: 1.6;
-      word-break: break-all;
-      overflow: hidden;
-      display: flex;
-      flex-wrap: wrap;
-      align-content: flex-start;
+    .step-card:hover {
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.08);
     }
 
-    /* Background: Encrypted / Blurry */
-    .layer-encrypted {
-      color: var(--text);
-      opacity: 0.2;
-      z-index: 1;
-      filter: blur(2px);
-      /* Blur the noise */
-      user-select: none;
-    }
-
-    /* Lens: The viewing window */
-    .truth-lens {
-      width: 150px;
-      /* Small Lens */
-      height: 150px;
-      border-radius: 50%;
-      border: 2px solid var(--primary);
-      position: absolute;
-      z-index: 10;
-      background: #000;
-      overflow: hidden;
-      box-shadow: 0 0 30px rgba(0, 243, 255, 0.4), inset 0 0 20px rgba(0, 243, 255, 0.2);
-      pointer-events: none;
-      /* Let clicks pass through */
-      /* Initial position centered */
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-
-    /* Inner Content of Lens: Decrypted */
-    .lens-inner {
-      width: 100vw;
-      /* Match Section Width */
-      height: 100vh;
-      /* Match Section Height */
-      position: absolute;
-      /* This will be offset by JS to match parent */
-      top: 0;
-      left: 0;
-      background: transparent;
-      color: var(--primary);
-      text-shadow: 0 0 5px var(--primary);
-      font-weight: 700;
-    }
-
-    .text-red {
-      color: var(--secondary);
-      text-shadow: 0 0 5px var(--secondary);
-    }
-
-    .text-green {
-      color: var(--success);
-      text-shadow: 0 0 8px var(--success);
-    }
-
-    /* System Status Display */
-    .scanner-status {
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      z-index: 100;
-      text-align: right;
-    }
-
-    .scanner-toggle {
-      cursor: pointer;
-      margin-bottom: 15px;
-    }
-
-    #morph-svg-scanner {
-      width: 60px;
-      height: 60px;
-      overflow: visible;
-      cursor: pointer;
-      transition: transform 0.3s;
-      animation: flash 2s ease-in-out infinite;
-    }
-
-    @keyframes flash {
-
-      0%,
-      50%,
-      100% {
-        opacity: 1;
-      }
-
-      25%,
-      75% {
-        opacity: 0.3;
-      }
-    }
-
-    #morph-svg-scanner:hover {
-      transform: scale(1.1);
-    }
-
-    .scanner-status-text {
+    .step-num {
       font-family: var(--font-head);
-      letter-spacing: 2px;
+      font-size: 4rem;
       color: var(--text);
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 10px;
+      opacity: 0.1;
+      line-height: 0.8;
     }
 
-    .scanner-status-indicator {
+    .step-content h3 {
+      font-family: 'AquireFont', var(--font-head);
+      font-size: 2rem;
+      margin: 0 0 15px 0;
+      color: var(--primary);
+    }
+
+    .step-content p {
+      line-height: 1.6;
+      font-size: 1.1rem;
+      color: var(--text);
+      opacity: 0.9;
+    }
+
+    .code-block {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      color: var(--success);
+      border: 1px solid var(--nav-border);
+      margin: 15px 0;
       display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: var(--secondary);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--secondary);
     }
 
-    .scanner-hint {
-      font-size: 0.7rem;
-      color: #666;
-      margin-top: 8px;
-    }
-
-    /* --- 5. CONTROL MODULE (TOGGLE) --- */
-    .control-module {
-      display: none;
-      /* Moved to scanner section */
-    }
-
-    /* --- 6. OBSERVER SECTION --- */
-    .section-features {
-      padding: 100px 5vw;
-      background: var(--bg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4rem;
-    }
-
-    .features-header {
-      text-align: center;
+    .step-image {
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       max-width: 800px;
     }
 
-    .features-title {
-      font-family: var(--font-head);
-      font-size: clamp(2.5rem, 6vw, 5rem);
-      color: var(--primary);
-      margin-bottom: 20px;
-      text-transform: uppercase;
-    }
-
-    .features-description {
-      font-size: 1.1rem;
-      line-height: 1.8;
-      color: var(--text);
-      opacity: 0.8;
-    }
-
-    /* Hover Card System */
-    .features-list {
-      display: grid;
-      container-type: inline-size;
-      grid-template-columns: 10fr 1fr 1fr 1fr 1fr 1fr 1fr;
-      gap: 12px;
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-      height: clamp(300px, 50vh, 500px);
-      width: 100%;
-      max-width: 1400px;
-      transition: grid-template-columns 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-
-    .feature-item {
-      background: var(--card-bg);
-      position: relative;
-      overflow: hidden;
-      min-width: 80px;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-      cursor: pointer;
-    }
-
-    .feature-article {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      font-family: var(--font-mono);
-      top: 0;
-      left: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: 1rem;
-      padding: 1.5rem;
-      overflow: hidden;
-    }
-
-    .feature-article h3 {
-      position: absolute;
-      top: 1.5rem;
-      left: 1.5rem;
-      transform-origin: 0 50%;
-      rotate: 90deg;
-      font-size: 0.9rem;
-      font-weight: 400;
-      text-transform: uppercase;
-      font-family: var(--font-head);
-      color: var(--primary);
-      opacity: 0.6;
-      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-      white-space: nowrap;
-      margin: 0;
-    }
-
-    .feature-icon {
-      width: 24px;
-      height: 24px;
-      stroke: var(--primary);
-      fill: none;
-      stroke-width: 2;
-      opacity: 0.6;
-      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-
-    .feature-article p {
-      font-size: 0.95rem;
-      line-height: 1.4;
-      color: var(--text);
-      opacity: 0;
-      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-      margin: 0;
-    }
-
-    .feature-link {
-      position: absolute;
-      bottom: 1.5rem;
-      height: 20px;
-      color: var(--primary);
-      text-decoration: none;
-      opacity: 0;
-      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .feature-link:hover {
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
-
-    .feature-img {
-      position: absolute;
-      pointer-events: none;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: grayscale(1) brightness(1.5);
-      scale: 1.1;
-      transition: filter 0.7s cubic-bezier(0.65, 0, 0.35, 1),
-        scale 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-      mask: radial-gradient(100% 100% at 100% 0, #fff, #0000);
-    }
-
-    /* Active state */
-    .feature-item[data-active="true"] h3,
-    .feature-item[data-active="true"] .feature-icon {
-      opacity: 1;
-    }
-
-    .feature-item[data-active="true"] p,
-    .feature-item[data-active="true"] .feature-link {
-      opacity: 1;
-      transition-delay: 0.15s;
-    }
-
-    .feature-item[data-active="true"] .feature-img {
-      filter: grayscale(0) brightness(1);
-      scale: 1;
-      transition-delay: 0.15s;
-    }
-
-    /* --- BROWSER EXTENSION SECTION --- */
-    .section-extension {
-      min-height: 50vh;
-      padding: 100px 5vw;
-      background: var(--bg);
-      border-top: 1px solid var(--card-border);
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      flex-direction: column;
+    .btn-download {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 30px;
-      text-align: center;
-    }
-
-    .extension-cta-title {
-      font-family: var(--font-head);
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      color: var(--primary);
-      text-transform: uppercase;
-      margin: 0;
-    }
-
-    .extension-cta-subtitle {
-      font-size: 1.2rem;
-      color: var(--text);
-      opacity: 0.7;
-      max-width: 600px;
-      margin: 0 0 30px 0;
-    }
-
-    .cta-button {
+      gap: 10px;
       background: var(--primary);
       color: #000;
-      border: none;
-      padding: 18px 50px;
-      font-size: 1rem;
+      padding: 15px 30px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
       font-family: var(--font-head);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.3s;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .cta-button:hover {
+    .btn-download:hover {
       transform: scale(1.05);
+      box-shadow: 0 0 20px var(--primary);
     }
 
-    .cta-button::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    .cta-button:hover::after {
-      width: 300px;
-      height: 300px;
-    }
-
-    .extension-visual {
-      flex: 1;
-      position: relative;
-      min-height: 500px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .browser-mockup {
-      width: 100%;
-      max-width: 600px;
-      background: var(--card-bg);
-      border: 2px solid var(--primary);
-      border-radius: 10px;
-      padding: 40px;
-      position: relative;
-      box-shadow: 0 0 50px rgba(0, 243, 255, 0.3);
-    }
-
-    .browser-mockup::before {
-      content: '';
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      width: 12px;
-      height: 12px;
-      background: var(--secondary);
-      border-radius: 50%;
-      box-shadow: 20px 0 0 var(--tertiary), 40px 0 0 var(--success);
-    }
-
-    /* --- 7. FOOTER --- */
+    /* --- FOOTER --- */
     footer {
-      padding: 80px 5vw 30px;
-      background: var(--bg);
+      width: 100%;
+      padding: 60px 5vw;
       border-top: 1px solid var(--card-border);
-      border-top-left-radius: 50px;
-      border-top-right-radius: 50px;
-      width: 80%;
-      /* Initial width for animation */
-      margin: 0 auto;
-      position: relative;
+      background: var(--glass);
+      margin-top: 50px;
     }
 
     .footer-content {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 50px;
-      margin-bottom: 50px;
-    }
-
-    .footer-column h3 {
-      font-family: var(--font-head);
-      color: var(--primary);
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .footer-links {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .footer-links li {
-      margin-bottom: 15px;
-    }
-
-    .footer-links a {
-      color: var(--text);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.3s;
-      opacity: 0.7;
-    }
-
-    .footer-links a:hover {
-      color: var(--primary);
-      opacity: 1;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .footer-bottom {
-      padding-top: 30px;
-      border-top: 1px solid var(--card-border);
       text-align: center;
-    }
-
-    .footer-credit {
-      font-size: 0.9rem;
-      color: #666;
-      text-transform: uppercase;
-    }
-
-    .footer-credit span {
-      color: var(--primary);
-    }
-
-    /* SCROLL PROGRESS */
-    .progress-line {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 4px;
-      background: var(--primary);
-      width: 0%;
-      z-index: 9000;
-    }
-
-    /* --- MOBILE RESPONSIVE --- */
-    @media (max-width: 768px) {
-
-      /* Navigation */
-      nav {
-        padding: 10px 15px;
-        gap: 15px;
-        width: 95%;
-      }
-
-      .nav-logo {
-        font-size: 1rem;
-      }
-
-      .nav-links {
-        gap: 5px;
-      }
-
-      .nav-links a {
-        font-size: 0.75rem;
-        padding: 6px 10px;
-      }
-
-      .theme-toggle {
-        width: 32px;
-        height: 32px;
-        font-size: 1rem;
-      }
-
-      .nav-cta {
-        padding: 8px 16px;
-        font-size: 0.8rem;
-      }
-
-      /* Hero */
-      h1 {
-        font-size: clamp(2.5rem, 15vw, 8rem) !important;
-        line-height: 0.9;
-      }
-
-      .hero-features {
-        flex-direction: column;
-        gap: 15px;
-      }
-
-      .feature-badge {
-        padding: 12px 20px;
-        font-size: 0.8rem;
-      }
-
-      /* Gallery */
-      .section-gallery {
-        height: 150vh;
-      }
-
-      .gallery-grid {
-        --tile-size: calc(var(--big-tile-size) / 4);
-      }
-
-      /* Scanner */
-      .scanner-window {
-        width: 95%;
-        height: 70%;
-        border-radius: 20px;
-      }
-
-      .scanner-status {
-        top: 15px;
-        right: 15px;
-      }
-
-      #morph-svg-scanner {
-        width: 40px;
-        height: 40px;
-      }
-
-      .scanner-status-text {
-        font-size: 0.7rem;
-      }
-
-      .scanner-hint {
-        font-size: 0.6rem;
-      }
-
-      /* Features */
-      #features-list {
-        display: flex !important;
-        flex-direction: column !important;
-        height: auto !important;
-        gap: 20px;
-        grid-template-columns: none !important;
-      }
-
-      .feature-item {
-        width: 100% !important;
-        height: auto !important;
-        min-height: auto !important;
-        opacity: 1 !important;
-        transform: none !important;
-        rotate: 0deg !important;
-        position: relative !important;
-        margin-bottom: 20px;
-        flex: none !important;
-        border-right: 1px solid var(--card-border) !important;
-        border-bottom: 1px solid var(--card-border) !important;
-      }
-
-      .feature-article {
-        opacity: 1 !important;
-        position: relative;
-        height: auto;
-        padding: 20px;
-      }
-
-      .feature-article h3 {
-        rotate: 0deg !important;
-        position: static !important;
-        margin-bottom: 1rem;
-        writing-mode: horizontal-tb !important;
-        white-space: normal !important;
-      }
-
-      .feature-item p,
-      .feature-item .feature-link,
-      .feature-item .feature-icon,
-      .feature-item h3 {
-        opacity: 1 !important;
-        transform: none !important;
-      }
-
-      .feature-img {
-        display: none !important;
-      }
-
-      .feature-img {
-        opacity: 0.3;
-      }
-
-      /* Extension */
-      .extension-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-      .extension-title {
-        font-size: clamp(2rem, 8vw, 3rem);
-      }
-
-      .extension-description {
-        font-size: 1rem;
-      }
-
-      /* Footer */
-      .footer-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
-      }
-
-      footer {
-        width: 95%;
-        padding: 60px 5vw 20px;
-      }
-
-      /* CTA Button */
-      .cta-button {
-        padding: 14px 35px;
-        font-size: 0.9rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: clamp(2rem, 12vw, 5rem) !important;
-      }
-
-      nav {
-        gap: 8px;
-        padding: 8px 12px;
-      }
-
-      .nav-links a {
-        font-size: 0.7rem;
-        padding: 5px 8px;
-      }
-
-      .nav-cta {
-        display: none;
-      }
-
-      .theme-toggle {
-        width: 28px;
-        height: 28px;
-      }
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.8rem;
+      opacity: 0.5;
     }
   </style>
 </head>
 
 <body>
 
+  <!-- GLOBAL EFFECTS -->
+  <div class="noise-overlay"></div>
+  <div id="cursor"></div>
+
   <!-- NAVIGATION -->
   <nav>
     <div class="nav-logo">VECTORA</div>
-        <ul class="nav-links">
+    <ul class="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/extension">Extension</a></li>
-      <li><a href="/guide">Guide</a></li>
+      <li><a href="/guide" class="active">Guide</a></li>
     </ul>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-      <span id="theme-icon">🌙</span>
-    </button>
-        <a href="/contact" class="nav-cta">Get Started</a>
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
+    <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
-  <!-- GLOBAL NOISE -->
-  <div class="noise-overlay"></div>
-
-  <!-- CUSTOM CURSOR -->
-  <div id="cursor"></div>
-  <div id="cursor-dot"></div>
-
-  <!-- PRELOADER -->
-  <div id="preloader">
-    <div class="loader-text" id="loader-txt">INITIALIZING VECTORA...</div>
-    <div style="margin-top: 10px; width: 200px; height: 1px; background: #333;">
-      <div id="loader-bar" style="width: 0%; height: 100%; background: var(--primary);"></div>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div>
+      <h1>Setup Guide</h1>
+      <div class="subtitle">Manual Installation Protocol v1.0</div>
     </div>
+  </section>
+
+  <!-- STEPS SECTION -->
+  <div class="guide-container">
+
+    <!-- Step 1 -->
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <h3>Download Payload</h3>
+        <p>Acquire the latest build of the Vectora Extension package.</p>
+        <a href="/static/vectora-extension.zip" class="btn-download" download>
+          ⬇ Download Package
+        </a>
+        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
+          Once downloaded, <strong>unzip (extract)</strong> the file to a known location on your system. <br>
+          <em>Note: Ensure you extract the folder completely, don't just open the zip.</em>
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <h3>Access Extensions Protocol</h3>
+        <p>Open your standard browser interface and navigate to the Extensions Management page.</p>
+        <div class="code-block">chrome://extensions</div>
+        <p>Alternatively, click the <strong>puzzle icon</strong> in your toolbar and select "Manage Extensions".</p>
+        <img
+          src="https://developer.chrome.com/static/docs/extensions/get-started/tutorial/hello-world/image/extensions-page.png"
+          alt="Extensions Page" class="step-image">
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <h3>Initialize Developer Mode</h3>
+        <p>In the top-right corner of the Extensions page, locate the <strong>Developer mode</strong> toggle switch.</p>
+        <p>Activate it to unlock advanced loading capabilities.</p>
+        <div
+          style="border: 1px solid var(--secondary); padding: 10px; border-radius: 5px; display: inline-block; color: var(--secondary); margin-top: 10px;">
+          ⚠ WARNING: Use only trusted extensions in Developer Mode.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <h3>Inject Unpacked Extension</h3>
+        <p>Click the <strong>Load unpacked</strong> button that appears in the top-left toolbar.</p>
+        <p>Navigate to and select the <strong>Vectora folder</strong> you extracted in Step 1.</p>
+        <img src="https://developer.chrome.com/static/docs/extensions/get-started/tutorial/hello-world/image/icon.png"
+          alt="Vectora Icon" style="width: 64px; margin-top: 20px; display: block;">
+        <p style="margin-top: 20px; color: var(--success); font-weight: bold;">
+          SYSTEM INTEGRATION COMPLETE.
+        </p>
+      </div>
+    </div>
+
   </div>
 
-  <!-- SCROLL PROGRESS -->
-  <div class="progress-line"></div>
-
-  <!-- HERO SECTION -->
-  <section class="hero" id="home">
-    <div class="hero-title-wrapper">
-      <h1 id="hero-h1">USER GUIDE</h1>
-      <div class="hero-subtitle">Manual & Documentation</div>
-
-      <!-- Feature Badges -->
-
-    </div>
-  </section>
-
-  
-  
-  <!-- GUIDE CONTENT -->
-  <section class="content-section" style="padding: 120px 5vw; background: var(--bg); position: relative; z-index: 5;">
-    <div style="max-width: 900px; margin: 0 auto;">
-      
-      <!-- HERO CARD -->
-      <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 50px; border-radius: 20px; margin-bottom: 50px;">
-        <h2 style="font-family: var(--font-head); color: var(--primary); font-size: 2.2rem; margin-bottom: 20px;">Manual Installation Guide</h2>
-        <p style="color: var(--text); font-size: 1.1rem; line-height: 1.6;">
-          VECTORA is currently in <strong>Developer Preview</strong>. To install it, you will need to load it manually into your browser using "Developer Mode". This works on Chrome, Edge, Brave, and other Chromium browsers (Windows & MacOS).
-        </p>
-      </div>
-
-      <!-- STEP 1 -->
-      <div style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; margin-bottom: 40px; align-items: start;">
-        <div style="font-family: var(--font-head); font-size: 3rem; color: var(--secondary); opacity: 0.5;">01</div>
-        <div>
-          <h3 style="font-family: var(--font-head); color: white; font-size: 1.5rem; margin-bottom: 10px;">Download & Extract</h3>
-          <p style="color: #ccc; line-height: 1.6; margin-bottom: 15px;">
-            Download the <code>vectora-extension.zip</code> file from the Extension page or GitHub.
-          </p>
-          <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px dashed #444;">
-             📂 <strong>Right-click</strong> the zip file > <strong>Extract All...</strong> <br>
-             (You should see a folder containing <code>manifest.json</code>).
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 2 -->
-      <div style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; margin-bottom: 40px; align-items: start;">
-        <div style="font-family: var(--font-head); font-size: 3rem; color: var(--secondary); opacity: 0.5;">02</div>
-        <div>
-          <h3 style="font-family: var(--font-head); color: white; font-size: 1.5rem; margin-bottom: 10px;">Open Extensions Management</h3>
-          <p style="color: #ccc; line-height: 1.6; margin-bottom: 15px;">
-            Open your browser and navigate to the extensions page:
-          </p>
-          <ul style="color: #ccc; line-height: 1.8; list-style-type: none; padding: 0;">
-            <li>🌐 <strong>Chrome:</strong> Type <code>chrome://extensions</code> in search bar.</li>
-            <li>🌐 <strong>Edge:</strong> Type <code>edge://extensions</code> in search bar.</li>
-            <li>🌐 <strong>Brave:</strong> Type <code>brave://extensions</code> in search bar.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- STEP 3 -->
-      <div style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; margin-bottom: 40px; align-items: start;">
-        <div style="font-family: var(--font-head); font-size: 3rem; color: var(--secondary); opacity: 0.5;">03</div>
-        <div>
-          <h3 style="font-family: var(--font-head); color: white; font-size: 1.5rem; margin-bottom: 10px;">Enable Developer Mode</h3>
-          <p style="color: #ccc; line-height: 1.6;">
-            Look for a toggle switch named <strong>"Developer mode"</strong> in the top-right corner of the page. <br>
-            <span style="color: var(--primary);">Turn it ON.</span>
-          </p>
-        </div>
-      </div>
-
-      <!-- STEP 4 -->
-      <div style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; margin-bottom: 40px; align-items: start;">
-        <div style="font-family: var(--font-head); font-size: 3rem; color: var(--secondary); opacity: 0.5;">04</div>
-        <div>
-          <h3 style="font-family: var(--font-head); color: white; font-size: 1.5rem; margin-bottom: 10px;">Load Unpacked</h3>
-          <p style="color: #ccc; line-height: 1.6; margin-bottom: 15px;">
-            Click the <strong>"Load unpacked"</strong> button that appeared (top left).
-          </p>
-          <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--success);">
-             ✅ Select the <strong>extracted folder</strong> from Step 1.<br>
-             (The VECTORA icon should now appear in your list).
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-
-<!-- FOOTER -->
-  <footer id="contact">
+  <!-- FOOTER -->
+  <footer>
     <div class="footer-content">
-      <div class="footer-column">
+      <div>
         <h3>VECTORA</h3>
-        <p style="color: var(--text); opacity: 0.7; line-height: 1.8;">
-          Advanced AI-powered reality defense system. Protecting truth in the digital age.
-        </p>
+        <p style="opacity: 0.7;">Advanced Reality Defense System.</p>
       </div>
-
-      <div class="footer-column">
-        <h3>Navigation</h3>
-        <ul class="footer-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/extension">Extension</a></li>
-          <li><a href="/guide">Guide</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-column">
-        <h3>Get Started</h3>
-        <ul class="footer-links">
-          <li><a href="#extension">Install Extension</a></li>
-          <li><a href="#docs">Documentation</a></li>
-          <li><a href="#api">API Access</a></li>
-          <li><a href="#support">Support</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-column">
-        <h3>Contact</h3>
-        <ul class="footer-links">
-          <li><a href="mailto:contact@vectora.ai">contact@vectora.ai</a></li>
-          <li><a href="#github">GitHub</a></li>
-          <li><a href="#twitter">Twitter</a></li>
-          <li><a href="#discord">Discord</a></li>
-        </ul>
+      <div>
+        <h3>Links</h3>
+        <p><a href="/" style="color:var(--text); text-decoration: none;">Home</a></p>
+        <p><a href="/extension" style="color:var(--text); text-decoration: none;">Extension</a></p>
+        <p><a href="https://github.com/namandhakad712/Vectora" target="_blank"
+            style="color:var(--text); text-decoration: none;">GitHub</a></p>
       </div>
     </div>
-
     <div class="footer-bottom">
-      <div class="footer-credit">
-        ARCHITECTED BY <span>NAMAN DHAKAD</span> | @ 2025 VECTORA AI
-      </div>
+      &copy; 2025 VECTORA AI. ARCHITECTED BY NAMAN DHAKAD.
     </div>
   </footer>
 
-  <!-- LENIS SMOOTH SCROLL -->
-  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
 
-  <!-- GSAP LIBRARIES -->
+  <!-- GSAP & LENIS -->
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/Draggable.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/InertiaPlugin.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/DrawSVGPlugin.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/MorphSVGPlugin.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/MotionPathPlugin.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/SplitText.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/ScrambleTextPlugin.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/Observer.min.js"></script>
 
   <script>
-    // --- 0. SETUP ---
-    gsap.registerPlugin(
-      ScrollTrigger, Draggable, InertiaPlugin, DrawSVGPlugin,
-      MorphSVGPlugin, MotionPathPlugin, SplitText, ScrambleTextPlugin, Observer
-    );
+    // --- SETUP ---
+    gsap.registerPlugin(ScrollTrigger);
 
-    // --- 0. LENIS SMOOTH SCROLL SETUP ---
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
-      smooth: true,
-      smoothTouch: false,
-      touchMultiplier: 2
-    });
-
+    // --- SMOOTH SCROLL ---
+    const lenis = new Lenis();
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
 
-    // Integrate Lenis with GSAP ScrollTrigger
-    lenis.on('scroll', ScrollTrigger.update);
-
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
-
-    gsap.ticker.lagSmoothing(0);
-
-    // Smooth scroll for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        if (targetId === '#') return;
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          lenis.scrollTo(targetElement, {
-            offset: -80, // Account for fixed nav height
-            duration: 1.5,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-          });
-        }
-      });
-    });
-
-    // Active nav link tracking
-    const navLinks = document.querySelectorAll('.nav-links a');
-    navLinks.forEach(link => {
-      link.addEventListener('click', function () {
-        navLinks.forEach(l => l.classList.remove('active'));
-        this.classList.add('active');
-      });
+    // --- NAV ANIMATION ---
+    gsap.to("nav", {
+      y: 150, // Move down into view (since translate is -150px initially) -> actually transform is translate(-50%, -150px)
+      // We want to reset translate Y to 0 effectively, but keep X centering.
+      transform: "translate(-50%, 0)",
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.5
     });
 
     // --- THEME TOGGLE ---
     const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
     const html = document.documentElement;
-
-    // Check for saved theme preference or default to 'dark'
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    html.setAttribute('data-theme', currentTheme);
-    themeIcon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
-
-    // Set cursor color after it's created
-    // Cursor styling handled by CSS based on data-theme attribute
-
     themeToggle.addEventListener('click', () => {
-      const currentTheme = html.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-      html.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      themeIcon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
-
-      // Cursor color now handled automatically by CSS
+      const current = html.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
     });
 
-    // --- 1. CURSOR LOGIC - INERTIAL BLOB ---
-    const dot = document.getElementById("cursor-dot");
-
-    // Mouse position tracking
-    let mouseX = 0;
-    let mouseY = 0;
-
-    // GSAP quickTo for ultra-smooth inertial movement
-    const cursorX = gsap.quickTo(cursor, "x", { duration: 0.5, ease: "power3.out" });
-    const cursorY = gsap.quickTo(cursor, "y", { duration: 0.5, ease: "power3.out" });
+    // --- CURSOR ---
+    const cursor = document.getElementById("cursor");
+    const cursorX = gsap.quickTo(cursor, "x", { duration: 0.4, ease: "power3.out" });
+    const cursorY = gsap.quickTo(cursor, "y", { duration: 0.4, ease: "power3.out" });
 
     window.addEventListener("mousemove", (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      cursorX(mouseX);
-      cursorY(mouseY);
+      cursorX(e.clientX);
+      cursorY(e.clientY);
     });
 
-    // Hover effects - expand blob on interactive elements
-    const interactiveElements = document.querySelectorAll("a, button, .feature-card, #morph-svg-scanner");
-    interactiveElements.forEach(el => {
-      el.addEventListener("mouseenter", () => {
-        gsap.to(cursor, { width: 80, height: 80, duration: 0.3, ease: "power2.out" });
-      });
-      el.addEventListener("mouseleave", () => {
-        gsap.to(cursor, { width: 40, height: 40, duration: 0.3, ease: "power2.out" });
-      });
+    // Hover effects
+    document.querySelectorAll("a, button, .step-card").forEach(el => {
+      el.addEventListener("mouseenter", () => gsap.to(cursor, {
+        width: 80,
+        height: 80,
+        duration: 0.3,
+        ease: "power2.out",
+        mixBlendMode: 'difference'
+      }));
+      el.addEventListener("mouseleave", () => gsap.to(cursor, {
+        width: 40,
+        height: 40,
+        duration: 0.3,
+        ease: "power2.out",
+        mixBlendMode: 'difference'
+      }));
     });
 
-    // Cursor styling now handled by CSS based on [data-theme]
-
-    // --- 2. TEXT GENERATOR FOR SCANNER ---
-    const encryptedEl = document.getElementById("encrypted-grid");
-    const decryptedEl = document.getElementById("decrypted-grid");
-    const lensEl = document.getElementById("lens");
-
-    // FAKE / DANGER DATA (Red Highlights)
-    const fakePhrases = [
-      "Narendra Modi is PM of <span class='text-red'>USA</span>",
-      "Earth is <span class='text-red'>FLAT</span>",
-      "AI will <span class='text-red'>DESTROY HUMANITY</span>",
-      "Data Security: <span class='text-red'>COMPROMISED</span>",
-      "Election Results: <span class='text-red'>FALSIFIED</span>",
-      "Vaccines contain <span class='text-red'>MICROCHIPS</span>",
-      "Global Warming is <span class='text-red'>A HOAX</span>",
-      "Moon Landing was <span class='text-red'>STAGED</span>",
-      "Network Status: <span class='text-red'>UNSECURED</span>",
-      "Identity Verification: <span class='text-red'>FAILED</span>",
-      "System Integrity: <span class='text-red'>0%</span>",
-    ];
-
-    // REAL / SECURE DATA (Green Highlights)
-    const realPhrases = [
-      "Narendra Modi is PM of <span class='text-green'>INDIA</span>",
-      "Earth is <span class='text-green'>ROUND</span>",
-      "AI will <span class='text-green'>EMPOWER HUMANITY</span>",
-      "Data Security: <span class='text-green'>ENCRYPTED (AES-256)</span>",
-      "Election Results: <span class='text-green'>VERIFIED</span>",
-      "Vaccines are <span class='text-green'>SAFE & EFFECTIVE</span>",
-      "Global Warming is <span class='text-green'>SCIENTIFIC FACT</span>",
-      "Moon Landing was <span class='text-green'>REAL (1969)</span>",
-      "Network Status: <span class='text-green'>PROTECTED</span>",
-      "Identity Verification: <span class='text-green'>CONFIRMED</span>",
-      "System Integrity: <span class='text-green'>100%</span>",
-    ];
-
-    // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
-      let content = "";
-      for (let i = 0; i < 300; i++) {
-        if (isEncryptedLayer) {
-          // Just noise for background
-          const chars = "010101XY#@!%&ERROR";
-          let scrambled = "";
-          for (let j = 0; j < 15; j++) scrambled += chars.charAt(Math.floor(Math.random() * chars.length));
-          content += `<span style="opacity:0.3">${scrambled}</span> `;
-        } else {
-          // Actual phrases for lens
-          const phrase = phraseArray[Math.floor(Math.random() * phraseArray.length)];
-          content += phrase + " // ";
-        }
-      }
-      element.innerHTML = content;
-    }
-
-    // Initial Load: Unsecured State
-    populateGrid(encryptedEl, [], true); // Background noise
-    populateGrid(decryptedEl, fakePhrases); // Lens shows Fake Data initially
-
-    // --- 3. SECURITY TOGGLE LOGIC (IN SCANNER SECTION) ---
-    let isSecured = false;
-    // Exclamation Mark Path
-    const alertPath = "M46,20 h8 v45 h-8 z M46,75 h8 v8 h-8 z";
-    // Shield Path
-    const shieldPath = "M50,10 L90,30 V60 C90,80 50,95 50,95 C50,95 10,80 10,60 V30 Z";
-    const statusText = document.getElementById("scanner-status-text");
-    const statusDot = document.getElementById("scanner-status-dot");
-
-    if (document.getElementById("morph-svg-scanner")) document.getElementById("morph-svg-scanner").addEventListener("click", () => {
-      isSecured = !isSecured;
-
-      // 1. Morph Icon
-      gsap.to("#morph-path-scanner", {
-        attr: { d: isSecured ? shieldPath : alertPath },
-        fill: isSecured ? "#00ff9d" : "#ff0055",
-        duration: 0.6,
-        ease: "elastic.out(1, 0.5)"
-      });
-
-      // Stop flashing animation when secured
-      const svg = document.getElementById("morph-svg-scanner");
-      svg.style.animation = isSecured ? "none" : "flash 2s ease-in-out infinite";
-
-      // 2. Update Status Text
-      statusText.innerHTML = isSecured ?
-        `<span class="scanner-status-indicator" style="background:#00ff9d; box-shadow:0 0 10px #00ff9d"></span> SYSTEM SECURED` :
-        `<span class="scanner-status-indicator" style="background:#ff0055; box-shadow:0 0 10px #ff0055"></span> SYSTEM UNSECURED`;
-
-      // 3. Update Lens Border
-      gsap.to(lensEl, {
-        borderColor: isSecured ? "#00ff9d" : "#ff0055",
-        boxShadow: isSecured ? "0 0 30px rgba(0, 255, 157, 0.4), inset 0 0 20px rgba(0, 255, 157, 0.2)" :
-          "0 0 30px rgba(255, 0, 85, 0.4), inset 0 0 20px rgba(255, 0, 85, 0.2)"
-      });
-
-      // 4. Update Lens Content (Re-populate with correct data)
-      gsap.to(decryptedEl, {
-        opacity: 0, duration: 0.2, onComplete: () => {
-          populateGrid(decryptedEl, isSecured ? realPhrases : fakePhrases);
-          gsap.to(decryptedEl, { opacity: 1, duration: 0.2 });
-        }
-      });
-    });
-
-    // --- 4. LENS TRACKING LOGIC (WITH INERTIA) ---
-    const scannerSec = document.getElementById("scanner-sec");
-
-    // GSAP quickTo for smooth inertial lens movement
-    const lensX = gsap.quickTo(lensEl, "x", { duration: 0.6, ease: "power3.out" });
-    const lensY = gsap.quickTo(lensEl, "y", { duration: 0.6, ease: "power3.out" });
-    const contentX = gsap.quickTo(decryptedEl, "x", { duration: 0.6, ease: "power3.out" });
-    const contentY = gsap.quickTo(decryptedEl, "y", { duration: 0.6, ease: "power3.out" });
-
-    // Track if mouse has entered scanner section
-    let hasEnteredScanner = false;
-
-    if (scannerSec) scannerSec.addEventListener("mouseenter", (e) => {
-      hasEnteredScanner = true;
-      gsap.to(cursor, { opacity: 0, scale: 0 });
-
-      // Smoothly move lens to cursor position on first enter
-      const rect = scannerSec.getBoundingClientRect();
-      const relX = e.clientX - rect.left;
-      const relY = e.clientY - rect.top;
-
-      gsap.set(lensEl, {
-        x: relX,
-        y: relY,
-        xPercent: -50,
-        yPercent: -50,
-        left: 0,
-        top: 0
-      });
-
-      gsap.set(decryptedEl, {
-        x: -relX + (150 / 2),
-        y: -relY + (150 / 2)
-      });
-    });
-
-    if (scannerSec) scannerSec.addEventListener("mousemove", (e) => {
-      if (!hasEnteredScanner) return;
-
-      const rect = scannerSec.getBoundingClientRect();
-      const relX = e.clientX - rect.left;
-      const relY = e.clientY - rect.top;
-
-      // Use quickTo for smooth inertial movement
-      lensX(relX);
-      lensY(relY);
-
-      // Sync lens positioning
-      gsap.set(lensEl, {
-        xPercent: -50,
-        yPercent: -50,
-        left: 0,
-        top: 0
-      });
-
-      // Move inner content opposite to lens (with same inertia)
-      contentX(-relX + (150 / 2));
-      contentY(-relY + (150 / 2));
-    });
-
-    if (scannerSec) scannerSec.addEventListener("mouseleave", () => {
-      hasEnteredScanner = false;
-      gsap.to(cursor, { opacity: 1, scale: 1 });
-    });
-
-    // --- 5. BOOT SEQUENCE ---
-    const loadTl = gsap.timeline();
-    loadTl.to("#loader-bar", { width: "100%", duration: 1.5, ease: "power2.inOut" })
-      .to("#loader-txt", {
-        scrambleText: { text: "ACCESS GRANTED", chars: "01X_" },
-        duration: 1
-      })
-      .to("#preloader", { yPercent: -100, duration: 0.8, ease: "expo.inOut" }, "+=0.2")
-      .fromTo("#hero-h1",
-        {
-          opacity: 0,
-          scale: 0.5,
-          rotationX: -90
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          rotationX: 0,
-          transformOrigin: "50% 50%",
-          duration: 1.5,
-          ease: "back.out(1.7)"
-        },
-        "-=0.4")
-      .from(".hero-subtitle", { opacity: 0, y: 20, duration: 0.8, ease: "power2.out" }, "-=0.8");
-
-    // --- 6. HERO ANIMATION ---
-    gsap.fromTo("#path-draw",
-      { drawSVG: "0%" },
-      { drawSVG: "100%", duration: 3, ease: "power1.inOut", repeat: -1, yoyo: true, repeatDelay: 1 }
-    );
-
-    gsap.utils.toArray(".particle").forEach((p, i) => {
-      gsap.to(p, {
-        motionPath: { path: "#path-main", align: "#path-main", alignOrigin: [0.5, 0.5] },
-        duration: 8 + i * 2,
-        repeat: -1,
-        ease: "linear"
-      });
-    });
-
-    // --- FLOATING SVG ELEMENTS ANIMATION ---
-    // Shield floating animation
-    gsap.to(".floating-element.shield", {
-      y: "+=20",
-      rotation: "+=5",
-      duration: 3,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
-
-    // Lock floating animation
-    gsap.to(".floating-element.lock", {
-      y: "-=25",
-      rotation: "-=3",
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
-
-    // Scan rotating animation
-    gsap.to("#scan-line", {
-      rotation: 360,
-      transformOrigin: "50% 50%",
-      duration: 3,
-      repeat: -1,
-      ease: "linear"
-    });
-
-    gsap.to(".floating-element.scan", {
-      scale: 1.1,
-      duration: 2,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
-
-    // Pulsing effect on scan circles
-    gsap.to("#scan-outer", {
-      opacity: 0.3,
-      duration: 1.5,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
-
-    // --- FEATURE BADGES ANIMATION ---
-    gsap.from(".feature-badge", {
-      scrollTrigger: {
-        trigger: ".hero-features",
-        start: "top 80%",
-      },
-      y: 50,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: "back.out(1.7)"
-    });
-
-    // Continuous subtle glow animation
-    gsap.to(".feature-badge", {
-      boxShadow: "0 0 20px rgba(0, 243, 255, 0.4)",
-      duration: 2,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      stagger: 0.3
-    });
-
-    // --- NAVIGATION ANIMATION ---
-    gsap.from("nav", {
-      y: -100,
-      opacity: 0,
-      duration: 1,
-      delay: 2.5,
-      ease: "power3.out"
-    });
-
-    // --- EXTENSION SECTION ANIMATION ---
-    gsap.from(".extension-content", {
-      scrollTrigger: {
-        trigger: ".section-extension",
-        start: "top 80%",
-      },
-      x: -100,
-      opacity: 0,
-      duration: 1,
-      ease: "power3.out"
-    });
-
-    gsap.from(".extension-visual", {
-      scrollTrigger: {
-        trigger: ".section-extension",
-        start: "top 80%",
-      },
-      x: 100,
-      opacity: 0,
-      duration: 1,
-      ease: "power3.out"
-    });
-
-    // Animate SVG elements in browser mockup
-    gsap.from(".browser-mockup circle, .browser-mockup rect, .browser-mockup path", {
-      scrollTrigger: {
-        trigger: ".browser-mockup",
-        start: "top 80%",
-      },
-      scale: 0,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: "back.out(2)"
-    });
-
-    // Animated data flow in extension visual
-    gsap.to(".browser-mockup line", {
-      strokeDashoffset: -10,
-      duration: 1,
-      repeat: -1,
-      ease: "linear"
-    });
-
-    // --- CTA BUTTON PULSE ---
-    gsap.to(".cta-button", {
-      boxShadow: "0 0 30px rgba(0, 243, 255, 0.6)",
-      duration: 1.5,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
-
-    // --- FOOTER EMERGENCE ANIMATION ---
-    gsap.from("footer", {
-      scrollTrigger: {
-        trigger: "footer",
-        start: "top 95%",
-        end: "top 50%",
-        scrub: 1,
-      },
-      width: "40%",
-      borderTopLeftRadius: "120px",
-      borderTopRightRadius: "120px",
-      ease: "power2.out"
-    });
-
-    gsap.from(".footer-column", {
-      scrollTrigger: {
-        trigger: "footer",
-        start: "top 90%",
-      },
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: "power2.out"
-    });
-
-    // --- 7. SCROLL SPLIT TEXT ---
-    document.fonts.ready.then(() => {
-      const split = new SplitText("#chaos-text", { type: "words, chars" });
-      const tl = gsap.timeline({
+    // --- ANIMATE STEPS ON SCROLL ---
+    gsap.utils.toArray(".step-card").forEach((card, i) => {
+      gsap.from(card, {
         scrollTrigger: {
-          trigger: "#problem-sec",
-          start: "top top",
-          end: "+=100%",
-          scrub: 1,
-          pin: true
-        }
-      });
-      tl.from(split.chars, {
+          trigger: card,
+          start: "top 85%"
+        },
+        y: 50,
         opacity: 0,
-        x: () => Math.random() * 500 - 250,
-        y: () => Math.random() * 500 - 250,
-        rotate: () => Math.random() * 360,
-        duration: 1,
-        stagger: 0.01
-      });
-      tl.to(".highlight-bad", {
-        color: "#ff0055",
-        textShadow: "2px 0px 0px white",
-        skewX: 20,
-        duration: 0.2
+        duration: 0.8,
+        ease: "back.out(1.5)"
       });
     });
 
-    // --- GALLERY SCROLL ANIMATION ---
-    const galleryGrid = document.getElementById("gallery-grid");
-    const galleryImages = document.querySelectorAll(".gallery-item img");
-
-    // Animate the grid scaling and rotation
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: "#gallery-sec",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1,
-      }
-    })
-      .to(galleryGrid, {
-        scale: 2, // Scale from 0.5 to 1.0 (2x zoom - less extreme)
-        rotation: 270,
-        ease: "none"
-      });
-
-    // Counter-rotate images so they stay upright
-    gsap.to(galleryImages, {
-      scrollTrigger: {
-        trigger: "#gallery-sec",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1,
-      },
-      rotation: -270,
-      ease: "none"
-    });
-
-    // Fade in gallery items with stagger
-    gsap.from(".gallery-item", {
-      scrollTrigger: {
-        trigger: "#gallery-sec",
-        start: "top 80%",
-        end: "top 20%",
-        scrub: 1,
-      },
-      opacity: 0,
-      scale: 0.5,
-      stagger: 0.1,
-      ease: "none"
-    });
-
-    // Scanner Status Display Animation
-    gsap.from(".scanner-status", {
-      scrollTrigger: {
-        trigger: "#scanner-sec",
-        start: "top 70%",
-      },
-      opacity: 0,
-      x: 50,
-      duration: 1,
-      ease: "power3.out"
-    });
-
-    // --- 8. OBSERVER CARDS ---
-    // Removed - replaced with hover card system
-
-    // --- HOVER EXPANDING FEATURES CARDS ---
-    const featuresList = document.getElementById('features-list');
-    const featureItems = featuresList.querySelectorAll('.feature-item');
-
-    const setFeatureActive = (event) => {
-      const closest = event.target.closest('.feature-item');
-      if (closest) {
-        const index = [...featureItems].indexOf(closest);
-        const cols = new Array(featuresList.children.length)
-          .fill()
-          .map((_, i) => {
-            featureItems[i].dataset.active = (index === i).toString();
-            return index === i ? '10fr' : '1fr';
-          })
-          .join(' ');
-        featuresList.style.setProperty('grid-template-columns', cols);
-      }
-    };
-
-    if (featuresList) featuresList.addEventListener('click', setFeatureActive);
-    if (featuresList) featuresList.addEventListener('pointermove', setFeatureActive);
-    if (featuresList) featuresList.addEventListener('focus', setFeatureActive, true);
-
-    gsap.to(".progress-line", {
-      width: "100%",
-      ease: "none",
-      scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 0 }
-    });
-
-    // --- NAV SHOW ON SCROLL ---
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
-      }
-    });
-  </script>
-  <!-- Vanta.js Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
-  <script>
-    // Initialize Vanta Fog on Hero Section
-    try {
-      VANTA.FOG({
-        el: "#home",
-        mouseControls: true,
-        touchControls: true,
-        gyroControls: true,
-        minHeight: 200.00,
-        minWidth: 200.00,
-        highlightColor: 0xf2bed,
-        midtoneColor: 0x27314f,
-        lowlightColor: 0x3b00ff,
-        baseColor: 0x0,
-        blurFactor: 0.53,
-        speed: 0.80,
-        zoom: 0.80
-      });
-    } catch (e) {
-      console.warn("Vanta.js failed to load:", e);
-    }
   </script>
 </body>
 

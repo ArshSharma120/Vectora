@@ -543,9 +543,10 @@
     }
 
     .nav-links a.active {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      color: #fff;
+      background: var(--primary);
+      color: #000;
       font-weight: 600;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
     }
 
     .nav-links a:not(.active):hover {
@@ -1573,7 +1574,7 @@
   <!-- NAVIGATION -->
   <nav>
     <div class="nav-logo">VECTORA</div>
-        <ul class="nav-links">
+    <ul class="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/extension">Extension</a></li>
@@ -1582,7 +1583,7 @@
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
       <span id="theme-icon">🌙</span>
     </button>
-        <a href="/contact" class="nav-cta">Get Started</a>
+    <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
   <!-- GLOBAL NOISE -->
@@ -1614,48 +1615,60 @@
     </div>
   </section>
 
-  
-  
+
+
   <!-- ABOUT CONTENT -->
   <section class="content-section" style="padding: 120px 5vw; background: var(--bg); position: relative; z-index: 5;">
     <div style="max-width: 1000px; margin: 0 auto; display: grid; gap: 60px;">
-      
+
       <!-- Core Mission -->
       <div>
-        <h2 style="font-family: var(--font-head); color: var(--primary); font-size: 3rem; margin-bottom: 30px;">The Reality Defense Protocol</h2>
+        <h2
+          style="font-family: 'AquireFont', var(--font-head); color: var(--primary); font-size: 3rem; margin-bottom: 30px;">
+          The
+          Reality Defense Protocol</h2>
         <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text); margin-bottom: 20px;">
-           The digital world is flooded with synthetic media, deepfakes, and algorithmic polarization. <strong>VECTORA</strong> is the counter-measure.
+          The digital world is flooded with synthetic media, deepfakes, and algorithmic polarization.
+          <strong>VECTORA</strong> is the counter-measure.
         </p>
         <p style="font-size: 1.1rem; line-height: 1.8; color: #aaa;">
-           We believe that truth shouldn't be a premium feature. It should be the default state of the internet. By leveraging the latest breakthroughs in Multimodal AI (Gemini 2.0), we process information at the edge—on your device—ensuring privacy while delivering military-grade fact-checking.
+          We believe that truth shouldn't be a premium feature. It should be the default state of the internet. By
+          leveraging the latest breakthroughs in Multimodal AI (Gemini 2.0), we process information at the edge—on your
+          device—ensuring privacy while delivering military-grade fact-checking.
         </p>
       </div>
 
       <!-- Stats / Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px;">
-        <div style="text-align: center; padding: 30px; border: 1px solid var(--card-border); border-radius: 20px; background: rgba(0,0,0,0.2);">
+        <div
+          style="text-align: center; padding: 30px; border: 1px solid var(--card-border); border-radius: 20px; background: rgba(0,0,0,0.2);">
           <div style="font-size: 3rem; font-weight: 800; color: var(--secondary);">99.8%</div>
           <div style="color: #fff; margin-top: 10px;">Detection Accuracy</div>
         </div>
-        <div style="text-align: center; padding: 30px; border: 1px solid var(--card-border); border-radius: 20px; background: rgba(0,0,0,0.2);">
+        <div
+          style="text-align: center; padding: 30px; border: 1px solid var(--card-border); border-radius: 20px; background: rgba(0,0,0,0.2);">
           <div style="font-size: 3rem; font-weight: 800; color: var(--tertiary);">12ms</div>
           <div style="color: #fff; margin-top: 10px;">Processing Latency</div>
         </div>
-        <div style="text-align: center; padding: 30px; border: 1px solid var(--card-border); border-radius: 20px; background: rgba(0,0,0,0.2);">
+        <div
+          style="text-align: center; padding: 30px; border: 1px solid var(--card-border); border-radius: 20px; background: rgba(0,0,0,0.2);">
           <div style="font-size: 3rem; font-weight: 800; color: var(--primary);">0</div>
           <div style="color: #fff; margin-top: 10px;">Data Collected</div>
         </div>
       </div>
-      
+
       <!-- Team -->
       <div>
-        <h3 style="font-family: var(--font-head); color: white; font-size: 2rem; margin-bottom: 20px;">Architect</h3>
-        <div class="glass-card" style="display: flex; align-items: center; gap: 20px; padding: 30px; background: rgba(255,255,255,0.05); border-radius: 20px;">
-           <div style="text-align: left;">
-              <h4 style="font-size: 1.4rem; color: var(--primary); margin: 0;">Naman Dhakad</h4>
-              <p style="color: #888; margin-top: 5px;">Lead Engineer & System Architect</p>
-              <p style="color: #ccc; margin-top: 15px; font-size: 0.9rem;">"I built VECTORA to ensure that as AI gets stronger, humanity gets smarter."</p>
-           </div>
+        <h3 style="font-family: 'AquireFont', var(--font-head); color: white; font-size: 2rem; margin-bottom: 20px;">
+          Architect</h3>
+        <div class="glass-card"
+          style="display: flex; align-items: center; gap: 20px; padding: 30px; background: rgba(255,255,255,0.05); border-radius: 20px;">
+          <div style="text-align: left;">
+            <h4 style="font-size: 1.4rem; color: var(--primary); margin: 0;">Naman Dhakad</h4>
+            <p style="color: #888; margin-top: 5px;">Lead Engineer & System Architect</p>
+            <p style="color: #ccc; margin-top: 15px; font-size: 0.9rem;">"I built VECTORA to ensure that as AI gets
+              stronger, humanity gets smarter."</p>
+          </div>
         </div>
       </div>
 
@@ -1663,7 +1676,7 @@
   </section>
 
 
-<!-- FOOTER -->
+  <!-- FOOTER -->
   <footer id="contact">
     <div class="footer-content">
       <div class="footer-column">
@@ -1697,7 +1710,7 @@
         <h3>Contact</h3>
         <ul class="footer-links">
           <li><a href="mailto:contact@vectora.ai">contact@vectora.ai</a></li>
-          <li><a href="#github">GitHub</a></li>
+          <li><a href="https://github.com/namandhakad712/Vectora" target="_blank">GitHub</a></li>
           <li><a href="#twitter">Twitter</a></li>
           <li><a href="#discord">Discord</a></li>
         </ul>
@@ -1876,7 +1889,8 @@
     ];
 
     // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
+    function populateGrid(element, phraseArray, isEncryptedLayer = false) {
+      if (!element) return;
       let content = "";
       for (let i = 0; i < 300; i++) {
         if (isEncryptedLayer) {

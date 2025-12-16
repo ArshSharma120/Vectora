@@ -543,9 +543,10 @@
     }
 
     .nav-links a.active {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      color: #fff;
+      background: var(--primary);
+      color: #000;
       font-weight: 600;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
     }
 
     .nav-links a:not(.active):hover {
@@ -1573,7 +1574,7 @@
   <!-- NAVIGATION -->
   <nav>
     <div class="nav-logo">VECTORA</div>
-        <ul class="nav-links">
+    <ul class="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/extension">Extension</a></li>
@@ -1582,7 +1583,7 @@
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
       <span id="theme-icon">🌙</span>
     </button>
-        <a href="/contact" class="nav-cta">Get Started</a>
+    <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
   <!-- GLOBAL NOISE -->
@@ -1614,43 +1615,59 @@
     </div>
   </section>
 
-  
-  
+
+
   <!-- EXTENSION CONTENT -->
   <section class="content-section" style="padding: 120px 5vw; background: var(--bg); position: relative; z-index: 5;">
     <div style="max-width: 1100px; margin: 0 auto;">
-      
+
       <!-- CTA HEADER -->
       <div style="text-align: center; margin-bottom: 60px;">
-        <h2 style="font-family: var(--font-head); font-size: 3rem; color: white; margin-bottom: 20px;">VECTORA v2.4</h2>
-        <p style="color: #888; font-family: var(--font-mono); margin-bottom: 30px;">Gemini 2.0 Flash • Local Processing • Real-time OCR</p>
-        <a href="/static/vectora-extension.zip" download class="nav-cta" style="padding: 18px 40px; font-size: 1.1rem; text-decoration: none;">DOWNLOAD .ZIP PACKAGE</a>
-        <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.6;">(Requires Developer Mode installation - See Guide)</p>
+        <h2 style="font-family: 'AquireFont', var(--font-head); font-size: 3rem; color: white; margin-bottom: 20px;">
+          VECTORA v2.4</h2>
+        <p style="color: #888; font-family: var(--font-mono); margin-bottom: 30px;">Gemini 2.0 Flash • Local Processing
+          • Real-time OCR</p>
+        <a href="/static/vectora-extension.zip" download class="nav-cta"
+          style="padding: 18px 40px; font-size: 1.1rem; text-decoration: none;">DOWNLOAD .ZIP PACKAGE</a>
+        <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.6;">(Requires Developer Mode installation - See Guide)
+        </p>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-        
+
         <!-- Feature 1 -->
-        <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
-          <h3 style="color: var(--primary); font-family: var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">AI Truth Score</h3>
+        <div class="glass-card"
+          style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
+          <h3
+            style="color: var(--primary); font-family: 'AquireFont', var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">
+            AI Truth Score</h3>
           <p style="color: #ccc; line-height: 1.6;">
-            Every article you visit is analyzed by our Gemini-powered engine. We assign a <strong>0-100% Truth Probability</strong> score based on cross-referencing claims with verified global databases.
+            Every article you visit is analyzed by our Gemini-powered engine. We assign a <strong>0-100% Truth
+              Probability</strong> score based on cross-referencing claims with verified global databases.
           </p>
         </div>
 
         <!-- Feature 2 -->
-        <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
-          <h3 style="color: var(--secondary); font-family: var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">Visual Decryption (OCR)</h3>
+        <div class="glass-card"
+          style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
+          <h3
+            style="color: var(--secondary); font-family: 'AquireFont', var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">
+            Visual Decryption (OCR)</h3>
           <p style="color: #ccc; line-height: 1.6;">
-            Right-click any suspicious image to activate the <strong>Neural Lens</strong>. VECTORA extracts text from memes and screenshots to verify their context and origin.
+            Right-click any suspicious image to activate the <strong>Neural Lens</strong>. VECTORA extracts text from
+            memes and screenshots to verify their context and origin.
           </p>
         </div>
 
         <!-- Feature 3 -->
-        <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
-          <h3 style="color: var(--tertiary); font-family: var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">Political Bias Check</h3>
+        <div class="glass-card"
+          style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 30px; border-radius: 20px;">
+          <h3
+            style="color: var(--tertiary); font-family: 'AquireFont', var(--font-head); font-size: 1.5rem; margin-bottom: 15px;">
+            Political Bias Check</h3>
           <p style="color: #ccc; line-height: 1.6;">
-            Detects hidden political framing and emotional manipulation. The sidebar reveals the <strong>Targeted Sentiment</strong> (Fear, Anger, Hope) used by the author.
+            Detects hidden political framing and emotional manipulation. The sidebar reveals the <strong>Targeted
+              Sentiment</strong> (Fear, Anger, Hope) used by the author.
           </p>
         </div>
 
@@ -1659,7 +1676,7 @@
   </section>
 
 
-<!-- FOOTER -->
+  <!-- FOOTER -->
   <footer id="contact">
     <div class="footer-content">
       <div class="footer-column">
@@ -1693,7 +1710,7 @@
         <h3>Contact</h3>
         <ul class="footer-links">
           <li><a href="mailto:contact@vectora.ai">contact@vectora.ai</a></li>
-          <li><a href="#github">GitHub</a></li>
+          <li><a href="https://github.com/namandhakad712/Vectora" target="_blank">GitHub</a></li>
           <li><a href="#twitter">Twitter</a></li>
           <li><a href="#discord">Discord</a></li>
         </ul>
@@ -1872,7 +1889,8 @@
     ];
 
     // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
+    function populateGrid(element, phraseArray, isEncryptedLayer = false) {
+      if (!element) return;
       let content = "";
       for (let i = 0; i < 300; i++) {
         if (isEncryptedLayer) {

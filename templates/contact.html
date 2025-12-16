@@ -543,9 +543,10 @@
     }
 
     .nav-links a.active {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      color: #fff;
+      background: var(--primary);
+      color: #000;
       font-weight: 600;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
     }
 
     .nav-links a:not(.active):hover {
@@ -1573,7 +1574,7 @@
   <!-- NAVIGATION -->
   <nav>
     <div class="nav-logo">VECTORA</div>
-        <ul class="nav-links">
+    <ul class="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/extension">Extension</a></li>
@@ -1582,7 +1583,7 @@
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
       <span id="theme-icon">🌙</span>
     </button>
-        <a href="/contact" class="nav-cta">Get Started</a>
+    <a href="/contact" class="nav-cta">Get Started</a>
   </nav>
 
   <!-- GLOBAL NOISE -->
@@ -1614,46 +1615,61 @@
     </div>
   </section>
 
-  
-  
+
+
   <!-- CONTACT CONTENT -->
   <section class="content-section" style="padding: 120px 5vw; background: var(--bg); position: relative; z-index: 5;">
-    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 50px;">
-      
+    <div
+      style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 50px;">
+
       <!-- Info Side -->
       <div>
-         <h2 style="font-family: var(--font-head); color: white; font-size: 3rem; margin-bottom: 20px;">Establish Uplink</h2>
-         <p style="color: #aaa; line-height: 1.6; margin-bottom: 40px;">
-           Have a feature request, bug report, or want to contribute to the codebase? The channel is open.
-         </p>
-         
-         <div style="margin-bottom: 30px;">
-           <h4 style="color: var(--primary); margin-bottom: 5px;">DIRECT CHANNEL</h4>
-           <a href="mailto:contact@vectora.ai" style="color: white; text-decoration: none; font-size: 1.2rem;">contact@vectora.ai</a>
-         </div>
+        <h2 style="font-family: 'AquireFont', var(--font-head); color: white; font-size: 3rem; margin-bottom: 20px;">
+          Establish Uplink
+        </h2>
+        <p style="color: #aaa; line-height: 1.6; margin-bottom: 40px;">
+          Have a feature request, bug report, or want to contribute to the codebase? The channel is open.
+        </p>
 
-         <div style="margin-bottom: 30px;">
-           <h4 style="color: var(--secondary); margin-bottom: 5px;">HQ COORDINATES</h4>
-           <p style="color: white;">Indore, Madhya Pradesh, India</p>
-         </div>
+        <div style="margin-bottom: 30px;">
+          <h4 style="color: var(--primary); margin-bottom: 5px;">DIRECT CHANNEL</h4>
+          <a href="mailto:contact@vectora.ai"
+            style="color: white; text-decoration: none; font-size: 1.2rem;">contact@vectora.ai</a>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+          <h4 style="color: var(--secondary); margin-bottom: 5px;">HQ COORDINATES</h4>
+          <p style="color: white;">Indore, Madhya Pradesh, India</p>
+        </div>
       </div>
 
       <!-- Form Side -->
-      <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 40px; border-radius: 20px;">
+      <div class="glass-card"
+        style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 40px; border-radius: 20px;">
         <form style="display: flex; flex-direction: column; gap: 20px;">
-           <div>
-             <label style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">NAME / ALIAS</label>
-             <input type="text" placeholder="e.g. Neo" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none;">
-           </div>
-           <div>
-             <label style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">CONTACT FREQUENCY</label>
-             <input type="email" placeholder="email@server.com" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none;">
-           </div>
-           <div>
-             <label style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">TRANSMISSION DATA</label>
-             <textarea placeholder="Message content..." rows="4" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none; font-family: inherit;"></textarea>
-           </div>
-           <button class="nav-cta" style="margin-top: 10px; width: 100%; text-align: center; justify-content: center; border: none; font-size: 1rem;">SEND MESSAGE</button>
+          <div>
+            <label style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">NAME
+              / ALIAS</label>
+            <input type="text" placeholder="e.g. Neo"
+              style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none;">
+          </div>
+          <div>
+            <label
+              style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">CONTACT
+              FREQUENCY</label>
+            <input type="email" placeholder="email@server.com"
+              style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none;">
+          </div>
+          <div>
+            <label
+              style="color: #888; font-size: 0.8rem; margin-bottom: 8px; display: block; letter-spacing: 1px;">TRANSMISSION
+              DATA</label>
+            <textarea placeholder="Message content..." rows="4"
+              style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none; font-family: inherit;"></textarea>
+          </div>
+          <button class="nav-cta"
+            style="margin-top: 10px; width: 100%; text-align: center; justify-content: center; border: none; font-size: 1rem;">SEND
+            MESSAGE</button>
         </form>
       </div>
 
@@ -1661,7 +1677,7 @@
   </section>
 
 
-<!-- FOOTER -->
+  <!-- FOOTER -->
   <footer id="contact">
     <div class="footer-content">
       <div class="footer-column">
@@ -1695,7 +1711,7 @@
         <h3>Contact</h3>
         <ul class="footer-links">
           <li><a href="mailto:contact@vectora.ai">contact@vectora.ai</a></li>
-          <li><a href="#github">GitHub</a></li>
+          <li><a href="https://github.com/namandhakad712/Vectora" target="_blank">GitHub</a></li>
           <li><a href="#twitter">Twitter</a></li>
           <li><a href="#discord">Discord</a></li>
         </ul>
@@ -1874,7 +1890,8 @@
     ];
 
     // Function to populate the grid
-    function populateGrid(element, phraseArray, isEncryptedLayer = false) { if (!element) return;
+    function populateGrid(element, phraseArray, isEncryptedLayer = false) {
+      if (!element) return;
       let content = "";
       for (let i = 0; i < 300; i++) {
         if (isEncryptedLayer) {
