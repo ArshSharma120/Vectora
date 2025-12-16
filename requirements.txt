@@ -4,4 +4,4 @@ Flask-Cors==3.0.10
 gunicorn==20.1.0
 python-dotenv==1.0.0
 pdf2image==1.17.0
-Pillow==10.2.0
+Pillow
