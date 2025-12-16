@@ -29,18 +29,17 @@ VECTORA is an advanced browser extension designed to combat the "post-truth" era
 
 ## ⚡ Core Features
 
-| Feature | Description | Status |
-| :--- | :--- | :--- |
 | **Reality Filter** | Real-time overlays on X, Reddit, and News sites. | ✅ Active |
-| **Neural Lens** | Reverse-image forensics on right-click context. | ✅ Active |
-| **Sentiment X-Ray** | Detects rage-bait and emotional manipulation. | ✅ Active |
+| **Neural Lens** | Reverse-image forensics and Document Analysis. | ✅ Active |
+| **Multi-Model** | Gemini, Groq, Cerebras Support. | ✅ Active |
+| **Web Search** | Live internet cross-referencing. | ✅ Active |
 | **Air-Gapped Core** | Zero-data retention policy. History stays local. | 🔒 Secure |
 
 ## 🛠 Tech Stack
 
 *   **Frontend**: HTML5, Vanilla JS, CSS3 (Cyberpunk Design System)
 *   **Motion**: GSAP (ScrollTrigger, Tween), Lenis Scroll
-*   **AI Engine**: Google Gemini 2.0 Flash API
+*   **AI Engine**: Google Gemini 2.0, Groq, Cerebras
 *   **Backend**: Flask (Python) for edge processing
 
 ## 🚀 Installation Protocol

@@ -28,10 +28,12 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # ✅ API Keys
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+CEREBRAS_API_KEY = os.getenv("CEREBRAS_API_KEY")
 
 # Base URLs
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+CEREBRAS_BASE_URL = "https://api.cerebras.ai/v1"
 
 
 def extract_probability(text):
@@ -101,7 +103,10 @@ def stream_gemini(prompt, model, file_uri=None, mime_type=None, web_search=False
     if web_search:
         tools.append({"googleSearch": {}})
         
-    payload = {"contents": contents}
+    payload = {
+        "contents": contents,
+        "generationConfig": {"temperature": 0.1} 
+    }
     if tools:
         payload["tools"] = tools
 
@@ -114,9 +119,29 @@ def stream_gemini(prompt, model, file_uri=None, mime_type=None, web_search=False
                     json_str = decoded_line[5:].strip()
                     try:
                         chunk = json.loads(json_str)
-                        text_chunk = chunk["candidates"][0]["content"]["parts"][0]["text"]
-                        yield text_chunk
-                    except:
+                        cand = chunk.get("candidates", [{}])[0]
+                        content = cand.get("content", {}).get("parts", [{}])[0].get("text", "")
+                        
+                        # Handle Text
+                        if content: yield content
+                        
+                        # Handle Grounding Metadata (Source Links)
+                        grounding = cand.get("groundingMetadata", {})
+                        chunks = grounding.get("groundingChunks", [])
+                        if chunks:
+                            links_md = "\n\n**Verified Sources:**\n"
+                            found_links = False
+                            for c in chunks:
+                                web = c.get("web", {})
+                                if web:
+                                    title = web.get("title", "Source")
+                                    uri = web.get("uri", "#")
+                                    links_md += f"- [{title}]({uri})\n"
+                                    found_links = True
+                            if found_links:
+                                yield links_md
+                    except Exception as e:
+                        # yield f"[Debug: Parsing Error {str(e)}]" 
                         pass
 
 # --- GROQ HELPERS ---
@@ -128,10 +153,15 @@ def encode_image(image_path):
 def convert_doc_to_images(doc_path):
     """Converts PDF to images. Returns list of image paths."""
     if not PDF_SUPPORT:
-        raise Exception("PDF support not available (poppler/pdf2image missing).")
+        raise Exception("System Configuration Error: 'poppler' is not installed or not in PATH. PDF conversion for non-native models (like Groq) requires Poppler. Please install Poppler or use Gemini (native PDF support).")
     
-    # Needs poppler installed on system
-    images = convert_from_path(doc_path)
+    try:
+        images = convert_from_path(doc_path)
+    except Exception as e:
+         if "poppler" in str(e).lower() or "not in path" in str(e).lower():
+             raise Exception("System Error: Poppler not found. Please install Poppler to process PDFs with this model, or switch to Gemini.")
+         raise e
+
     img_paths = []
     base = os.path.splitext(doc_path)[0]
     for i, img in enumerate(images):
@@ -150,8 +180,9 @@ def stream_groq(prompt, model, file_path=None, mime_type=None):
     messages = []
     content_list = [{"type": "text", "text": prompt}]
     
-    if file_path:
-        # Check if it's already an image
+    if file_path and mime_type:
+        # Check if model supports vision (managed by frontend selection normally, but backend check is good)
+        # Assuming frontend passes correct model.
         if mime_type.startswith("image/"):
             b64_img = encode_image(file_path)
             content_list.append({
@@ -159,14 +190,12 @@ def stream_groq(prompt, model, file_path=None, mime_type=None):
                 "image_url": {"url": f"data:{mime_type};base64,{b64_img}"}
             })
         elif mime_type == "application/pdf":
-            # Convert PDF to images
             try:
                 img_paths = convert_doc_to_images(file_path)
                 for path in img_paths:
                     b64 = encode_image(path)
                     content_list.append({
                         "type": "image_url",
-                         # Note: Groq mainly supports image/jpeg or png
                         "image_url": {"url": f"data:image/jpeg;base64,{b64}"}
                     })
             except Exception as e:
@@ -176,12 +205,41 @@ def stream_groq(prompt, model, file_path=None, mime_type=None):
     messages.append({"role": "user", "content": content_list})
     
     data = {
-        "model": model,
-        "messages": messages,
-        "stream": True
+        "model": model, 
+        "messages": messages, 
+        "stream": True,
+        "temperature": 0.2
     }
     
     with requests.post(f"{GROQ_BASE_URL}/chat/completions", headers=headers, json=data, stream=True) as resp:
+        for line in resp.iter_lines():
+            if line:
+                decoded_line = line.decode('utf-8')
+                if decoded_line.startswith("data:"):
+                    json_str = decoded_line[5:].strip()
+                    if json_str == "[DONE]": break
+                    try:
+                        chunk = json.loads(json_str)
+                        content = chunk["choices"][0]["delta"].get("content", "")
+                        if content: yield content
+                    except:
+                        pass
+
+# --- CEREBRAS HELPERS ---
+
+def stream_cerebras(prompt, model):
+    headers = {
+        "Authorization": f"Bearer {CEREBRAS_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "stream": True,
+        "temperature": 0.2
+    }
+    
+    with requests.post(f"{CEREBRAS_BASE_URL}/chat/completions", headers=headers, json=data, stream=True) as resp:
         for line in resp.iter_lines():
             if line:
                 decoded_line = line.decode('utf-8')
@@ -218,10 +276,10 @@ def guide_page(): return render_template('guide.html')
 
 @app.route("/api/models", methods=["GET"])
 def get_models():
-    """Fetch available models from Gemini and Groq."""
-    models = {"gemini": [], "groq": []}
+    """Fetch available models with capabilities."""
+    models = {"gemini": [], "groq": [], "cerebras": []}
     
-    # Fetch Gemini Models
+    # 1. Gemini
     try:
         url = f"{GEMINI_BASE_URL}/models"
         params = {"key": GEMINI_API_KEY}
@@ -230,24 +288,54 @@ def get_models():
             data = resp.json()
             for m in data.get("models", []):
                 if "generateContent" in m.get("supportedGenerationMethods", []):
-                    models["gemini"].append(m["name"].replace("models/", ""))
+                    name = m["name"].replace("models/", "")
+                    models["gemini"].append({
+                        "id": name,
+                        "capabilities": ["text", "image", "web_search"] # Gemini 1.5+ generally supports all
+                    })
     except Exception as e:
         print(f"Error fetching Gemini models: {e}", file=sys.stderr)
-        models["gemini"] = ["gemini-2.0-flash", "gemini-1.5-flash"]
+        models["gemini"] = [
+            {"id": "gemini-2.0-flash", "capabilities": ["text", "image", "web_search"]},
+            {"id": "gemini-1.5-flash", "capabilities": ["text", "image", "web_search"]},
+            {"id": "gemini-1.5-pro", "capabilities": ["text", "image", "web_search"]}
+        ]
 
-    # Fetch Groq Models
+    # 2. Groq (Hardcoded as per user request for specific model set)
+    models["groq"] = [
+        # TEXT + IMAGE
+        {"id": "meta-llama/llama-guard-4-12b", "capabilities": ["text", "image"]},
+        {"id": "meta-llama/llama-4-maverick-17b-128e-instruct", "capabilities": ["text", "image"]},
+        {"id": "meta-llama/llama-4-scout-17b-16e-instruct", "capabilities": ["text", "image"]},
+        # TEXT + WEB SEARCH (Compound & OSS)
+        {"id": "openai/gpt-oss-120b", "capabilities": ["text", "web_search"]},
+        {"id": "openai/gpt-oss-20b", "capabilities": ["text", "web_search"]},
+        {"id": "groq/compound", "capabilities": ["text", "web_search"]},
+        {"id": "groq/compound-mini", "capabilities": ["text", "web_search"]},
+        {"id": "openai/gpt-oss-safeguard-20b", "capabilities": ["text", "web_search"]}
+    ]
+
+    # 3. Cerebras (Live Fetch)
     try:
-        url = f"{GROQ_BASE_URL}/models"
-        headers = {"Authorization": f"Bearer {GROQ_API_KEY}"}
+        url = f"{CEREBRAS_BASE_URL}/models"
+        headers = {"Authorization": f"Bearer {CEREBRAS_API_KEY}"}
         resp = requests.get(url, headers=headers)
         if resp.status_code == 200:
             data = resp.json()
+            # Cerebras API response format: {"data": [{"id": "..."}, ...]}
             for m in data.get("data", []):
-                models["groq"].append(m["id"])
+                models["cerebras"].append({
+                    "id": m["id"],
+                    "capabilities": ["text"] # Assume text-only for inference endpoints
+                })
     except Exception as e:
-        print(f"Error fetching Groq models: {e}", file=sys.stderr)
-        models["groq"] = ["llama3-8b-8192", "mixtral-8x7b-32768"]
-        
+        print(f"Error fetching Cerebras models: {e}", file=sys.stderr)
+        # Fallback if fetch fails
+        models["cerebras"] = [
+            {"id": "llama3.1-8b", "capabilities": ["text"]},
+            {"id": "llama3.1-70b", "capabilities": ["text"]}
+        ]
+    
     return jsonify(models)
 
 
@@ -269,46 +357,61 @@ def process():
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(file_path)
             mime_type = file.mimetype or "application/octet-stream"
-            
-            # Simple mime correction for pdf
             if filename.lower().endswith(".pdf"): mime_type = "application/pdf"
             if filename.lower().endswith(".jpg") or filename.lower().endswith(".jpeg"): mime_type = "image/jpeg"
             if filename.lower().endswith(".png"): mime_type = "image/png"
 
         if not model:
-            model = "gemini-2.0-flash" if provider == "gemini" else "llama3-70b-8192"
+            if provider == "gemini": model = "gemini-2.0-flash"
+            elif provider == "groq": model = "llama3-70b-8192"
+            else: model = "llama3.1-70b"
 
-        # System Prompt construction
-        sys_prompt = f"Analyze inputs for facts/misinformation. " \
-                     f"Provide Verdict, Reason, and Estimated Truth Probability %."
+        # DETAILED SYSTEM PROMPT
+        sys_prompt = (
+            "You are Vectora, an elite fact-checking AI Agent. "
+            "Your mission is to analyze the provided input (text, image, or document) "
+            "and verify its truthfulness with high precision.\n\n"
+            "## OUTPUT PROTOCOL:\n"
+            "1. **VERDICT**: [TRUE / FALSE / MISLEADING / SATIRE / UNVERIFIED]\n"
+            "2. **RISK SCORE**: [0-100%] (Probability of Misinformation)\n"
+            "3. **ANALYSIS**: Provide a crisp, evidence-based explanation. "
+            "Cite known facts and point out logical fallacies or manipulation tactics.\n"
+            "4. **SOURCES**: List credible sources with their direct **URL links** to verify your claims. \n"
+            "   - **FORMAT**: `[Source Name](https://full.url.here)` \n"
+            "   - **CRITICAL**: Do NOT output blank links. If a specific URL is not available, do not list it. \n"
+            "   - **VERIFICATION**: Ensure every link provided is a valid, accessible URL.\n\n"
+            "Maintain an objective, professional, and authoritative tone."
+        )
         
         if user_input:
-            prompt = f"{sys_prompt}\n\nUser Input: {user_input}"
+            prompt = f"{sys_prompt}\n\n[USER INPUT]: {user_input}"
         else:
-            prompt = f"{sys_prompt}\n\n(Analyze the provided document/image)"
+            prompt = f"{sys_prompt}\n\n(No text input. Analyze the attached file)"
 
         def generate():
             try:
                 if provider == "gemini":
-                    # Handle File Upload for Gemini
                     file_uri = None
                     if file_path:
                         yield f"// Uploading {os.path.basename(file_path)} to Google Vault...\n"
                         file_uri = upload_to_gemini(file_path, mime_type)
-                        yield f"// Upload Complete. Analysis Started...\n"
                     
                     yield from stream_gemini(prompt, model, file_uri, mime_type, web_search)
                 
-                else: # Groq
+                elif provider == "groq":
                     if file_path:
-                        yield f"// Processing {os.path.basename(file_path)} for Vision Model...\n"
+                        yield f"// Processing Image Data for Groq...\n"
                     yield from stream_groq(prompt, model, file_path, mime_type)
+                    
+                elif provider == "cerebras":
+                    # Cerebras is Text-Only currently for standard inference
+                    if file_path:
+                        yield f"// WARNING: Cerebras provider supports TEXT ONLY. File ignored.\n"
+                    yield from stream_cerebras(prompt, model)
                 
             except Exception as e:
-                yield f"\n[ERROR: {str(e)}]"
+                yield f"\n[SYSTEM ERROR: {str(e)}]"
             finally:
-                # Cleanup Code if strictly needed, but tmp files might be useful for debug or need cron cleanup
-                # if file_path and os.path.exists(file_path): os.remove(file_path)
                 pass
 
         return Response(stream_with_context(generate()), content_type='text/plain')
