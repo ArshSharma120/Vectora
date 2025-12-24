@@ -31,10 +31,10 @@ chrome.runtime.onInstalled.addListener(() => {
 // Send request to backend API for AI analysis
 async function postToBackend(payload) {
   try {
-    // Try production first, fallback to localhost
+    // Try localhost first (local development), then production
     const endpoints = [
-      'https://vectora.vercel.app/ai-check',
-      'http://127.0.0.1:5001/ai-check'
+      'http://127.0.0.1:5001/ai-check',
+      'https://vectora.vercel.app/ai-check'
     ];
     
     let lastError = null;
@@ -43,25 +43,28 @@ async function postToBackend(payload) {
         const resp = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          timeout: 10000
         });
         
         if (resp.ok) {
           const data = await resp.json();
+          console.log('Analysis result:', data);
           return data || { ai_percent: 50, message: 'Analysis complete' };
         }
       } catch (e) {
         lastError = e;
+        console.log(`Endpoint ${endpoint} failed:`, e.message);
         continue; // Try next endpoint
       }
     }
     
     // All endpoints failed
     console.error('All endpoints failed:', lastError);
-    return { ai_percent: 50, message: 'Unable to reach analysis server' };
+    return { ai_percent: 50, message: 'Server unreachable. Ensure Flask is running on http://127.0.0.1:5001' };
   } catch (e) {
     console.error('Backend error:', e);
-    return { ai_percent: 50, message: 'Network error' };
+    return { ai_percent: 50, message: 'Network error - check console' };
   }
 }
 
