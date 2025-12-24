@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 # Optional PDF support
 try:
-    from pdf2image import convert_from_path
+    from pdf2image import convert_from_path # type: ignore
     PDF_SUPPORT = True
 except ImportError:
     PDF_SUPPORT = False
