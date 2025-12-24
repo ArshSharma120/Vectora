@@ -460,31 +460,48 @@ Return a percentage 0-100 where:
 - 41-60%: Mixed or unclear
 - 61-80%: Likely AI-generated
 - 81-100%: Almost certainly AI-generated"""
+            parts = [{"text": analysis_prompt}]
         else:
-            analysis_prompt = f"""Analyze this image and determine the likelihood it was AI-generated.
-
-Image URL: {image_url if image_url else video_url}
+            # For images: download, base64-encode, and send as inline_data
+            analysis_prompt = """Analyze this image and determine the likelihood it was AI-generated.
 
 Respond with a JSON object ONLY (no other text):
-{{"ai_percent": <0-100>, "reason": "<brief explanation>"}}
+{"ai_percent": <0-100>, "reason": "<brief explanation>"}
 
 Consider: artifacts, unnatural patterns, weird textures, impossible physics, watermarks, tool signs.
 Return 0-100 where 0=clearly real, 100=certainly AI-generated."""
+            
+            image_data = None
+            mime_type = "image/jpeg"
+            try:
+                # Download image from URL
+                img_resp = requests.get(image_url or video_url, timeout=10)
+                if img_resp.status_code == 200:
+                    image_data = base64.b64encode(img_resp.content).decode('utf-8')
+                    # Guess mime type from content-type header
+                    content_type = img_resp.headers.get('content-type', 'image/jpeg')
+                    if 'png' in content_type.lower():
+                        mime_type = "image/png"
+                    elif 'gif' in content_type.lower():
+                        mime_type = "image/gif"
+                    elif 'webp' in content_type.lower():
+                        mime_type = "image/webp"
+            except Exception as e:
+                print(f"Failed to download image: {e}", file=sys.stderr)
+            
+            if image_data:
+                parts = [
+                    {"text": analysis_prompt},
+                    {"inline_data": {"mime_type": mime_type, "data": image_data}}
+                ]
+            else:
+                # Fallback if image download fails
+                parts = [{"text": analysis_prompt + f"\n\nNote: Could not download image from {image_url or video_url}"}]
         
         # Call Gemini 2.5 Flash API
         url = f"{GEMINI_BASE_URL}/models/gemini-2.5-flash:generateContent"
         params = {"key": GEMINI_API_KEY}
         headers = {"Content-Type": "application/json"}
-        
-        parts = [{"text": analysis_prompt}]
-        
-        # Add image if URL provided
-        if image_url:
-            try:
-                # For image URLs, we use inline data or reference
-                parts = [{"text": analysis_prompt}, {"inline_data": {"mime_type": "image/jpeg", "data": image_url}}]
-            except:
-                parts = [{"text": f"{analysis_prompt}\n\nNote: Could not load image from URL"}]
         
         payload = {
             "contents": [{"parts": parts}],
