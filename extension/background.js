@@ -1,89 +1,629 @@
-// background.js - Manifest V3 service worker for Vectora AI Check Extension
+// background.js - Standalone service worker for Vectora AI Check Extension
+// ULTRA USELESS CONCEPT OF USING SERVER TO USE A EXTENSION.
+// No backend server required - makes direct API calls to AI providers
 
-// Initialize context menus on installation/update
+// Settings
+let settings = {
+  provider: 'gemini',
+  cerebras_api_key: '',
+  cerebras_model: 'llama-3.3-70b',
+  gemini_api_key: '',
+  gemini_model: 'gemini-2.0-flash-exp',
+  groq_api_key: '',
+  groq_model: 'llama-3.3-70b-versatile'
+};
+
+// Load settings on startup
+loadSettings();
+
+function loadSettings() {
+  chrome.storage.sync.get([
+    'provider',
+    'cerebras_api_key',
+    'cerebras_model',
+    'gemini_api_key',
+    'gemini_model',
+    'groq_api_key',
+    'groq_model'
+  ], (result) => {
+    settings = { ...settings, ...result };
+    console.log('Settings loaded:', { ...settings, cerebras_api_key: '***', gemini_api_key: '***', groq_api_key: '***' });
+  });
+}
+
+// Listen for messages from popup and content script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'settingsUpdated') {
+    loadSettings();
+    sendResponse({ success: true });
+  }
+
+  // Handle text analysis from popup/content script
+  else if (message.action === 'analyzeText') {
+    console.log('Text analysis requested:', message.text.substring(0, 50) + '...');
+
+    const apiKey = settings[`${settings.provider}_api_key`];
+    if (!apiKey) {
+      const errorMsg = 'Please configure API key in settings';
+      sendResponse({ success: false, message: errorMsg });
+
+      // Show error notification
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) showNotification(tabs[0].id, 0, errorMsg);
+      });
+
+      return true;
+    }
+
+    console.log('Calling analyzeText with provider:', settings.provider);
+
+    analyzeText(message.text).then(result => {
+      console.log('Analysis result:', result);
+      sendResponse({ success: true, ...result });
+
+      // Show notification on active tab and save history
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          showNotification(tabs[0].id, result.ai_percent, result.message);
+          saveToHistory(tabs[0].url, 'text', result);
+        }
+      });
+    }).catch(error => {
+      console.error('Text analysis error:', error);
+      const errorMsg = `Error: ${error.message}`;
+      sendResponse({ success: false, message: errorMsg });
+
+      // Show error notification
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) showNotification(tabs[0].id, 0, errorMsg);
+      });
+    });
+
+    return true; // Keep channel open for async response
+  }
+
+  // Handle image analysis from content script
+  else if (message.action === 'analyzeImage') {
+    const apiKey = settings[`${settings.provider}_api_key`];
+    if (!apiKey) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) showNotification(tabs[0].id, 0, 'Please configure API key in settings');
+      });
+      return true;
+    }
+
+    analyzeImage(message.imageUrl).then(result => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          showNotification(tabs[0].id, result.ai_percent, result.message);
+          chrome.storage.local.set({ lastCheck: result });
+          saveToHistory(tabs[0].url, 'image', result);
+        }
+      });
+    }).catch(error => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) showNotification(tabs[0].id, 0, `Error: ${error.message}`);
+      });
+    });
+
+    return true;
+  }
+
+  // Handle screen capture
+  else if (message.action === 'captureVisibleTab') {
+    chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
+      if (chrome.runtime.lastError) {
+        console.error('Capture error:', chrome.runtime.lastError);
+        return;
+      }
+
+      // Crop and analyze
+      cropAndAnalyze(dataUrl, message.crop);
+    });
+
+    return true;
+  }
+
+  // Get model capabilities (for popup validation)
+  else if (message.action === 'getModelCapabilities') {
+    const provider = message.provider || settings.provider;
+    const model = message.model || settings[`${provider}_model`];
+
+    // Determine capabilities based on provider and model (matching main.py)
+    let capabilities = ['text']; // All models support text
+
+    if (provider === 'gemini') {
+      // Gemini 1.5+ supports everything
+      capabilities.push('image', 'web_search');
+    }
+    else if (provider === 'groq') {
+      // Groq models: EITHER image OR web_search, not both
+
+      // Vision models (TEXT + IMAGE)
+      if (model && (
+        model.includes('llama-guard') ||
+        model.includes('llama-4-maverick') ||
+        model.includes('llama-4-scout') ||
+        model.includes('vision')
+      )) {
+        capabilities.push('image');
+      }
+
+      // Compound & OSS models (TEXT + WEB SEARCH)
+      else if (model && (
+        model.includes('compound') ||
+        model.includes('gpt-oss')
+      )) {
+        capabilities.push('web_search');
+      }
+    }
+    // Cerebras is text-only (no additional capabilities)
+
+    sendResponse({ capabilities });
+    return true;
+  }
+
+  return false;
+});
+
+// Save usage history
+async function saveToHistory(url, feature, result) {
+  try {
+    const history = await chrome.storage.local.get('usageHistory');
+    const historyList = history.usageHistory || [];
+
+    // Add new entry
+    historyList.unshift({
+      url: url,
+      feature: feature, // 'text', 'image', or 'screen'
+      ai_percent: result.ai_percent,
+      message: result.message,
+      timestamp: Date.now(),
+      provider: settings.provider,
+      model: settings[`${settings.provider}_model`]
+    });
+
+    // Keep only last 50 entries
+    if (historyList.length > 50) {
+      historyList.splice(50);
+    }
+
+    await chrome.storage.local.set({ usageHistory: historyList });
+  } catch (error) {
+    console.error('Failed to save history:', error);
+  }
+}
+
+
+// Crop captured image and analyze
+async function cropAndAnalyze(dataUrl, crop) {
+  try {
+    console.log('Cropping screenshot...', crop);
+
+    // Convert data URL to blob
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+
+    // Create ImageBitmap (works in service worker)
+    const imageBitmap = await createImageBitmap(blob);
+
+    // Validate crop dimensions
+    const actualWidth = Math.min(crop.width, imageBitmap.width - crop.x);
+    const actualHeight = Math.min(crop.height, imageBitmap.height - crop.y);
+
+    console.log('Image dimensions:', imageBitmap.width, imageBitmap.height);
+    console.log('Crop area:', crop.x, crop.y, actualWidth, actualHeight);
+
+    // Create canvas and crop
+    const canvas = new OffscreenCanvas(actualWidth, actualHeight);
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      imageBitmap,
+      crop.x, crop.y, actualWidth, actualHeight,
+      0, 0, actualWidth, actualHeight
+    );
+
+    const croppedBlob = await canvas.convertToBlob({ type: 'image/png' });
+    const croppedDataUrl = await blobToDataUrl(croppedBlob);
+
+    console.log('Cropped image created, using SAME flow as image analysis...');
+
+    // USE THE SAME FLOW AS IMAGE ANALYSIS - just call analyzeImage with data URL!
+    const result = await analyzeImage(croppedDataUrl);
+
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        showNotification(tabs[0].id, result.ai_percent, result.message);
+        saveToHistory(tabs[0].url, 'screen', result);
+      }
+    });
+  } catch (error) {
+    console.error('Screen capture error:', error);
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        showNotification(tabs[0].id, 0, `Error: ${error.message}`);
+      }
+    });
+  }
+}
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
+
+// Initialize context menus
 chrome.runtime.onInstalled.addListener(() => {
-  // Remove any existing menu items to prevent duplicates
   chrome.contextMenus.removeAll(() => {
-    // Create context menu for selected text
+    // Text selection menu
     chrome.contextMenus.create({
       id: 'vectora-check-text',
       title: 'Check AI Authenticity',
       contexts: ['selection']
-    }, () => {
-      if(chrome.runtime.lastError) {
-        console.error('Error creating text menu:', chrome.runtime.lastError);
-      }
     });
 
-    // Create context menu for images
+    // Image menu
     chrome.contextMenus.create({
       id: 'vectora-check-image',
       title: 'Check AI Authenticity',
       contexts: ['image']
-    }, () => {
-      if(chrome.runtime.lastError) {
-        console.error('Error creating image menu:', chrome.runtime.lastError);
-      }
     });
   });
 });
 
-// Send request to backend API for AI analysis
-async function postToBackend(payload) {
+// Handle context menu clicks
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   try {
-    // Try localhost first (local development), then production
-    const endpoints = [
-      'http://127.0.0.1:5001/ai-check',
-      'https://vectora.vercel.app/ai-check'
-    ];
-    
-    let lastError = null;
-    for (const endpoint of endpoints) {
-      try {
-        const resp = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          timeout: 10000
-        });
-        
-        if (resp.ok) {
-          const data = await resp.json();
-          console.log('Analysis result:', data);
-          return data || { ai_percent: 50, message: 'Analysis complete' };
-        }
-      } catch (e) {
-        lastError = e;
-        console.log(`Endpoint ${endpoint} failed:`, e.message);
-        continue; // Try next endpoint
+    if (info.menuItemId === 'vectora-check-text') {
+      const selectedText = info.selectionText || '';
+
+      if (!selectedText.trim()) {
+        showNotification(tab.id, 0, 'Please select text to analyze');
+        return;
       }
+
+      // Check if API key is configured
+      const apiKey = settings[`${settings.provider}_api_key`];
+      if (!apiKey) {
+        showNotification(tab.id, 0, 'Please configure API key in extension settings');
+        return;
+      }
+
+      showNotification(tab.id, 0, 'Analyzing text...');
+
+      const result = await analyzeText(selectedText);
+
+      showNotification(tab.id, result.ai_percent, result.message);
+      chrome.storage.local.set({ lastCheck: result });
     }
-    
-    // All endpoints failed
-    console.error('All endpoints failed:', lastError);
-    return { ai_percent: 50, message: 'Server unreachable. Ensure Flask is running on http://127.0.0.1:5001' };
-  } catch (e) {
-    console.error('Backend error:', e);
-    return { ai_percent: 50, message: 'Network error - check console' };
+
+    else if (info.menuItemId === 'vectora-check-image') {
+      const srcUrl = info.srcUrl || '';
+
+      if (!srcUrl) {
+        showNotification(tab.id, 0, 'Could not extract image URL');
+        return;
+      }
+
+      const apiKey = settings[`${settings.provider}_api_key`];
+      if (!apiKey) {
+        showNotification(tab.id, 0, 'Please configure API key in extension settings');
+        return;
+      }
+
+      showNotification(tab.id, 0, 'Analyzing image...');
+
+      const result = await analyzeImage(srcUrl);
+
+      showNotification(tab.id, result.ai_percent, result.message);
+      chrome.storage.local.set({ lastCheck: result });
+    }
+  } catch (error) {
+    console.error('Context menu error:', error);
+    showNotification(tab.id, 0, `Error: ${error.message}`);
+  }
+});
+
+// Analyze text using selected AI provider
+async function analyzeText(text) {
+  const provider = settings.provider;
+  const apiKey = settings[`${provider}_api_key`];
+  const model = settings[`${provider}_model`];
+
+  const prompt = `Analyze this text and determine the likelihood it was generated by AI.
+
+Text to analyze:
+${text}
+
+Respond with ONLY a JSON object (no markdown, no extra text):
+{"ai_percent": <0-100>, "reason": "<brief explanation>"}
+
+Consider: writing style, unusual patterns, perfect grammar, repetitive phrases, lack of human emotion/opinions, generic content.
+Return a percentage 0-100 where:
+- 0-20%: Clearly human written
+- 21-40%: Likely human with possible AI assistance
+- 41-60%: Mixed or unclear
+- 61-80%: Likely AI-generated
+- 81-100%: Almost certainly AI-generated`;
+
+  try {
+    let response;
+
+    if (provider === 'cerebras') {
+      response = await callCerebrasAPI(apiKey, model, prompt);
+    } else if (provider === 'gemini') {
+      response = await callGeminiAPI(apiKey, model, prompt);
+    } else if (provider === 'groq') {
+      response = await callGroqAPI(apiKey, model, prompt);
+    }
+
+    return parseAIResponse(response);
+  } catch (error) {
+    console.error('Analysis error:', error);
+    throw error; // NO FAKE DATA - throw real error
   }
 }
 
-// Show notification overlay on the page
-function showNotification(tabId, aiPercent, message) {
-  chrome.scripting.executeScript({
-    target: { tabId: tabId },
-    func: injectNotification,
-    args: [aiPercent, message]
-  }).catch(err => console.error('Script injection error:', err));
+// Analyze image using selected AI provider
+async function analyzeImage(imageUrl) {
+  const provider = settings.provider;
+  const apiKey = settings[`${provider}_api_key`];
+  const model = settings[`${provider}_model`];
+
+  const prompt = `Analyze this image and determine the likelihood it was AI-generated.
+
+Respond with ONLY a JSON object (no markdown, no extra text):
+{"ai_percent": <0-100>, "reason": "<brief explanation>"}
+
+Consider: artifacts, unnatural patterns, weird textures, impossible physics, watermarks, AI tool signatures.
+Return 0-100 where 0=clearly real, 100=certainly AI-generated.`;
+
+  try {
+    // Download image and convert to base64
+    const imageData = await downloadImage(imageUrl);
+
+    let response;
+
+    if (provider === 'gemini') {
+      response = await callGeminiVisionAPI(apiKey, model, prompt, imageData);
+    } else if (provider === 'groq') {
+      // Check if model supports vision (TEXT + IMAGE models from main.py)
+      const isVisionModel =
+        model.includes('llama-guard') ||
+        model.includes('llama-4-maverick') ||
+        model.includes('llama-4-scout') ||
+        model.includes('vision'); // Keep this for any future vision models
+
+      if (!isVisionModel) {
+        throw new Error(`Selected Groq model "${model}" does not support image analysis.\n\nSupported models:\n• llama-guard-4-12b\n• llama-4-maverick-17b-128e-instruct\n• llama-4-scout-17b-16e-instruct`);
+      }
+      response = await callGroqVisionAPI(apiKey, model, prompt, imageData);
+    } else {
+      throw new Error('Cerebras does not support image analysis. Please select Gemini or Groq with a vision model.');
+    }
+
+    return parseAIResponse(response);
+  } catch (error) {
+    console.error('Image analysis error:', error);
+    throw error; // NO FAKE DATA - throw real error
+  }
 }
 
-// Injected function that runs on the webpage
+// Download image and convert to base64
+async function downloadImage(url) {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result.split(',')[1];
+        resolve({ data: base64, mimeType: blob.type });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    throw new Error(`Failed to download image: ${error.message}`);
+  }
+}
+
+
+// API Calls
+
+async function callCerebrasAPI(apiKey, model, prompt) {
+  const response = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      max_tokens: 256
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Cerebras API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+async function callGeminiAPI(apiKey, model, prompt, imageData = null) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  const parts = [{ text: prompt }];
+
+  const payload = {
+    contents: [{ parts }],
+    generationConfig: { temperature: 0.3 }
+  };
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.candidates[0].content.parts[0].text;
+}
+
+async function callGeminiVisionAPI(apiKey, model, prompt, imageData) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  const parts = [
+    { text: prompt },
+    {
+      inline_data: {
+        mime_type: imageData.mimeType,
+        data: imageData.data
+      }
+    }
+  ];
+
+  const payload = {
+    contents: [{ parts }],
+    generationConfig: { temperature: 0.3 }
+  };
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.candidates[0].content.parts[0].text;
+}
+
+async function callGroqAPI(apiKey, model, prompt) {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      max_tokens: 256
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Groq API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+async function callGroqVisionAPI(apiKey, model, prompt, imageData) {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt },
+          {
+            type: 'image_url',
+            image_url: {
+              url: `data:${imageData.mimeType};base64,${imageData.data}`
+            }
+          }
+        ]
+      }],
+      temperature: 0.3,
+      max_tokens: 256
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Groq API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+// Parse AI response to extract percentage and reason
+function parseAIResponse(text) {
+  try {
+    // Clean markdown code blocks
+    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+    // Try to find JSON in response
+    const jsonMatch = text.match(/\{.*?\}/s);
+    if (jsonMatch) {
+      const json = JSON.parse(jsonMatch[0]);
+
+      // NO FAKE DATA - must have real ai_percent from AI
+      if (json.ai_percent === undefined || json.ai_percent === null) {
+        throw new Error('AI response missing ai_percent field');
+      }
+
+      return {
+        ai_percent: Math.min(100, Math.max(0, parseInt(json.ai_percent))),
+        message: json.reason || 'Analysis complete'
+      };
+    }
+
+    // Fallback: extract from text
+    const percentMatch = text.match(/(\d+)%/);
+    if (!percentMatch) {
+      throw new Error(`AI response has no percentage. Response: ${text.substring(0, 200)}`);
+    }
+
+    return {
+      ai_percent: Math.min(100, Math.max(0, parseInt(percentMatch[1]))),
+      message: text.substring(0, 200)
+    };
+  } catch (error) {
+    console.error('Failed to parse AI response:', text);
+    throw new Error(`Failed to parse AI response: ${error.message}`);
+  }
+}
+
+// Show notification overlay
+function showNotification(tabId, aiPercent, message) {
+  chrome.scripting.executeScript({
+    target: { tabId },
+    func: injectNotification,
+    args: [aiPercent, message]
+  }).catch(err => console.error('Notification error:', err));
+}
+
+// Injected notification function
 function injectNotification(percent, msg) {
-  // Remove any existing notification to prevent duplicates
   const existing = document.getElementById('vectora-notification');
   if (existing) existing.remove();
-  
-  // Create styles if not already present
+
   if (!document.getElementById('vectora-styles')) {
     const style = document.createElement('style');
     style.id = 'vectora-styles';
@@ -98,7 +638,7 @@ function injectNotification(percent, msg) {
         border-radius: 12px;
         padding: 16px 20px;
         min-width: 280px;
-        max-width: 320px;
+      max-width: 400px;
         box-shadow: 0 8px 32px rgba(0, 243, 255, 0.15), 0 0 20px rgba(0, 0, 0, 0.5);
         font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
         color: #e0e0e0;
@@ -145,33 +685,20 @@ function injectNotification(percent, msg) {
         font-weight: 500;
         letter-spacing: 0.5px;
       }
-      @media (max-width: 480px) {
-        #vectora-notification {
-          top: 12px;
-          right: 12px;
-          min-width: 240px;
-          padding: 12px 14px;
-        }
-        .vectora-ai-percent {
-          font-size: 28px;
-        }
-      }
     `;
     document.head.appendChild(style);
   }
-  
-  // Create notification element
+
   const notif = document.createElement('div');
   notif.id = 'vectora-notification';
   notif.innerHTML = `
     <div class="vectora-label">AI Involvement</div>
     <div class="vectora-ai-percent">${Math.round(percent)}%</div>
-    <div class="vectora-message">${String(msg).substring(0, 100)}</div>
+    <div class="vectora-message">${msg}</div>
     <div class="vectora-powered">Powered by Vectora</div>
   `;
   document.body.appendChild(notif);
-  
-  // Auto-remove after 5 seconds with fade-out
+
   setTimeout(() => {
     notif.style.opacity = '0';
     notif.style.transition = 'opacity 0.3s ease-out';
@@ -180,47 +707,3 @@ function injectNotification(percent, msg) {
     }, 300);
   }, 5000);
 }
-
-// Handle context menu clicks
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  try {
-    if (info.menuItemId === 'vectora-check-text') {
-      const selectedText = info.selectionText || '';
-      
-      if (!selectedText || !selectedText.trim()) {
-        showNotification(tab.id, 0, 'Please select text to analyze');
-        return;
-      }
-      
-      showNotification(tab.id, 0, 'Analyzing...');
-      const result = await postToBackend({ text: selectedText });
-      
-      const ai_percent = result.ai_percent || 50;
-      const message = result.message || 'Analysis complete';
-      
-      showNotification(tab.id, ai_percent, message);
-      chrome.storage.local.set({ lastCheck: result });
-    }
-    
-    if (info.menuItemId === 'vectora-check-image') {
-      const srcUrl = info.srcUrl || '';
-      
-      if (!srcUrl) {
-        showNotification(tab.id, 0, 'Could not extract image URL');
-        return;
-      }
-      
-      showNotification(tab.id, 0, 'Analyzing image...');
-      const result = await postToBackend({ image_url: srcUrl });
-      
-      const ai_percent = result.ai_percent || 50;
-      const message = result.message || 'Analysis complete';
-      
-      showNotification(tab.id, ai_percent, message);
-      chrome.storage.local.set({ lastCheck: result });
-    }
-  } catch (error) {
-    console.error('Context menu error:', error);
-    showNotification(tab.id, 0, 'Error processing request');
-  }
-});
