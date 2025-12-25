@@ -77,7 +77,71 @@ chrome.storage.sync.get([
 
     // Fetch models from APIs
     fetchAllModels();
+
+    // Load usage history
+    loadHistory();
 });
+
+// Load usage history
+async function loadHistory() {
+    const result = await chrome.storage.local.get('usageHistory');
+    const historyList = result.usageHistory || [];
+
+    const historyContainer = document.getElementById('history-list');
+
+    if (historyList.length === 0) {
+        historyContainer.innerHTML = '<div class="history-empty">No history yet. Start using the extension!</div>';
+        return;
+    }
+
+    historyContainer.innerHTML = '';
+
+    historyList.forEach(entry => {
+        const item = document.createElement('div');
+        item.className = `history-item ${entry.feature}`;
+
+        const iconMap = {
+            text: 'notepad.png',
+            image: 'image-camera.png',
+            screen: 'web-search.png'
+        };
+
+        const url = new URL(entry.url);
+        const domain = url.hostname.replace('www.', '');
+        const timeAgo = getTimeAgo(entry.timestamp);
+
+        item.innerHTML = `
+      <div class="history-feature">
+        <img src="icons/${iconMap[entry.feature]}" alt="${entry.feature}">
+        <span>${entry.feature}</span>
+      </div>
+      <div class="history-url" title="${entry.url}">${domain}</div>
+      <div class="history-result">AI: ${entry.ai_percent}%</div>
+      <div class="history-time">${timeAgo}</div>
+    `;
+
+        item.addEventListener('click', () => {
+            chrome.tabs.create({ url: entry.url });
+        });
+
+        historyContainer.appendChild(item);
+    });
+}
+
+function getTimeAgo(timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return 'Just now';
+}
 
 // Fetch models from all providers
 async function fetchAllModels() {
@@ -187,20 +251,20 @@ async function fetchGroqModels() {
 
         const data = await response.json();
 
-        // Map Groq models with capabilities based on model name/type
+        // Map Groq models with capabilities based on model name/type (matching main.py)
         availableModels.groq = data.data.map(m => {
             const caps = ['text'];
 
-            // Vision models support images
+            // Vision models support images (TEXT + IMAGE)
             if (m.id.includes('vision') || m.id.includes('llama-guard') ||
                 m.id.includes('llama-4-maverick') || m.id.includes('llama-4-scout')) {
                 caps.push('image');
             }
-
-            // Compound and OSS models support web search
-            if (m.id.includes('compound') || m.id.includes('gpt-oss')) {
+            // Compound and OSS models support web search (TEXT + WEB SEARCH)
+            else if (m.id.includes('compound') || m.id.includes('gpt-oss')) {
                 caps.push('web_search');
             }
+            // Otherwise just text-only
 
             return {
                 id: m.id,

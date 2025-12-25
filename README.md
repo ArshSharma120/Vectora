@@ -71,12 +71,10 @@ GROQ_API_KEY=your_key_here
   <tr>
     <td align="center" width="50%">. 
       <h3>NAMAN DHAKAD</h3>
-      <p><i>Lead Engineer</i></p>
       <code>"The code is the law."</code>
     </td>
     <td align="center" width="50%">
       <h3>ARSH SHARMA</h3>
-      <p><i>Founder | Lead Engineer</i></p>
       <code>"We don't follow system we define them."</code>
     </td>
   </tr>
