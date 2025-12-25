@@ -383,6 +383,53 @@
             font-size: 0.85rem;
         }
 
+        /* Selected Model Capabilities */
+        .selected-capabilities {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .selected-capabilities.show {
+            display: block;
+        }
+
+        .selected-capabilities .cap-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .selected-capabilities .cap-list {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .selected-capabilities .cap-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .selected-capabilities .cap-item img {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
         /* Buttons */
         .actions {
             display: flex;
@@ -529,6 +576,7 @@
                             </div>
                             <div class="model-dropdown" id="cerebras-dropdown"></div>
                         </div>
+                        <div class="selected-capabilities" id="cerebras-capabilities"></div>
                     </div>
                 </div>
 
@@ -548,6 +596,7 @@
                             </div>
                             <div class="model-dropdown" id="gemini-dropdown"></div>
                         </div>
+                        <div class="selected-capabilities" id="gemini-capabilities"></div>
                     </div>
                 </div>
 
@@ -567,6 +616,7 @@
                             </div>
                             <div class="model-dropdown" id="groq-dropdown"></div>
                         </div>
+                        <div class="selected-capabilities" id="groq-capabilities"></div>
                     </div>
                 </div>
 

@@ -227,22 +227,23 @@ async function cropAndAnalyze(dataUrl, crop) {
     const croppedBlob = await canvas.convertToBlob({ type: 'image/png' });
     const croppedDataUrl = await blobToDataUrl(croppedBlob);
 
-    console.log('Cropped image created, analyzing...');
+    console.log('Cropped image created, using SAME flow as image analysis...');
 
-    // Analyze cropped image
-    const result = await analyzeImageFromDataUrl(croppedDataUrl);
+    // USE THE SAME FLOW AS IMAGE ANALYSIS - just call analyzeImage with data URL!
+    const result = await analyzeImage(croppedDataUrl);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]) {
         showNotification(tabs[0].id, result.ai_percent, result.message);
-        chrome.storage.local.set({ lastCheck: result });
         saveToHistory(tabs[0].url, 'screen', result);
       }
     });
   } catch (error) {
-    console.error('Crop and analyze error:', error);
+    console.error('Screen capture error:', error);
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) showNotification(tabs[0].id, 0, `Error: ${error.message}`);
+      if (tabs[0]) {
+        showNotification(tabs[0].id, 0, `Error: ${error.message}`);
+      }
     });
   }
 }
@@ -429,54 +430,6 @@ async function downloadImage(url) {
     });
   } catch (error) {
     throw new Error(`Failed to download image: ${error.message}`);
-  }
-}
-
-// Analyze image from data URL (for screen capture)
-async function analyzeImageFromDataUrl(dataUrl) {
-  const provider = settings.provider;
-  const apiKey = settings[`${provider}_api_key`];
-  const model = settings[`${provider}_model`];
-
-  const prompt = `Analyze this screenshot and determine the likelihood it contains AI-generated content.
-
-Respond with ONLY a JSON object (no markdown, no extra text):
-{"ai_percent": <0-100>, "reason": "<brief explanation>"}
-
-Consider: artifacts, unnatural patterns, AI-generated text/images, impossible elements.
-Return 0-100 where 0=clearly real, 100=certainly AI-generated.`;
-
-  try {
-    // Extract base64 data from data URL
-    const base64Data = dataUrl.split(',')[1];
-    const mimeType = dataUrl.match(/data:(.*?);/)[1];
-
-    const imageData = { data: base64Data, mimeType };
-
-    let response;
-
-    if (provider === 'gemini') {
-      response = await callGeminiVisionAPI(apiKey, model, prompt, imageData);
-    } else if (provider === 'groq') {
-      // Check if model supports vision (TEXT + IMAGE models from main.py)
-      const isVisionModel =
-        model.includes('llama-guard') ||
-        model.includes('llama-4-maverick') ||
-        model.includes('llama-4-scout') ||
-        model.includes('vision');
-
-      if (!isVisionModel) {
-        throw new Error(`Selected Groq model "${model}" does not support image analysis.`);
-      }
-      response = await callGroqVisionAPI(apiKey, model, prompt, imageData);
-    } else {
-      throw new Error('Cerebras does not support image analysis.');
-    }
-
-    return parseAIResponse(response);
-  } catch (error) {
-    console.error('Image analysis error:', error);
-    throw error; // NO FAKE DATA - throw real error
   }
 }
 
