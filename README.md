@@ -408,6 +408,7 @@ Response:
       <sub>Full-Stack • AI/ML • System Architecture</sub>
     </td>
     <td align="center" width="50%">
+    <img src="https://github.com/ArshSharma120.png" width="100px" style="border-radius: 50%"/>
       <h3>ARSH SHARMA</h3>
       <code>"We don't follow systems, we define them."</code><br>
       <sub>UI/UX Design • Frontend • Visual Excellence</sub>
