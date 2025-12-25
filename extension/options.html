@@ -516,24 +516,30 @@
         }
 
         /* Clear History Button */
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
         .clear-history-btn {
-            width: 100%;
-            margin-top: 16px;
-            padding: 10px;
+            width: 32px;
+            height: 32px;
+            padding: 0;
             background: #fed7d7;
             color: #c53030;
             border: none;
             border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .clear-history-btn:hover {
             background: #fc8181;
-            color: white;
-            transform: translateY(-1px);
+            transform: scale(1.1);
         }
 
         /* Vectora API Toggle */
@@ -616,12 +622,16 @@
     <div class="layout">
         <!-- Left Sidebar - History -->
         <div class="history-sidebar">
-            <div class="history-title">Usage History</div>
-            <div class="history-subtitle">Recent detections</div>
+            <div class="history-header">
+                <div>
+                    <div class="history-title">Usage History</div>
+                    <div class="history-subtitle">Recent detections</div>
+                </div>
+                <button class="clear-history-btn" id="clear-history-btn">🗑️</button>
+            </div>
             <div class="history-list" id="history-list">
                 <div class="history-empty">No history yet. Start using the extension!</div>
             </div>
-            <button class="clear-history-btn" id="clear-history-btn">🗑️ Clear History</button>
         </div>
 
         <!-- Main Content -->
