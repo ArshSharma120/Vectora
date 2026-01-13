@@ -14,3 +14,13 @@ Cerebras API error: 404 - {"message":"Model llama-3-70b-instruct does not exist 
  * Debugger PIN: 721-381-479
 Cerebras API error: 404 - {"message":"Model llama-3-70b-instruct does not exist or you do not have access to it.","type":"not_found_error","param":"model","code":"model_not_found"}
 127.0.0.1 - - [25/Dec/2025 08:34:22] "POST /ai-check HTTP/1.1" 200 -
+Cerebras API error: 404 - {"message":"Model llama-3-70b-instruct does not exist or you do not have access to it.","type":"not_found_error","param":"model","code":"model_not_found"}
+127.0.0.1 - - [30/Dec/2025 13:18:01] "POST /ai-check HTTP/1.1" 200 -
+Cerebras API error: 404 - {"message":"Model llama-3-70b-instruct does not exist or you do not have access to it.","type":"not_found_error","param":"model","code":"model_not_found"}
+127.0.0.1 - - [30/Dec/2025 13:18:27] "POST /ai-check HTTP/1.1" 200 -
+Cerebras API error: 404 - {"message":"Model llama-3-70b-instruct does not exist or you do not have access to it.","type":"not_found_error","param":"model","code":"model_not_found"}
+127.0.0.1 - - [30/Dec/2025 13:18:39] "POST /ai-check HTTP/1.1" 200 -
+Cerebras API error: 404 - {"message":"Model llama-3-70b-instruct does not exist or you do not have access to it.","type":"not_found_error","param":"model","code":"model_not_found"}
+127.0.0.1 - - [30/Dec/2025 13:20:43] "POST /ai-check HTTP/1.1" 200 -
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:301: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-y093kmki'}
+  warnings.warn(
