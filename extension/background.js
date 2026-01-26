@@ -441,51 +441,105 @@ async function downloadImage(url) {
 
 // API Calls
 
-async function callCerebrasAPI(apiKey, model, prompt) {
-  const response = await fetch('https://api.cerebras.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 256
-    })
-  });
+// Retry helper with exponential backoff
+async function retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const isLastAttempt = i === maxRetries - 1;
+      if (isLastAttempt) throw error;
 
-  if (!response.ok) {
-    throw new Error(`Cerebras API error: ${response.status}`);
+      const delay = baseDelay * Math.pow(2, i);
+      console.warn(`Attempt ${i + 1} failed, retrying in ${delay}ms...`, error.message);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
   }
+}
 
-  const data = await response.json();
-  return data.choices[0].message.content;
+async function callCerebrasAPI(apiKey, model, prompt) {
+  console.log('Calling Cerebras API with model:', model);
+
+  return retryWithBackoff(async () => {
+    const response = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.1, // Lower temp for more consistent JSON
+        max_tokens: 300,  // Increased for detailed responses
+        response_format: { type: "text" }
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Cerebras API error response:', errorText);
+      throw new Error(`Cerebras API error: ${response.status} - ${errorText.substring(0, 100)}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+
+    if (!content) {
+      throw new Error('Empty response from Cerebras API');
+    }
+
+    console.log('Cerebras API success');
+    return content;
+  });
 }
 
 async function callGeminiAPI(apiKey, model, prompt, imageData = null) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  console.log('Calling Gemini API with model:', model);
 
-  const parts = [{ text: prompt }];
+  return retryWithBackoff(async () => {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  const payload = {
-    contents: [{ parts }],
-    generationConfig: { temperature: 0.3 }
-  };
+    const parts = [{ text: prompt }];
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    const payload = {
+      contents: [{ parts }],
+      generationConfig: {
+        temperature: 0.1,  // Lower for consistent JSON
+        maxOutputTokens: 500,
+        topP: 0.95,
+        topK: 40
+      }
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API error response:', errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText.substring(0, 100)}`);
+    }
+
+    const data = await response.json();
+
+    // Validate response structure
+    if (!data.candidates || !data.candidates[0]) {
+      throw new Error('Invalid Gemini API response structure');
+    }
+
+    const content = data.candidates[0]?.content?.parts?.[0]?.text;
+
+    if (!content) {
+      throw new Error('Empty content from Gemini API');
+    }
+
+    console.log('Gemini API success');
+    return content;
   });
-
-  if (!response.ok) {
-    throw new Error(`Gemini API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data.candidates[0].content.parts[0].text;
 }
 
 async function callGeminiVisionAPI(apiKey, model, prompt, imageData) {
@@ -494,198 +548,308 @@ async function callGeminiVisionAPI(apiKey, model, prompt, imageData) {
   console.log('Image data length:', imageData.data.length, 'chars');
   console.log('Prompt preview:', prompt.substring(0, 100) + '...');
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-  const parts = [
-    { text: prompt },
-    {
-      inline_data: {
-        mime_type: imageData.mimeType,
-        data: imageData.data
-      }
-    }
-  ];
-
-  const payload = {
-    contents: [{ parts }],
-    generationConfig: { temperature: 0.3 }
-  };
-
-  console.log('Sending request to Gemini Vision API...');
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Gemini Vision API error response:', errorText);
-    throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+  // Validate image data
+  if (!imageData.data || imageData.data.length === 0) {
+    throw new Error('Invalid image data: empty base64 string');
   }
 
-  const data = await response.json();
-  console.log('Gemini Vision API success, response received');
-  return data.candidates[0].content.parts[0].text;
+  // Validate base64 format (basic check)
+  const base64Pattern = /^[A-Za-z0-9+/]+={0,2}$/;
+  if (!base64Pattern.test(imageData.data.substring(0, 100))) {
+    throw new Error('Invalid image data: not valid base64 format');
+  }
+
+  // Check image size (Gemini has limits)
+  const imageSizeBytes = (imageData.data.length * 3) / 4; // Approximate decoded size
+  const maxSizeBytes = 20 * 1024 * 1024; // 20MB limit
+
+  if (imageSizeBytes > maxSizeBytes) {
+    throw new Error(`Image too large: ${(imageSizeBytes / 1024 / 1024).toFixed(2)}MB (max 20MB)`);
+  }
+
+  return retryWithBackoff(async () => {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    const parts = [
+      { text: prompt },
+      {
+        inline_data: {
+          mime_type: imageData.mimeType,
+          data: imageData.data
+        }
+      }
+    ];
+
+    const payload = {
+      contents: [{ parts }],
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 500
+      }
+    };
+
+    console.log('Sending request to Gemini Vision API...');
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini Vision API error response:', errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText.substring(0, 200)}`);
+    }
+
+    const data = await response.json();
+
+    // Validate response structure
+    if (!data.candidates || !data.candidates[0]) {
+      throw new Error('Invalid Gemini Vision API response structure');
+    }
+
+    const content = data.candidates[0]?.content?.parts?.[0]?.text;
+
+    if (!content) {
+      throw new Error('Empty content from Gemini Vision API');
+    }
+
+    console.log('Gemini Vision API success, response received');
+    return content;
+  });
 }
 
 async function callGroqAPI(apiKey, model, prompt) {
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 256
-    })
-  });
+  async function callGroqAPI(apiKey, model, prompt) {
+    console.log('Calling Groq API with model:', model);
 
-  if (!response.ok) {
-    throw new Error(`Groq API error: ${response.status}`);
-  }
+    return retryWithBackoff(async () => {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.1,
+          max_tokens: 300
+        })
+      });
 
-  const data = await response.json();
-  return data.choices[0].message.content;
-}
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Groq API error response:', errorText);
+        throw new Error(`Groq API error: ${response.status} - ${errorText.substring(0, 100)}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+
+      if (!content) {
+        throw new Error('Empty response from Groq API');
+      }
+
+      console.log('Groq API success');
+      console.log('Calling Groq API with model:', model);
+
+      return retryWithBackoff(async () => {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.1,
+            max_tokens: 300
+          })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Groq API error response:', errorText);
+          throw new Error(`Groq API error: ${response.status} - ${errorText.substring(0, 100)}`);
+        }
+
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content;
+
+        if (!content) {
+          throw new Error('Empty response from Groq API');
+        }
+
+        console.log('Groq API success');
+        return content;
+      });
+    }
 
 async function callGroqVisionAPI(apiKey, model, prompt, imageData) {
-  console.log('Calling Groq Vision API with model:', model);
-  console.log('Image data mimeType:', imageData.mimeType);
-  console.log('Image data length:', imageData.data.length, 'chars');
+        console.log('Calling Groq Vision API with model:', model);
+        console.log('Image data mimeType:', imageData.mimeType);
+        console.log('Image data length:', imageData.data.length, 'chars');
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: model,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          {
-            type: 'image_url',
-            image_url: {
-              url: `data:${imageData.mimeType};base64,${imageData.data}`
-            }
+        // Validate image data
+        if (!imageData.data || imageData.data.length === 0) {
+          throw new Error('Invalid image data: empty base64 string');
+        }
+
+        // Check image size (Groq has limits)
+        const imageSizeBytes = (imageData.data.length * 3) / 4;
+        const maxSizeBytes = 10 * 1024 * 1024; // 10MB limit for Groq
+
+        if (imageSizeBytes > maxSizeBytes) {
+          throw new Error(`Image too large: ${(imageSizeBytes / 1024 / 1024).toFixed(2)}MB (max 10MB for Groq)`);
+        }
+
+        return retryWithBackoff(async () => {
+          const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [{
+                role: 'user',
+                content: [
+                  { type: 'text', text: prompt },
+                  {
+                    type: 'image_url',
+                    image_url: {
+                      url: `data:${imageData.mimeType};base64,${imageData.data}`
+                    }
+                  }
+                ]
+              }],
+              temperature: 0.1,
+              max_tokens: 300
+            })
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Groq Vision API error response:', errorText);
+            throw new Error(`Groq API error: ${response.status} - ${errorText.substring(0, 100)}`);
           }
-        ]
-      }],
-      temperature: 0.3,
-      max_tokens: 256
-    })
-  });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Groq Vision API error response:', errorText);
-    throw new Error(`Groq API error: ${response.status} - ${errorText}`);
-  }
+          const data = await response.json();
+          const content = data.choices?.[0]?.message?.content;
 
-  const data = await response.json();
-  console.log('Groq Vision API success, response received');
-  return data.choices[0].message.content;
-}
+          if (!content) {
+            throw new Error('Empty response from Groq Vision API');
+          }
+
+          console.log('Groq Vision API success, response received');
+          return content;
+        });
+      }
 
 // Parse AI response to extract percentage and reason
 function parseAIResponse(text) {
-  try {
-    console.log('Parsing AI response:', text); // DEBUG LOG
+        try {
+          console.log('Parsing AI response:', text); // DEBUG LOG
 
-    // Clean markdown code blocks and extra whitespace
-    let cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+          // Clean markdown code blocks and extra whitespace
+          let cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    // Try multiple JSON extraction strategies
-    let json = null;
+          // Try multiple JSON extraction strategies
+          let json = null;
 
-    // Strategy 1: Try to parse the entire cleaned response as JSON
-    try {
-      json = JSON.parse(cleaned);
-    } catch (e) {
-      // Strategy 2: Find the LAST complete JSON object (not first, which might be incomplete)
-      // This regex finds all {...} blocks and we'll use the last one
-      const allMatches = cleaned.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g);
-      if (allMatches && allMatches.length > 0) {
-        // Try parsing from last to first (most complete usually at end)
-        for (let i = allMatches.length - 1; i >= 0; i--) {
+          // Strategy 1: Try to parse the entire cleaned response as JSON
           try {
-            const candidate = JSON.parse(allMatches[i]);
-            if (candidate.ai_percent !== undefined) {
-              json = candidate;
-              break;
+            // Clean markdown code blocks and extra whitespace
+            let cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+            // Try multiple JSON extraction strategies
+            let json = null;
+
+            // Strategy 1: Try to parse the entire cleaned response as JSON
+            try {
+              json = JSON.parse(cleaned);
+            } catch (e) {
+              // Strategy 2: Find the LAST complete JSON object (not first, which might be incomplete)
+              // This regex finds all {...} blocks and we'll use the last one
+              const allMatches = cleaned.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g);
+              if (allMatches && allMatches.length > 0) {
+                // Try parsing from last to first (most complete usually at end)
+                for (let i = allMatches.length - 1; i >= 0; i--) {
+                  try {
+                    const candidate = JSON.parse(allMatches[i]);
+                    if (candidate.ai_percent !== undefined) {
+                      json = candidate;
+                      break;
+                    }
+                  } catch (parseErr) {
+                    continue;
+                  }
+                }
+              }
             }
-          } catch (parseErr) {
-            continue;
+
+            // If we found valid JSON with ai_percent
+            if (json && (json.ai_percent !== undefined && json.ai_percent !== null)) {
+              console.log('Successfully parsed JSON:', json); // DEBUG LOG
+              return {
+                ai_percent: Math.min(100, Math.max(0, parseInt(json.ai_percent))),
+                message: json.reason || json.message || 'Analysis complete'
+              };
+            }
+
+            // Fallback Strategy 3: Extract from natural language
+            console.warn('JSON parsing failed, trying natural language extraction'); // DEBUG LOG
+
+            // Look for patterns like "75%" or "ai_percent: 75" or "75 percent"
+            const percentPatterns = [
+              /(?:ai_percent|percentage|confidence)[:\s]+(\d+)/i,
+              /(\d+)\s*%/,
+              /(\d+)\s+percent/i
+            ];
+
+            for (const pattern of percentPatterns) {
+              const match = text.match(pattern);
+              if (match && match[1]) {
+                const percent = parseInt(match[1]);
+                console.log('Extracted percentage from text:', percent); // DEBUG LOG
+                return {
+                  ai_percent: Math.min(100, Math.max(0, percent)),
+                  message: text.substring(0, 200).replace(/\s+/g, ' ').trim()
+                };
+              }
+            }
+
+            // If all strategies fail
+            throw new Error(`Could not extract ai_percent from response. Raw response: ${text.substring(0, 300)}`);
+
+          } catch (error) {
+            console.error('Failed to parse AI response (full text):', text);
+            console.error('Parse error:', error);
+            throw new Error(`Failed to parse AI response: ${error.message}`);
           }
         }
-      }
-    }
 
-    // If we found valid JSON with ai_percent
-    if (json && (json.ai_percent !== undefined && json.ai_percent !== null)) {
-      console.log('Successfully parsed JSON:', json); // DEBUG LOG
-      return {
-        ai_percent: Math.min(100, Math.max(0, parseInt(json.ai_percent))),
-        message: json.reason || json.message || 'Analysis complete'
-      };
-    }
+  // Show notification overlay
+  function showNotification(tabId, aiPercent, message) {
+          chrome.scripting.executeScript({
+            target: { tabId },
+            func: injectNotification,
+            args: [aiPercent, message]
+          }).catch(err => console.error('Notification error:', err));
+        }
 
-    // Fallback Strategy 3: Extract from natural language
-    console.warn('JSON parsing failed, trying natural language extraction'); // DEBUG LOG
+        // Injected notification function
+        function injectNotification(percent, msg) {
+          const existing = document.getElementById('vectora-notification');
+          if (existing) existing.remove();
 
-    // Look for patterns like "75%" or "ai_percent: 75" or "75 percent"
-    const percentPatterns = [
-      /(?:ai_percent|percentage|confidence)[:\s]+(\d+)/i,
-      /(\d+)\s*%/,
-      /(\d+)\s+percent/i
-    ];
-
-    for (const pattern of percentPatterns) {
-      const match = text.match(pattern);
-      if (match && match[1]) {
-        const percent = parseInt(match[1]);
-        console.log('Extracted percentage from text:', percent); // DEBUG LOG
-        return {
-          ai_percent: Math.min(100, Math.max(0, percent)),
-          message: text.substring(0, 200).replace(/\s+/g, ' ').trim()
-        };
-      }
-    }
-
-    // If all strategies fail
-    throw new Error(`Could not extract ai_percent from response. Raw response: ${text.substring(0, 300)}`);
-
-  } catch (error) {
-    console.error('Failed to parse AI response (full text):', text);
-    console.error('Parse error:', error);
-    throw new Error(`Failed to parse AI response: ${error.message}`);
-  }
-}
-
-// Show notification overlay
-function showNotification(tabId, aiPercent, message) {
-  chrome.scripting.executeScript({
-    target: { tabId },
-    func: injectNotification,
-    args: [aiPercent, message]
-  }).catch(err => console.error('Notification error:', err));
-}
-
-// Injected notification function
-function injectNotification(percent, msg) {
-  const existing = document.getElementById('vectora-notification');
-  if (existing) existing.remove();
-
-  if (!document.getElementById('vectora-styles')) {
-    const style = document.createElement('style');
-    style.id = 'vectora-styles';
-    style.textContent = `
+          if (!document.getElementById('vectora-styles')) {
+            const style = document.createElement('style');
+            style.id = 'vectora-styles';
+            style.textContent = `
       #vectora-notification {
         position: fixed;
         top: 24px;
@@ -744,24 +908,24 @@ function injectNotification(percent, msg) {
         letter-spacing: 0.5px;
       }
     `;
-    document.head.appendChild(style);
-  }
+            document.head.appendChild(style);
+          }
 
-  const notif = document.createElement('div');
-  notif.id = 'vectora-notification';
-  notif.innerHTML = `
+          const notif = document.createElement('div');
+          notif.id = 'vectora-notification';
+          notif.innerHTML = `
     <div class="vectora-label">AI Involvement</div>
     <div class="vectora-ai-percent">${Math.round(percent)}%</div>
     <div class="vectora-message">${msg}</div>
     <div class="vectora-powered">Powered by Vectora</div>
   `;
-  document.body.appendChild(notif);
+          document.body.appendChild(notif);
 
-  setTimeout(() => {
-    notif.style.opacity = '0';
-    notif.style.transition = 'opacity 0.3s ease-out';
-    setTimeout(() => {
-      if (notif.parentNode) notif.remove();
-    }, 300);
-  }, 5000);
-}
+          setTimeout(() => {
+            notif.style.opacity = '0';
+            notif.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(() => {
+              if (notif.parentNode) notif.remove();
+            }, 300);
+          }, 5000);
+        }
