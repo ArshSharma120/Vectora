@@ -277,6 +277,9 @@ def contact_page(): return render_template('contact.html')
 @app.route('/guide')
 def guide_page(): return render_template('guide.html')
 
+@app.route('/instructions')
+def instructions_page(): return render_template('instructions.html')
+
 @app.route('/extension-v1.0.zip')
 def download_extension():
     """Serve the extension ZIP file for download"""
