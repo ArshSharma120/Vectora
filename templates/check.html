@@ -1220,15 +1220,25 @@
 
     renderer.link = function (href, title, text) {
       const safeHref = (typeof href === 'string') ? href : '';
-      const safeText = (typeof text === 'string') ? text : 'Link';
+      let safeText = (typeof text === 'string' && text) ? text : 'Source';
 
-      // If URL is missing or invalid (doesn't start with http), render as text
+      // Smart Fallback: If text is generic 'Link' or 'Source' and we have a title, use title
+      if ((safeText === 'Link' || safeText === 'Source') && title) {
+        safeText = title;
+      }
+
+      // If text looks like a URL, truncate it
+      if (safeText.startsWith('http') && safeText.length > 30) {
+        safeText = safeText.substring(0, 27) + '...';
+      }
+
+      // If URL is missing or invalid (doesn't start with http), render as non-clickable
       if (!safeHref || !safeHref.startsWith('http')) {
-        return `<span class="broken-link" style="color:var(--muted); opacity:0.7; cursor:not-allowed;" title="Invalid Source/No URL provided">${safeText}</span>`;
+        return `<span class="broken-link" style="color:var(--muted); opacity:0.7; cursor:not-allowed;" title="Invalid Source">[${safeText}]</span>`;
       }
 
       // Class 'external-link' for interception
-      return `<a href="${safeHref}" class="external-link" title="${title || ''}">${safeText}${linkIcon}</a>`;
+      return `<a href="${safeHref}" class="external-link" title="${title || safeHref}">${safeText}${linkIcon}</a>`;
     };
     marked.use({ renderer });
 
