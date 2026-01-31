@@ -1671,12 +1671,24 @@
     }
 
     clearBtn.addEventListener('click', () => {
+      // 1. Clear Inputs
       document.getElementById('user_input').value = '';
       fileInput.value = '';
       fileLabel.classList.remove('has-file');
       fileLabel.querySelector('span').textContent = `[ UPLOAD DOC/IMG ]`;
       analysisContainer.innerHTML = '';
-      setStatus('Buffer cleared. Ready.');
+
+      // 2. Reset Config to Defaults (Groq Compound + Web Search)
+      document.getElementById('web-search').checked = true;
+      selectedProvider = 'groq';
+      selectedModel = 'groq/compound';
+
+      // 3. Update UI
+      providerSelect.value = 'groq';
+      updateModelDropdown(); // Refreshes model list
+      updateConfigDisplay(); // Updates Badge
+
+      setStatus('Buffer cleared. Protocol reset to Default (Groq Compound).');
     });
 
     form.addEventListener('submit', async (e) => {
@@ -1702,11 +1714,8 @@
           alert(`MODEL INCOMPATIBLE:\nThe selected model [${selectedModel}] does not support IMAGE analysis.\n\nPlease switch to a Multimodal model (e.g., Gemini 2.5/2.0, Llama Vision).`);
           return;
         }
-        if (isPdf && !currentCaps.includes('image') && !selectedModel.includes('gemini')) {
-          // Note: Groq uses vision for PDFs, so 'image' cap is proxy, but let's be strict.
-          // Actually, our get_models sets 'image' for vision models.
-          // Gemini models support native PDF (we marked them 'text','image').
-          alert(`MODEL INCOMPATIBLE:\nThe selected model [${selectedModel}] does not support DOCUMENT analysis.\n\nPlease switch to a Multimodal model.`);
+        if (isPdf && !selectedModel.includes('gemini')) {
+          alert(`RESTRICTED: PDF/Document analysis is EXCLUSIVE to Gemini models.\n\nPlease switch to a Gemini model (e.g. Gemini 2.0 Flash) to browse documents.`);
           return;
         }
       }

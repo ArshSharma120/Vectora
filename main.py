@@ -500,6 +500,9 @@ def process():
                     yield from stream_gemini(prompt, model, file_uri, mime_type, web_search)
                 
                 elif provider == "groq":
+                    if file_path and mime_type == "application/pdf":
+                         yield "[SYSTEM ERROR: Documents/PDFs are restricted to GEMINI models only. Please switch model.]"
+                         return
                     if file_path:
                         yield f"// Processing Image Data for Groq...\n"
                     yield from stream_groq(prompt, model, file_path, mime_type, web_search)

@@ -16,7 +16,7 @@
 4. ✅ **gemini-3-flash-preview** -  Premium (SynthID + 20/day limit)[GEMINI]
 5. ✅ **zai-glm-4.7** - Text-only (no web search) "BEST FOR REASONING"[CEREBRAS]
 
-### **PDFs (1 model - overlaps with #3):**
+### **PDFs and any Document Processing (1 model - overlaps with #3):**
 - ✅ **gemini-3-flash-preview** - Only option for PDFs[GEMINI]
 - ✅ **gemini-2.5-flash** -FALLBACK Premium (SynthID + 20/day limit)[GEMINI]
 - ✅ **gemini-2.5-flash-lite** -FALLBACK Premium (SynthID + 20/day limit)[GEMINI]
