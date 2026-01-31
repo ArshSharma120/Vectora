@@ -307,6 +307,9 @@ def guide_page(): return render_template('guide.html')
 @app.route('/instructions')
 def instructions_page(): return render_template('instructions.html')
 
+@app.route('/terms')
+def terms_page(): return render_template('terms.html')
+
 @app.route('/extension-v2.6.zip')
 def download_extension():
     """Serve the extension ZIP file for download"""

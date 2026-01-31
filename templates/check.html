@@ -1749,6 +1749,14 @@
       setStatus('Buffer cleared. Protocol reset to Default (Groq Compound).');
     });
 
+    // CTRL+ENTER SHORTCUT
+    document.getElementById('user_input').addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        submitBtn.click();
+      }
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const inputVal = document.getElementById('user_input').value.trim();
