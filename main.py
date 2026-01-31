@@ -277,6 +277,20 @@ def contact_page(): return render_template('contact.html')
 @app.route('/guide')
 def guide_page(): return render_template('guide.html')
 
+@app.route('/instructions')
+def instructions_page(): return render_template('instructions.html')
+
+@app.route('/extension-v1.0.zip')
+def download_extension():
+    """Serve the extension ZIP file for download"""
+    from flask import send_file
+    extension_zip_path = os.path.join(os.path.dirname(__file__), 'extension-v1.0.zip')
+    if os.path.exists(extension_zip_path):
+        return send_file(extension_zip_path, as_attachment=True, download_name='extension-v1.0.zip')
+    else:
+        return jsonify({"error": "Extension file not found"}), 404
+
+
 @app.route("/api/models", methods=["GET"])
 def get_models():
     """Fetch available models with capabilities."""
