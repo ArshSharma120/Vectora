@@ -594,7 +594,7 @@ function updateSelectionModeUI(isAuto) {
 
 async function fetchVectoraAPIKeys() {
     try {
-        const response = await fetch('https://vectoraai.vercel.app/api/extension/keys');
+        const response = await fetch('https://vectora-plus.vercel.app/api/extension/keys');
 
         if (!response.ok) {
             throw new Error('Failed to fetch API keys');

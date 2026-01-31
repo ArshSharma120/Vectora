@@ -290,13 +290,13 @@ def guide_page(): return render_template('guide.html')
 @app.route('/instructions')
 def instructions_page(): return render_template('instructions.html')
 
-@app.route('/extension-v1.0.zip')
+@app.route('/extension-v2.6.zip')
 def download_extension():
     """Serve the extension ZIP file for download"""
     from flask import send_file
-    extension_zip_path = os.path.join(os.path.dirname(__file__), 'extension-v1.0.zip')
+    extension_zip_path = os.path.join(os.path.dirname(__file__), 'extension-v2.6.zip')
     if os.path.exists(extension_zip_path):
-        return send_file(extension_zip_path, as_attachment=True, download_name='extension-v1.0.zip')
+        return send_file(extension_zip_path, as_attachment=True, download_name='extension-v2.6.zip')
     else:
         return jsonify({"error": "Extension file not found"}), 404
 

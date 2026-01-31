@@ -1142,15 +1142,6 @@
       margin: 0;
     }
 
-    .feature-icon {
-      width: 24px;
-      height: 24px;
-      stroke: var(--primary);
-      fill: none;
-      stroke-width: 2;
-      opacity: 0.6;
-      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-    }
 
     .feature-article p {
       font-size: 0.95rem;
@@ -1159,11 +1150,15 @@
       opacity: 0;
       transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
       margin: 0;
+      margin-top: 60px;
+      margin-bottom: 40px;
+      z-index: 1;
     }
 
     .feature-link {
       position: absolute;
       bottom: 1.5rem;
+      left: 1.5rem;
       height: 20px;
       color: var(--primary);
       text-decoration: none;
@@ -1171,6 +1166,7 @@
       transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
       font-weight: 600;
       font-size: 0.9rem;
+      z-index: 2;
     }
 
     .feature-link:hover {
@@ -1743,12 +1739,6 @@
           <h3>Manifest V3</h3>
           <p>Chrome Extension architecture engineered for maximum stealth and velocity. Built on the latest web
             standards.</p>
-          <svg class="feature-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M6 3h12l4 6-10 13L2 9Z" />
-            <path d="M11 3 8 9l4 13 4-13-3-6" />
-            <path d="M2 9h20" />
-          </svg>
           <a href="#" class="feature-link">Learn more →</a>
           <img class="feature-img" src="https://picsum.photos/720/720?random=12" alt="Manifest V3" />
         </article>
