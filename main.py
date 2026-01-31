@@ -368,7 +368,29 @@ def get_models():
     """Fetch available models with curated metadata."""
     models = {"gemini": [], "groq": [], "cerebras": []}
     
-    # ... (Gemini/Groq loops skipped for brevity in replace target, I'll just target the dictionary end)
+    # 1. Gemini
+    for mid in CURATED_MODELS["gemini"]:
+        meta = MODEL_METADATA.get(mid, {})
+        models["gemini"].append({
+            "id": mid,
+            "name": mid.upper() if "preview" not in mid else "GEMINI 3 FLASH", 
+            **meta
+        })
+
+    # 2. Groq
+    for mid in CURATED_MODELS["groq"]:
+        meta = MODEL_METADATA.get(mid, {})
+        # Friendly Name Logic
+        name = mid.split('/')[-1].upper()
+        if "compound" in mid: name = "GROQ COMPOUND" if "mini" not in mid else "GROQ MINI"
+        elif "llama" in mid: name = "LLAMA 4 MAVERICK" if "maverick" in mid else "LLAMA 4 SCOUT"
+        elif "gpt" in mid: name = "GPT-OSS 120B"
+        
+        models["groq"].append({
+            "id": mid,
+            "name": name,
+            **meta
+        })
 
     # 3. Cerebras
     for mid in CURATED_MODELS["cerebras"]:

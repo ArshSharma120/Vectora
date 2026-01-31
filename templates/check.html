@@ -1219,25 +1219,32 @@
     const linkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px; opacity:0.7;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
 
     renderer.link = function (href, title, text) {
-      const safeHref = (typeof href === 'string') ? href : '';
-      let safeText = (typeof text === 'string' && text) ? text : 'Source';
+      // Robust extraction
+      let safeHref = href || '';
+      let safeText = text || '';
 
-      // Smart Fallback: If text is generic 'Link' or 'Source' and we have a title, use title
+      // If text is missing but we have a valid link, use the link as text
+      if (!safeText && safeHref) safeText = safeHref;
+      // If both are missing, use generic 'Link'
+      if (!safeText) safeText = 'Source';
+
+      // Fallback: If text is 'Link'/'Source' and title exists, use title
       if ((safeText === 'Link' || safeText === 'Source') && title) {
         safeText = title;
       }
 
-      // If text looks like a URL, truncate it
-      if (safeText.startsWith('http') && safeText.length > 30) {
-        safeText = safeText.substring(0, 27) + '...';
+      // Truncate long URL text 
+      if (safeText.startsWith('http') && safeText.length > 40) {
+        safeText = safeText.substring(0, 37) + '...';
       }
 
-      // If URL is missing or invalid (doesn't start with http), render as non-clickable
+      // 1. INVALID KNON-HTTP LINK -> JUST SHOW RAW TEXT
+      // The user wants raw content if link fails.
       if (!safeHref || !safeHref.startsWith('http')) {
-        return `<span class="broken-link" style="color:var(--muted); opacity:0.7; cursor:not-allowed;" title="Invalid Source">[${safeText}]</span>`;
+        return safeText;
       }
 
-      // Class 'external-link' for interception
+      // 2. VALID LINK -> Render Button
       return `<a href="${safeHref}" class="external-link" title="${title || safeHref}">${safeText}${linkIcon}</a>`;
     };
     marked.use({ renderer });
