@@ -1131,17 +1131,22 @@
         </div>
       </div>
 
-      <div class="stat-block" style="margin-top: auto; border:none; padding:0;">
-        <div class="stat-label">SESSION_ID</div>
-        <div class="stat-val sidebar-foot" id="session-id-display">Initializing...</div>
-      </div>
+      <div class="stat-block" style="margin-top: auto; border:none; padding:0; display:flex;">
+        <!-- SESSION ID (Left) -->
+        <div style="flex:1; padding:15px; border-right: 1px solid rgba(0,243,255,0.1);">
+          <div class="stat-label">SESSION_ID</div>
+          <div class="stat-val sidebar-foot" id="session-id-display" style="font-size:0.75rem;">Initializing...</div>
+        </div>
 
-      <div onclick="openConfig()"
-        style="margin-top: 15px; margin-bottom: 20px; cursor: pointer; text-align: center; opacity: 0.8; transition: opacity 0.3s;"
-        onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">
-        <span
-          style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--secondary); border: 1px solid var(--secondary); padding: 5px 10px; border-radius: 4px;">[
-          ADVANCED CONFIG ]</span>
+        <!-- CONFIG (Right) -->
+        <div onclick="openConfig()"
+          style="flex:1; display:flex; align-items:center; justify-content:center; cursor:pointer; background:rgba(0,0,0,0.2); transition: background 0.2s;"
+          onmouseover="this.style.background='rgba(0,243,255,0.1)'"
+          onmouseout="this.style.background='rgba(0,0,0,0.2)'">
+          <span
+            style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--secondary); letter-spacing:1px; font-weight:bold;">[
+            ADVANCED ]</span>
+        </div>
       </div>
     </aside>
 
