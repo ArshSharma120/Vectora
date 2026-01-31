@@ -477,6 +477,144 @@
       cursor: pointer;
     }
 
+    /* --- NEW MODEL BADGES & SECTIONS --- */
+    .model-badge {
+      font-size: 0.6rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 8px;
+    }
+
+    .badge-primary {
+      background: var(--primary);
+      color: #000;
+    }
+
+    .badge-success {
+      background: #00ff9d;
+      color: #000;
+    }
+
+    .badge-warning {
+      background: #ffaa00;
+      color: #000;
+    }
+
+    /* Removed pulse to avoid distraction */
+    .badge-tertiary {
+      background: #0066ff;
+      color: #fff;
+    }
+
+    .badge-secondary {
+      background: var(--secondary);
+      color: #fff;
+    }
+
+    .badge-muted {
+      background: #666;
+      color: #fff;
+    }
+
+    .dropdown-section {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section-header {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--primary);
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding: 5px 10px;
+      background: rgba(0, 243, 255, 0.1);
+      border-left: 3px solid var(--primary);
+      text-transform: uppercase;
+    }
+
+    .model-item {
+      padding: 12px 15px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      /* Separator */
+      transition: background 0.2s;
+    }
+
+    .model-item:hover {
+      background: rgba(0, 243, 255, 0.1);
+    }
+
+    .model-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .model-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: var(--font-body);
+    }
+
+    .model-caps {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    /* PROVIDER LOGO DISPLAY */
+    .logo-display-wrapper {
+      margin-top: 20px;
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .provider-logo {
+      font-family: 'AquireFont', var(--font-head);
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      margin-top: 10px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .logo-groq {
+      color: #f55036;
+      text-shadow: 0 0 15px rgba(245, 80, 54, 0.4);
+    }
+
+    .logo-gemini {
+      color: #4facfe;
+      text-shadow: 0 0 15px rgba(79, 172, 254, 0.4);
+      background: -webkit-linear-gradient(#4facfe, #00f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-cerebras {
+      color: #ffffff;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    }
+
     /* MAIN CONSOLE */
     .console-wrapper {
       border: 1px solid var(--border);
@@ -943,7 +1081,6 @@
   </nav>
 
   <main class="terminal-container">
-    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="stat-block">
         <div class="stat-label">SYSTEM_STATUS</div>
@@ -953,12 +1090,20 @@
         <div class="stat-label">SECURITY_LEVEL</div>
         <div class="stat-val">MAXIMUM</div>
       </div>
-      <div class="stat-block">
-        <div class="stat-label">active_config</div>
-        <div class="stat-val" style="font-size: 1rem; color: var(--text);" id="current-config">Gemini / Flash</div>
-      </div>
 
-      <button class="config-btn" id="open-settings">[ CHANGE CONFIG ]</button>
+      <!-- LOGO DISPLAY (Replaces Config Button) -->
+      <!-- LOGO DISPLAY -->
+      <div class="logo-display-wrapper">
+        <div class="stat-label">ACTIVE CORE</div>
+        <div
+          style="min-height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px;">
+          <img id="active-model-logo" src="" alt="Active Model"
+            style="height: 35px; width: auto; display: block; object-fit: contain;">
+          <div id="active-model-name"
+            style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); margin-top: 8px; opacity: 0.6; letter-spacing: 1px; text-transform: uppercase;">
+            INITIALIZING...</div>
+        </div>
+      </div>
 
       <div class="stat-block" style="margin-top: auto; border:none; padding:0;">
         <div class="stat-label">SESSION_ID</div>
@@ -1095,6 +1240,7 @@
       root.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
       themeBtn.textContent = next === 'dark' ? '☀' : '☾';
+      updateConfigDisplay();
     });
 
     // --- MOBILE NAV ---
@@ -1147,11 +1293,7 @@
     providerSelect.value = selectedProvider;
     updateConfigDisplay();
 
-    function updateConfigDisplay() {
-      let label = selectedModel;
-      if (label && label.length > 15) label = label.substring(0, 15) + '...';
-      configDisplay.textContent = `${selectedProviderName(selectedProvider)} / ${label}`;
-    }
+
 
     modelTrigger.addEventListener('click', (e) => {
       modelOptions.classList.toggle('open');
@@ -1172,6 +1314,7 @@
         availableModels = await res.json();
         isLoadingModels = false;
         updateModelDropdown();
+        updateConfigDisplay(); // Sync logo on init
       } catch (e) {
         console.error("Failed to fetch models", e);
         isLoadingModels = false;
@@ -1187,90 +1330,253 @@
       }
 
       modelOptions.innerHTML = '';
-      const provider = providerSelect.value;
-      const models = availableModels[provider] || [];
 
-      if (models.length === 0) {
+      // 1. Flatten all models and add provider info
+      // PRIORITY: Groq (Llama default) -> Gemini -> Cerebras
+      const allModels = [];
+      ['groq', 'gemini', 'cerebras'].forEach(prov => {
+        (availableModels[prov] || []).forEach(m => {
+          m.provider = prov; // Attach provider
+          allModels.push(m);
+        });
+      });
+
+      if (allModels.length === 0) {
         modelOptions.innerHTML = '<div style="padding:15px; color:var(--muted)">No models available</div>';
         return;
       }
 
-      let foundSelected = false;
+      // 2. Define Categories
+      const categories = [
+        {
+          id: 'image',
+          title: '📸 IMAGE ANALYSIS',
+          filter: m => (m.capabilities && m.capabilities.includes('image')) || (m.category && m.category.includes('image'))
+        },
+        {
+          id: 'text',
+          title: '📝 TEXT ANALYSIS',
+          filter: m => (m.capabilities && m.capabilities.includes('text')) || (m.category && m.category.includes('text'))
+        },
+        {
+          id: 'pdf',
+          title: '📄 PDF ANALYSIS',
+          filter: m => (m.capabilities && m.capabilities.includes('pdf')) || m.id.includes('gemini') // Gemini is default for PDF
+        }
+      ];
 
-      models.forEach(m => {
-        const row = document.createElement('div');
-        row.className = 'option-item';
+      // 3. Render Sections
+      categories.forEach(cat => {
+        const catModels = allModels.filter(cat.filter);
+        if (catModels.length === 0) return;
 
-        let iconsHtml = '<div class="caps-icons">';
-        if (m.capabilities.includes('text'))
-          iconsHtml += '<img src="/static/icons/notepad.png" class="cap-icon" title="Text">';
-        if (m.capabilities.includes('image'))
-          iconsHtml += '<img src="/static/icons/image-camera.png" class="cap-icon" title="Image">';
-        if (m.capabilities.includes('web_search') || provider === 'gemini')
-          iconsHtml += '<img src="/static/icons/web-search.png" class="cap-icon" title="Web/Doc">';
-        iconsHtml += '</div>';
+        // Deduplicate within category if needed (not strictly necessary if list is unique, but models can appear in multiple categories)
+        // We allow same model in multiple categories as requested.
 
-        row.innerHTML = `${iconsHtml} <span>${m.id}</span>`;
+        const section = document.createElement('div');
+        section.className = 'dropdown-section';
 
-        row.addEventListener('click', () => {
-          selectModel(m.id, row.innerHTML);
+        const header = document.createElement('div');
+        header.className = 'section-header';
+        header.textContent = cat.title;
+        section.appendChild(header);
+
+        catModels.forEach(m => {
+          // Use Metadata if available
+          const badge = m.badge || '';
+          const badgeColor = m.badge_color || 'muted';
+          const desc = m.description || m.name || m.id;
+
+          const item = document.createElement('div');
+          item.className = 'model-item';
+
+          // Icon Generation
+          let iconsHtml = '';
+          if (m.capabilities) {
+            m.capabilities.forEach(c => {
+              if (c === 'text') iconsHtml += '<img src="/static/icons/notepad.png" style="width:12px; opacity:0.7" title="Text">';
+              if (c === 'image') iconsHtml += '<img src="/static/icons/image-camera.png" style="width:12px; opacity:0.7" title="Image">';
+              if (c === 'web_search') iconsHtml += '<img src="/static/icons/web-search.png" style="width:12px; opacity:0.7" title="Web Search">';
+            });
+          }
+
+          item.innerHTML = `
+            <div class="model-header">
+                <span>${m.name || m.id}</span>
+                ${badge ? `<span class="model-badge badge-${badgeColor}">${badge}</span>` : ''}
+            </div>
+            <div class="model-desc">${desc}</div>
+            <div class="model-caps">${iconsHtml}</div>
+          `;
+
+          item.addEventListener('click', () => {
+            selectModel(m.id, m.provider, item.innerHTML);
+          });
+
+          section.appendChild(item);
         });
 
-        modelOptions.appendChild(row);
-
-        if (m.id === selectedModel) {
-          modelTrigger.innerHTML = row.innerHTML;
-          modelInput.value = m.id;
-          foundSelected = true;
-        }
+        modelOptions.appendChild(section);
       });
 
-      if (!foundSelected && models.length > 0) {
-        const firstM = models[0];
-        let iconsHtml = '<div class="caps-icons">';
-        if (firstM.capabilities.includes('text'))
-          iconsHtml += '<img src="/static/icons/notepad.png" class="cap-icon">';
-        if (firstM.capabilities.includes('image'))
-          iconsHtml += '<img src="/static/icons/image-camera.png" class="cap-icon">';
-        if (firstM.capabilities.includes('web_search') || provider === 'gemini')
-          iconsHtml += '<img src="/static/icons/document.png" class="cap-icon">';
-        iconsHtml += '</div>';
-
-        selectModel(firstM.id, `${iconsHtml} <span>${firstM.id}</span>`);
-      }
-    }
-
-    function selectModel(id, htmlContent) {
-      selectedModel = id;
-      modelInput.value = id;
-      modelTrigger.innerHTML = htmlContent;
-      modelOptions.classList.remove('open');
-
-      // CHECK WEB SEARCH CAPABILITY
-      const warningEl = document.getElementById('model-warning');
-      const allModels = [].concat(...Object.values(availableModels));
-      const m = allModels.find(mod => mod.id === id);
-
-      if (m) {
-        // Gemini always has web access effectively via Google Search tool, 
-        // others need specific capability check
-        if (m.capabilities.includes('web_search') || id.includes('gemini')) {
-          warningEl.style.display = 'none';
-        } else {
-          warningEl.style.display = 'block';
+      // Set initial selection visualization if needed
+      // Logic to find current selected model and update trigger
+      const current = allModels.find(m => m.id === selectedModel);
+      if (current) {
+        // Just simplistic trigger update
+        const badge = current.badge || '';
+        const badgeColor = current.badge_color || 'muted';
+        modelTrigger.innerHTML = `
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                <span style="font-weight:bold">${current.name || current.id}</span>
+                ${badge ? `<span class="model-badge badge-${badgeColor}">${badge}</span>` : ''}
+            </div>
+           `;
+        // Ensure provider is synced
+        if (current.provider !== selectedProvider) {
+          selectedProvider = current.provider;
+          providerSelect.value = selectedProvider;
         }
       }
     }
+
+    function updateConfigDisplay() {
+      const logoImg = document.getElementById('active-model-logo');
+      const nameEl = document.getElementById('active-model-name');
+
+      if (!logoImg || !nameEl) return;
+
+      const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const model = selectedModel || '';
+
+      let layout = 'powered-by-groq';
+      let extDark = 'svg';
+      let extLight = 'svg';
+
+      // Determine Image Set based on Model ID
+      if (model.includes('llama')) {
+        layout = 'meta-llama';
+        extDark = 'png';
+        extLight = 'png';
+      } else if (model.includes('gemini')) {
+        layout = 'gemini';
+        extDark = 'webp';
+        extLight = 'svg';
+      } else if (model.includes('glm')) {
+        layout = 'glm-4.7';
+        extDark = 'jpg';
+        extLight = 'jpg';
+      } else if (model.includes('gpt')) {
+        layout = 'gpt';
+        extDark = 'jpg';
+        extLight = 'webp';
+      } else if (model.includes('compound') || model.includes('groq')) {
+        layout = 'powered-by-groq';
+        extDark = 'svg';
+        extLight = 'svg';
+      } else if (selectedProvider === 'cerebras') {
+        layout = 'glm-4.7';
+        extDark = 'jpg';
+        extLight = 'jpg';
+      }
+
+      const ext = theme === 'dark' ? extDark : extLight;
+      logoImg.src = `/static/model-images/${layout}-${theme}.${ext}`;
+
+      // Update Name
+      nameEl.textContent = model.toUpperCase();
+    }
+
+
+    function selectModel(id, provider, htmlContent) {
+      selectedModel = id;
+      selectedProvider = provider;
+      modelInput.value = id;
+      providerSelect.value = provider; // Sync hidden native select
+
+      modelTrigger.innerHTML = htmlContent;
+
+      modelOptions.classList.remove('open');
+      localStorage.setItem('vectora_model', id);
+      localStorage.setItem('vectora_provider', provider);
+      updateConfigDisplay();
+
+      // CHECK WEB SEARCH CAPABILITY/WARNINGS
+      const warningEl = document.getElementById('model-warning');
+
+      // Quota Warning for Gemini
+      if (provider === 'gemini') {
+        showToast('⚠️ Gemini models limited to 20 requests/day');
+      }
+    }
+
+    // Auto-Selection Logic
+    function autoSelectModel() {
+      const fileInput = document.getElementById('file-upload');
+      const textarea = document.getElementById('user_input');
+      const webSearchEnabled = document.getElementById('web-search').checked;
+
+      let targetId = null;
+      let targetProvider = null;
+
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (file.type.startsWith('image/')) {
+          // Default Image Model
+          targetId = 'meta-llama/llama-4-maverick-17b-128e-instruct';
+          targetProvider = 'groq';
+        } else if (file.type === 'application/pdf') {
+          // Default PDF Model
+          targetId = 'gemini-3-flash-preview';
+          targetProvider = 'gemini';
+          showToast('⚠️ PDF analysis requires Gemini (20/day limit)');
+        }
+      } else if (textarea.value.trim().length > 0) {
+        // Text Analysis
+        if (webSearchEnabled) {
+          targetId = 'groq/compound';
+          targetProvider = 'groq';
+        } else {
+          targetId = 'glm-4-plus';
+          targetProvider = 'cerebras';
+        }
+      }
+
+      // If we found a target and it's different, switch
+      if (targetId && (targetId !== selectedModel)) {
+        selectedModel = targetId;
+        selectedProvider = targetProvider;
+        providerSelect.value = selectedProvider;
+        updateModelDropdown(); // This will update the trigger UI
+        updateConfigDisplay(); // Update Logo
+
+        // Show notification
+        showToast(`Auto-selected: ${targetId}`);
+      }
+    }
+
+
+
+
+    // toast helper if not exists
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.style.cssText = "position:fixed; bottom:20px; right:20px; background:var(--surface); border:1px solid var(--primary); padding:10px 20px; z-index:9999; animation: fadein 0.5s; color:var(--text); font-family:var(--font-mono); font-size:0.8rem;";
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 4000);
+    }
+
+    // Attach auto-select listeners
+    document.getElementById('file-upload').addEventListener('change', autoSelectModel);
+    document.getElementById('web-search').addEventListener('change', autoSelectModel);
 
     providerSelect.addEventListener('change', () => {
       updateModelDropdown();
     });
 
-    openBtn.addEventListener('click', () => {
-      modal.classList.add('open');
-      providerSelect.value = selectedProvider;
-      updateModelDropdown();
-    });
+    // Open Button Listener Removed as Element is Removed
+    // openBtn.addEventListener('click', () => { ... });
 
     closeBtn.addEventListener('click', () => {
       modal.classList.remove('open');
@@ -1321,6 +1627,7 @@
         fileLabel.classList.add('has-file');
         fileLabel.querySelector('span').textContent = `[ ${fileInput.files[0].name} ]`;
         setStatus(`File loaded: ${fileInput.files[0].name}`);
+        autoSelectModel(); // Trigger auto-select
       } else {
         fileLabel.classList.remove('has-file');
         fileLabel.querySelector('span').textContent = `[ UPLOAD DOC/IMG ]`;

@@ -174,7 +174,7 @@ def convert_doc_to_images(doc_path):
         if i >= 4: break # Limit to first 5 pages for API limits
     return img_paths
 
-def stream_groq(prompt, model, file_path=None, mime_type=None):
+def stream_groq(prompt, model, file_path=None, mime_type=None, web_search=False):
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
@@ -185,7 +185,6 @@ def stream_groq(prompt, model, file_path=None, mime_type=None):
     
     if file_path and mime_type:
         # Check if model supports vision (managed by frontend selection normally, but backend check is good)
-        # Assuming frontend passes correct model.
         if mime_type.startswith("image/"):
             b64_img = encode_image(file_path)
             content_list.append({
@@ -213,6 +212,17 @@ def stream_groq(prompt, model, file_path=None, mime_type=None):
         "stream": True,
         "temperature": 0.2
     }
+
+    # Enable tools for relevant models if web_search is requested
+    if web_search:
+        if "gpt-oss" in model:
+            # GPT-OSS supports browser_search
+            data["tools"] = [{"type": "browser_search"}]
+        elif "compound" in model:
+            # Compound uses tools automatically, but we can ensure web_search is enabled if needed.
+            # Usually not required as it's default, but good to be explicit if using compound_custom
+            pass
+
     
     with requests.post(f"{GROQ_BASE_URL}/chat/completions", headers=headers, json=data, stream=True) as resp:
         for line in resp.iter_lines():
@@ -291,67 +301,103 @@ def download_extension():
         return jsonify({"error": "Extension file not found"}), 404
 
 
+# CURATED MODELS - Final Selection
+CURATED_MODELS = {
+    "gemini": [
+        "gemini-3-flash-preview",
+        "gemini-2.5-flash", 
+        "gemini-2.5-flash-lite"
+    ],
+    "groq": [
+        "groq/compound",
+        "groq/compound-mini", 
+        "openai/gpt-oss-120b",
+        "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "meta-llama/llama-4-scout-17b-16e-instruct"
+    ],
+    "cerebras": [
+        "glm-4-plus" 
+    ]
+}
+
+MODEL_METADATA = {
+    # IMAGES
+    "meta-llama/llama-4-maverick-17b-128e-instruct": {
+        "category": "image", "badge": "DEFAULT", "badge_color": "primary",
+        "description": "Best default for image analysis - 128K context", "capabilities": ["text", "image"]
+    },
+    "meta-llama/llama-4-scout-17b-16e-instruct": {
+        "category": "image", "badge": "FAST", "badge_color": "success",
+        "description": "Fast image analysis alternative", "capabilities": ["text", "image"]
+    },
+    
+    # GEMINI (Images, Text, PDF)
+    "gemini-3-flash-preview": {
+        "category": "image,text,pdf", "badge": "PREMIUM", "badge_color": "warning",
+        "description": "Latest Gemini - SynthID, PDF support, Web Grounding", "capabilities": ["text", "image", "pdf", "web_search"]
+    },
+    "gemini-2.5-flash": {
+        "category": "image,text,pdf", "badge": "FALLBACK", "badge_color": "tertiary",
+        "description": "Gemini fallback - balanced", "capabilities": ["text", "image", "pdf", "web_search"]
+    },
+    "gemini-2.5-flash-lite": {
+        "category": "image,text,pdf", "badge": "LITE", "badge_color": "muted",
+        "description": "Faster, lighter Gemini fallback", "capabilities": ["text", "image", "pdf", "web_search"]
+    },
+    
+    # TEXT
+    "groq/compound": {
+        "category": "text", "badge": "DEFAULT", "badge_color": "primary",
+        "description": "Fact-checking with multiple web searches", "capabilities": ["text", "web_search"]
+    },
+    "groq/compound-mini": {
+        "category": "text", "badge": "FAST", "badge_color": "success",
+        "description": "Faster single web search", "capabilities": ["text", "web_search"]
+    },
+    "openai/gpt-oss-120b": {
+        "category": "text", "badge": "LONG DOCS", "badge_color": "tertiary",
+        "description": "131K context with web search", "capabilities": ["text", "web_search"]
+    },
+    "glm-4-plus": {
+        "category": "text", "badge": "REASONING", "badge_color": "secondary",
+        "description": "Complex reasoning - No Web Search", "capabilities": ["text"]
+    }
+}
+
 @app.route("/api/models", methods=["GET"])
 def get_models():
-    """Fetch available models with capabilities."""
+    """Fetch available models with curated metadata."""
     models = {"gemini": [], "groq": [], "cerebras": []}
     
     # 1. Gemini
     try:
-        url = f"{GEMINI_BASE_URL}/models"
-        params = {"key": GEMINI_API_KEY}
-        resp = requests.get(url, params=params)
-        if resp.status_code == 200:
-            data = resp.json()
-            for m in data.get("models", []):
-                if "generateContent" in m.get("supportedGenerationMethods", []):
-                    name = m["name"].replace("models/", "")
-                    models["gemini"].append({
-                        "id": name,
-                        "capabilities": ["text", "image", "web_search"] # Gemini 1.5+ generally supports all
-                    })
-    except Exception as e:
-        print(f"Error fetching Gemini models: {e}", file=sys.stderr)
-        models["gemini"] = [
-            {"id": "gemini-2.0-flash", "capabilities": ["text", "image", "web_search"]},
-            {"id": "gemini-1.5-flash", "capabilities": ["text", "image", "web_search"]},
-            {"id": "gemini-1.5-pro", "capabilities": ["text", "image", "web_search"]}
-        ]
+        # We assume these exist or fallback to metadata defaults if fetch fails
+        for mid in CURATED_MODELS["gemini"]:
+             meta = MODEL_METADATA.get(mid, {})
+             models["gemini"].append({
+                 "id": mid,
+                 "name": mid.replace("-", " ").title(),
+                 **meta
+             })
+    except Exception: pass
 
-    # 2. Groq (Hardcoded as per user request for specific model set)
-    models["groq"] = [
-        # TEXT + IMAGE
-        {"id": "meta-llama/llama-guard-4-12b", "capabilities": ["text", "image"]},
-        {"id": "meta-llama/llama-4-maverick-17b-128e-instruct", "capabilities": ["text", "image"]},
-        {"id": "meta-llama/llama-4-scout-17b-16e-instruct", "capabilities": ["text", "image"]},
-        # TEXT + WEB SEARCH (Compound & OSS)
-        {"id": "openai/gpt-oss-120b", "capabilities": ["text", "web_search"]},
-        {"id": "openai/gpt-oss-20b", "capabilities": ["text", "web_search"]},
-        {"id": "groq/compound", "capabilities": ["text", "web_search"]},
-        {"id": "groq/compound-mini", "capabilities": ["text", "web_search"]},
-        {"id": "openai/gpt-oss-safeguard-20b", "capabilities": ["text", "web_search"]}
-    ]
+    # 2. Groq
+    for mid in CURATED_MODELS["groq"]:
+        meta = MODEL_METADATA.get(mid, {})
+        models["groq"].append({
+            "id": mid,
+            "name": mid.split("/")[-1].replace("-", " ").title(),
+            **meta
+        })
 
-    # 3. Cerebras (Live Fetch)
-    try:
-        url = f"{CEREBRAS_BASE_URL}/models"
-        headers = {"Authorization": f"Bearer {CEREBRAS_API_KEY}"}
-        resp = requests.get(url, headers=headers)
-        if resp.status_code == 200:
-            data = resp.json()
-            # Cerebras API response format: {"data": [{"id": "..."}, ...]}
-            for m in data.get("data", []):
-                models["cerebras"].append({
-                    "id": m["id"],
-                    "capabilities": ["text"] # Assume text-only for inference endpoints
-                })
-    except Exception as e:
-        print(f"Error fetching Cerebras models: {e}", file=sys.stderr)
-        # Fallback if fetch fails
-        models["cerebras"] = [
-            {"id": "llama3.1-8b", "capabilities": ["text"]},
-            {"id": "llama3.1-70b", "capabilities": ["text"]}
-        ]
+    # 3. Cerebras
+    for mid in CURATED_MODELS["cerebras"]:
+        meta = MODEL_METADATA.get(mid, {})
+        models["cerebras"].append({
+            "id": mid,
+            "name": "GLM 4.7 Plus", # Friendly name
+            **meta
+        })
     
     return jsonify(models)
 
@@ -418,7 +464,7 @@ def process():
                 elif provider == "groq":
                     if file_path:
                         yield f"// Processing Image Data for Groq...\n"
-                    yield from stream_groq(prompt, model, file_path, mime_type)
+                    yield from stream_groq(prompt, model, file_path, mime_type, web_search)
                     
                 elif provider == "cerebras":
                     # Cerebras is Text-Only currently for standard inference
