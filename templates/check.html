@@ -1688,14 +1688,14 @@
         }
       }
 
-      if (useWebSearch && !currentCaps.includes('web_search') && selectedProvider !== 'gemini') {
-        // Gemini implies web search usually, others might not
-        // For now, we only block if we explicitly know it fails, but let's warn
-        // Actually, relax this for now as backend handles fallback or ignores it, 
-        // but USER ASKED FOR POPUP.
-        if (!currentCaps.includes('web_search')) {
-          if (!confirm("WARNING:\nThis model does not natively support Web Search. Results may be limited to internal knowledge.\n\nContinue anyway?")) return;
-        }
+      // Relaxed Check: Trust ID if metadata fails
+      const supportsWebSearch = currentCaps.includes('web_search') ||
+        selectedModel.includes('compound') ||
+        selectedModel.includes('gpt-oss') ||
+        selectedProvider === 'gemini';
+
+      if (useWebSearch && !supportsWebSearch) {
+        if (!confirm("WARNING:\nThis model does not natively support Web Search. Results may be limited to internal knowledge.\n\nContinue anyway?")) return;
       }
 
       analysisContainer.innerHTML = '';
