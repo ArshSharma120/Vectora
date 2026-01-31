@@ -1103,9 +1103,18 @@
         <div class="stat-val">MAXIMUM</div>
       </div>
 
-      <!-- LOGO DISPLAY (Replaces Config Button) -->
+      <div class="stat-block hover-effect" onclick="openConfig()"
+        style="cursor:pointer; border-color: var(--secondary);">
+        <div class="stat-label" style="color:var(--secondary)">SESSION_CONFIG</div>
+        <div class="stat-val"
+          style="font-size:0.8rem; display:flex; justify-content:space-between; align-items:center;">
+          <span>ADVANCED</span>
+          <span style="font-size:1rem;">⚙</span>
+        </div>
+      </div>
+
       <!-- LOGO DISPLAY -->
-      <div class="logo-display-wrapper">
+      <div class="logo-display-wrapper" onclick="openConfig()" style="cursor:pointer;">
         <div class="stat-label">ACTIVE CORE</div>
         <div
           style="min-height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px;">
@@ -1609,6 +1618,13 @@
 
     // Open Button Listener Removed as Element is Removed
     // openBtn.addEventListener('click', () => { ... });
+
+    // OPEN CONFIG MODAL
+    function openConfig() {
+      const m = document.getElementById('settings-modal');
+      m.classList.add('open');
+      updateModelDropdown();
+    }
 
     closeBtn.addEventListener('click', () => {
       modal.classList.remove('open');
