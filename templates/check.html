@@ -1210,8 +1210,8 @@
 
     // --- APP STATE ---
     let availableModels = { gemini: [], groq: [], cerebras: [] };
-    let selectedProvider = localStorage.getItem('vectora_provider') || 'gemini';
-    let selectedModel = localStorage.getItem('vectora_model') || 'gemini-2.0-flash';
+    let selectedProvider = localStorage.getItem('vectora_provider') || 'groq';
+    let selectedModel = localStorage.getItem('vectora_model') || 'groq/compound';
     let isLoadingModels = true;
 
     // Configure Marked
@@ -1250,14 +1250,8 @@
 
     gsap.from(".terminal-container", { scale: 0.95, opacity: 0, duration: 1, ease: "power2.out", delay: 0.2 });
 
-    const cursor = document.getElementById('cursor');
-    window.addEventListener('mousemove', (e) => {
-      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
-    });
-    document.querySelectorAll('a, button, textarea, .file-btn').forEach(el => {
-      el.addEventListener('mouseenter', () => gsap.to(cursor, { scale: 3 }));
-      el.addEventListener('mouseleave', () => gsap.to(cursor, { scale: 1 }));
-    });
+    // Cursor logic moved to bottom script to avoid redeclaration
+
 
     // --- MODAL & SETTINGS LOGIC ---
     const modal = document.getElementById('settings-modal');
@@ -1537,7 +1531,7 @@
           targetId = 'groq/compound';
           targetProvider = 'groq';
         } else {
-          targetId = 'glm-4.7';
+          targetId = 'zai-glm-4.7';
           targetProvider = 'cerebras';
         }
       }

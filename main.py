@@ -316,7 +316,7 @@ CURATED_MODELS = {
         "meta-llama/llama-4-scout-17b-16e-instruct"
     ],
     "cerebras": [
-        "glm-4.7" 
+        "zai-glm-4.7" 
     ]
 }
 
@@ -358,7 +358,7 @@ MODEL_METADATA = {
         "category": "text", "badge": "LONG DOCS", "badge_color": "tertiary",
         "description": "131K context with web search", "capabilities": ["text", "web_search"]
     },
-    "glm-4.7": {
+    "zai-glm-4.7": {
         "category": "text", "badge": "REASONING", "badge_color": "secondary",
         "description": "Complex reasoning - No Web Search", "capabilities": ["text"]
     }
@@ -369,33 +369,14 @@ def get_models():
     """Fetch available models with curated metadata."""
     models = {"gemini": [], "groq": [], "cerebras": []}
     
-    # 1. Gemini
-    try:
-        # We assume these exist or fallback to metadata defaults if fetch fails
-        for mid in CURATED_MODELS["gemini"]:
-             meta = MODEL_METADATA.get(mid, {})
-             models["gemini"].append({
-                 "id": mid,
-                 "name": mid.replace("-", " ").title(),
-                 **meta
-             })
-    except Exception: pass
-
-    # 2. Groq
-    for mid in CURATED_MODELS["groq"]:
-        meta = MODEL_METADATA.get(mid, {})
-        models["groq"].append({
-            "id": mid,
-            "name": mid.split("/")[-1].replace("-", " ").title(),
-            **meta
-        })
+    # ... (Gemini/Groq loops skipped for brevity in replace target, I'll just target the dictionary end)
 
     # 3. Cerebras
     for mid in CURATED_MODELS["cerebras"]:
         meta = MODEL_METADATA.get(mid, {})
         models["cerebras"].append({
             "id": mid,
-            "name": "GLM 4.7 Plus", # Friendly name
+            "name": "ZAI GLM 4.7", # Updated name
             **meta
         })
     

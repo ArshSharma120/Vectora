@@ -1,22 +1,22 @@
-# VECTORA - Quick Implementation Checklist
+# VECTORA - MODEL OPTIMIZATION Implementation Checklist
 
 ## ✅ **7 CURATED MODELS** (Final List)
 
 ### **Images (3 models):**
-1. ✅ **meta-llama/llama-4-maverick-17b-128e-instruct** - Default for images
-2. ✅ **meta-llama/llama-4-scout-17b-16e-instruct** - Fast alternative
-3. ✅ **gemini-3-flash-preview** - Premium (SynthID + 20/day limit)
-4. ✅ **gemini-2.5-flash** -FALLBACK Premium (SynthID + 20/day limit)
-5. ✅ **gemini-2.5-flash-lite** -FALLBACK Premium (SynthID + 20/day limit)
+1. ✅ **meta-llama/llama-4-maverick-17b-128e-instruct** - Default for images[GROQ]
+2. ✅ **meta-llama/llama-4-scout-17b-16e-instruct** - Fast alternative[GROQ]
+3. ✅ **gemini-3-flash-preview** - Premium (SynthID + 20/day limit)[GEMINI]
+4. ✅ **gemini-2.5-flash** -FALLBACK Premium (SynthID + 20/day limit)[GEMINI]
+5. ✅ **gemini-2.5-flash-lite** -FALLBACK Premium (SynthID + 20/day limit)[GEMINI]
 
 ### **Text (4 models):**
-1. ✅ **Groq Compound** - Default for text (web search)
-2. ✅ **Groq Compound Mini** - Faster (web search)
-3. ✅ **GPT-OSS 120B** - Long docs (web search)
-4. ✅ **gemini-3-flash-preview** -  Premium (SynthID + 20/day limit)
-5. ✅ **GLM 4.7** - Text-only (no web search) "BEST FOR REASONING"
+1. ✅ **Groq Compound** - Default for text (web search)[GROQ]
+2. ✅ **Groq Compound Mini** - Faster (web search)[GROQ]
+3. ✅ **GPT-OSS 120B** - Long docs (web search)[GROQ]
+4. ✅ **gemini-3-flash-preview** -  Premium (SynthID + 20/day limit)[GEMINI]
+5. ✅ **zai-glm-4.7** - Text-only (no web search) "BEST FOR REASONING"[CEREBRAS]
 
 ### **PDFs (1 model - overlaps with #3):**
-- ✅ **gemini-3-flash-preview** - Only option for PDFs
-- ✅ **gemini-2.5-flash** -FALLBACK Premium (SynthID + 20/day limit)
-- ✅ **gemini-2.5-flash-lite** -FALLBACK Premium (SynthID + 20/day limit)
+- ✅ **gemini-3-flash-preview** - Only option for PDFs[GEMINI]
+- ✅ **gemini-2.5-flash** -FALLBACK Premium (SynthID + 20/day limit)[GEMINI]
+- ✅ **gemini-2.5-flash-lite** -FALLBACK Premium (SynthID + 20/day limit)[GEMINI]

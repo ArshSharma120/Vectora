@@ -437,8 +437,8 @@ Return a percentage 0-100 where:
     // 3. GLM 4.7 (Cerebras) - Reasoning
     if (settings.cerebras_api_key) {
       try {
-        console.log('Auto: Trying GLM 4.7...');
-        const res = await callCerebrasAPI(settings.cerebras_api_key, 'glm-4.7', prompt);
+        console.log('Auto: Trying ZAI GLM 4.7...');
+        const res = await callCerebrasAPI(settings.cerebras_api_key, 'zai-glm-4.7', prompt);
         return parseAIResponse(res);
       } catch (e) { console.warn('GLM 4.7 failed:', e); }
     }
@@ -728,7 +728,7 @@ async function callGeminiVisionAPI(apiKey, model, prompt, imageData) {
 }
 
 async function callGroqAPI(apiKey, model, prompt) {
-  console.log('Calling Groq API with model:', model);
+  console.log(`Calling Groq API with model: ${model}`);
 
   return retryWithBackoff(async () => {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -835,96 +835,89 @@ function parseAIResponse(text) {
     let json = null;
 
     // Strategy 1: Try to parse the entire cleaned response as JSON
+
     try {
-      // Clean markdown code blocks and extra whitespace
-      let cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-      // Try multiple JSON extraction strategies
-      let json = null;
-
-      // Strategy 1: Try to parse the entire cleaned response as JSON
-      try {
-        json = JSON.parse(cleaned);
-      } catch (e) {
-        // Strategy 2: Find the LAST complete JSON object (not first, which might be incomplete)
-        // This regex finds all {...} blocks and we'll use the last one
-        const allMatches = cleaned.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g);
-        if (allMatches && allMatches.length > 0) {
-          // Try parsing from last to first (most complete usually at end)
-          for (let i = allMatches.length - 1; i >= 0; i--) {
-            try {
-              const candidate = JSON.parse(allMatches[i]);
-              if (candidate.ai_percent !== undefined) {
-                json = candidate;
-                break;
-              }
-            } catch (parseErr) {
-              continue;
+      json = JSON.parse(cleaned);
+    } catch (e) {
+      // Strategy 2: Find the LAST complete JSON object (not first, which might be incomplete)
+      // This regex finds all {...} blocks and we'll use the last one
+      const allMatches = cleaned.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g);
+      if (allMatches && allMatches.length > 0) {
+        // Try parsing from last to first (most complete usually at end)
+        for (let i = allMatches.length - 1; i >= 0; i--) {
+          try {
+            const candidate = JSON.parse(allMatches[i]);
+            if (candidate.ai_percent !== undefined) {
+              json = candidate;
+              break;
             }
+          } catch (parseErr) {
+            continue;
           }
         }
       }
+    }
 
-      // If we found valid JSON with ai_percent
-      if (json && (json.ai_percent !== undefined && json.ai_percent !== null)) {
-        console.log('Successfully parsed JSON:', json); // DEBUG LOG
+    // If we found valid JSON with ai_percent
+    if (json && (json.ai_percent !== undefined && json.ai_percent !== null)) {
+      console.log('Successfully parsed JSON:', json); // DEBUG LOG
+      return {
+        ai_percent: Math.min(100, Math.max(0, parseInt(json.ai_percent))),
+        message: json.reason || json.message || 'Analysis complete'
+      };
+    }
+
+    // Fallback Strategy 3: Extract from natural language
+    console.warn('JSON parsing failed, trying natural language extraction'); // DEBUG LOG
+
+    // Look for patterns like "75%" or "ai_percent: 75" or "75 percent"
+    const percentPatterns = [
+      /(?:ai_percent|percentage|confidence)[:\s]+(\d+)/i,
+      /(\d+)\s*%/,
+      /(\d+)\s+percent/i
+    ];
+
+    for (const pattern of percentPatterns) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        const percent = parseInt(match[1]);
+        console.log('Extracted percentage from text:', percent); // DEBUG LOG
         return {
-          ai_percent: Math.min(100, Math.max(0, parseInt(json.ai_percent))),
-          message: json.reason || json.message || 'Analysis complete'
+          ai_percent: Math.min(100, Math.max(0, percent)),
+          message: text.substring(0, 200).replace(/\s+/g, ' ').trim()
         };
       }
-
-      // Fallback Strategy 3: Extract from natural language
-      console.warn('JSON parsing failed, trying natural language extraction'); // DEBUG LOG
-
-      // Look for patterns like "75%" or "ai_percent: 75" or "75 percent"
-      const percentPatterns = [
-        /(?:ai_percent|percentage|confidence)[:\s]+(\d+)/i,
-        /(\d+)\s*%/,
-        /(\d+)\s+percent/i
-      ];
-
-      for (const pattern of percentPatterns) {
-        const match = text.match(pattern);
-        if (match && match[1]) {
-          const percent = parseInt(match[1]);
-          console.log('Extracted percentage from text:', percent); // DEBUG LOG
-          return {
-            ai_percent: Math.min(100, Math.max(0, percent)),
-            message: text.substring(0, 200).replace(/\s+/g, ' ').trim()
-          };
-        }
-      }
-
-      // If all strategies fail
-      throw new Error(`Could not extract ai_percent from response. Raw response: ${text.substring(0, 300)}`);
-
-    } catch (error) {
-      console.error('Failed to parse AI response (full text):', text);
-      console.error('Parse error:', error);
-      throw new Error(`Failed to parse AI response: ${error.message}`);
     }
+
+    // If all strategies fail
+    throw new Error(`Could not extract ai_percent from response. Raw response: ${text.substring(0, 300)}`);
+
+  } catch (error) {
+    console.error('Failed to parse AI response (full text):', text);
+    console.error('Parse error:', error);
+    throw new Error(`Failed to parse AI response: ${error.message}`);
   }
+}
 
-  // Show notification overlay
-  function showNotification(tabId, aiPercent, message) {
-    chrome.scripting.executeScript({
-      target: { tabId },
-      func: injectNotification,
-      args: [aiPercent, message]
-    }).catch(err => console.error('Notification error:', err));
-  }
+// Show notification overlay
+function showNotification(tabId, aiPercent, message) {
+  chrome.scripting.executeScript({
+    target: { tabId },
+    func: injectNotification,
+    args: [aiPercent, message]
+  }).catch(err => console.error('Notification error:', err));
+}
 
-  // Injected notification function
-  // Injected notification function
-  function injectNotification(percent, msg) {
-    const existing = document.getElementById('vectora-notification');
-    if (existing) existing.remove();
+// Injected notification function
+// Injected notification function
+function injectNotification(percent, msg) {
+  const existing = document.getElementById('vectora-notification');
+  if (existing) existing.remove();
 
-    if (!document.getElementById('vectora-styles')) {
-      const style = document.createElement('style');
-      style.id = 'vectora-styles';
-      style.textContent = `
+  if (!document.getElementById('vectora-styles')) {
+    const style = document.createElement('style');
+    style.id = 'vectora-styles';
+    style.textContent = `
       #vectora-notification {
         position: fixed;
         top: 24px;
@@ -993,47 +986,47 @@ function parseAIResponse(text) {
         align-self: flex-end;
       }
     `;
-      document.head.appendChild(style);
-    }
+    document.head.appendChild(style);
+  }
 
-    const notif = document.createElement('div');
-    notif.id = 'vectora-notification';
+  const notif = document.createElement('div');
+  notif.id = 'vectora-notification';
 
-    let contentHtml = '';
+  let contentHtml = '';
 
-    if (percent === -1) {
-      // LOADING STATE
-      contentHtml = `
+  if (percent === -1) {
+    // LOADING STATE
+    contentHtml = `
         <div class="vectora-label">Processing Request...</div>
         <div class="vectora-loader"></div>
         <div class="vectora-message" style="color: #fff;">${msg}</div>
       `;
-    } else {
-      // RESULT STATE
-      let color = '#00f3ff';
-      if (percent < 30) color = '#10b981'; // Green for Human
-      else if (percent > 70) color = '#ef4444'; // Red for AI
+  } else {
+    // RESULT STATE
+    let color = '#00f3ff';
+    if (percent < 30) color = '#10b981'; // Green for Human
+    else if (percent > 70) color = '#ef4444'; // Red for AI
 
-      contentHtml = `
+    contentHtml = `
         <div class="vectora-label">AI Analysis Logic</div>
         <div class="vectora-ai-percent" style="color: ${color}; text-shadow: 0 0 15px ${color}40;">${Math.round(percent)}%</div>
         <div class="vectora-message">${msg}</div>
         <div class="vectora-powered">Powered by Vectora</div>
       `;
-    }
-
-    notif.innerHTML = contentHtml;
-    document.body.appendChild(notif);
-
-    // Auto-remove only if it's a Result (percent >= 0)
-    // Loading state persists until replaced by Result logic
-    if (percent !== -1) {
-      setTimeout(() => {
-        notif.style.opacity = '0';
-        notif.style.transition = 'opacity 0.3s ease-out';
-        setTimeout(() => {
-          if (notif.parentNode) notif.remove();
-        }, 300);
-      }, 7000); // 7 seconds for results
-    }
   }
+
+  notif.innerHTML = contentHtml;
+  document.body.appendChild(notif);
+
+  // Auto-remove only if it's a Result (percent >= 0)
+  // Loading state persists until replaced by Result logic
+  if (percent !== -1) {
+    setTimeout(() => {
+      notif.style.opacity = '0';
+      notif.style.transition = 'opacity 0.3s ease-out';
+      setTimeout(() => {
+        if (notif.parentNode) notif.remove();
+      }, 300);
+    }, 7000); // 7 seconds for results
+  }
+}
