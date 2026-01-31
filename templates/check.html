@@ -1013,7 +1013,22 @@
     <div class="modal-box">
       <h2 class="modal-title">SYSTEM CONFIGURATION</h2>
 
-      <div class="form-group">
+      <style>
+        .section-header {
+          font-size: 1rem;
+          font-weight: bold;
+          color: var(--secondary);
+          margin-top: 15px;
+          margin-bottom: 8px;
+          border-bottom: 2px solid var(--secondary);
+          padding-bottom: 5px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          background: rgba(0, 243, 255, 0.05);
+          padding: 8px;
+        }
+      </style>
+      <div class="form-group" style="display:none;">
         <label class="form-label">AI_PROVIDER</label>
         <select class="form-select" id="provider-select">
           <option value="gemini">Google Gemini</option>
@@ -1103,16 +1118,6 @@
         <div class="stat-val">MAXIMUM</div>
       </div>
 
-      <div class="stat-block hover-effect" onclick="openConfig()"
-        style="cursor:pointer; border-color: var(--secondary);">
-        <div class="stat-label" style="color:var(--secondary)">SESSION_CONFIG</div>
-        <div class="stat-val"
-          style="font-size:0.8rem; display:flex; justify-content:space-between; align-items:center;">
-          <span>ADVANCED</span>
-          <span style="font-size:1rem;">⚙</span>
-        </div>
-      </div>
-
       <!-- LOGO DISPLAY -->
       <div class="logo-display-wrapper" onclick="openConfig()" style="cursor:pointer;">
         <div class="stat-label">ACTIVE CORE</div>
@@ -1129,6 +1134,14 @@
       <div class="stat-block" style="margin-top: auto; border:none; padding:0;">
         <div class="stat-label">SESSION_ID</div>
         <div class="stat-val sidebar-foot" id="session-id-display">Initializing...</div>
+      </div>
+
+      <div onclick="openConfig()"
+        style="margin-top: 15px; margin-bottom: 20px; cursor: pointer; text-align: center; opacity: 0.8; transition: opacity 0.3s;"
+        onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">
+        <span
+          style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--secondary); border: 1px solid var(--secondary); padding: 5px 10px; border-radius: 4px;">[
+          ADVANCED CONFIG ]</span>
       </div>
     </aside>
 
