@@ -316,7 +316,7 @@ CURATED_MODELS = {
         "meta-llama/llama-4-scout-17b-16e-instruct"
     ],
     "cerebras": [
-        "glm-4-plus" 
+        "glm-4.7" 
     ]
 }
 
@@ -358,7 +358,7 @@ MODEL_METADATA = {
         "category": "text", "badge": "LONG DOCS", "badge_color": "tertiary",
         "description": "131K context with web search", "capabilities": ["text", "web_search"]
     },
-    "glm-4-plus": {
+    "glm-4.7": {
         "category": "text", "badge": "REASONING", "badge_color": "secondary",
         "description": "Complex reasoning - No Web Search", "capabilities": ["text"]
     }
