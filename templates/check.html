@@ -1219,8 +1219,14 @@
     const linkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px; opacity:0.7;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
 
     renderer.link = function (href, title, text) {
-      const safeHref = (typeof href === 'string') ? href : '#';
+      const safeHref = (typeof href === 'string') ? href : '';
       const safeText = (typeof text === 'string') ? text : 'Link';
+
+      // If URL is missing or invalid (doesn't start with http), render as text
+      if (!safeHref || !safeHref.startsWith('http')) {
+        return `<span class="broken-link" style="color:var(--muted); opacity:0.7; cursor:not-allowed;" title="Invalid Source/No URL provided">${safeText}</span>`;
+      }
+
       // Class 'external-link' for interception
       return `<a href="${safeHref}" class="external-link" title="${title || ''}">${safeText}${linkIcon}</a>`;
     };
@@ -1774,10 +1780,22 @@
         // Finalize
         setStatus(`Analysis Complete.`);
         const hudHeader = hudContent.parentElement.querySelector('.hud-header');
-        hudHeader.innerHTML = `<span>ANALYSIS COMPLETE</span> <span>100%</span>`;
+        hudHeader.innerHTML = `
+            <span>ANALYSIS COMPLETE</span> 
+            <div style="display:flex; gap:15px; align-items:center;">
+                <span style="font-family:var(--font-mono); font-weight:bold;">100%</span>
+                <button id="copy-analysis" style="background:transparent; border:1px solid currentColor; color:inherit; font-family:var(--font-mono); font-size:0.7rem; cursor:pointer; padding:2px 8px; border-radius:3px;">COPY</button>
+            </div>
+        `;
         hudHeader.style.borderColor = "#0f0";
         hudHeader.style.color = "#0f0";
         hudHeader.style.background = "rgba(0, 255, 0, 0.1)";
+
+        // Copy functionality
+        document.getElementById('copy-analysis').addEventListener('click', () => {
+          const text = accumulatedText.replace(/\*\*/g, '').replace(/###/g, '').replace(/\[(.*?)\]\((.*?)\)/g, '$1 ($2)');
+          navigator.clipboard.writeText(text).then(() => showToast('Analysis Copied to Clipboard'));
+        });
 
       } catch (err) {
       } finally {
