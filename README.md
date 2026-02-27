@@ -1,4 +1,4 @@
-# 🌐 VECTORA `[v2.5.0]`
+# 🌐 VECTORA `[v2.6.0]`
 
 > **The Neural Firewall for the Post-Truth Era.**  
 > *Redefining verification in the age of synthetic reality.*
@@ -7,12 +7,12 @@
 
 ![Vectora Banner](static/og-image.jpg)
 
-[![Status](https://img.shields.io/badge/STATUS-OPERATIONAL-00ff9d?style=for-the-badge)](https://vectoraai.vercel.app)
+[![Status](https://img.shields.io/badge/STATUS-OPERATIONAL-00ff9d?style=for-the-badge)](https://vectora-plus.vercel.app)
 [![License](https://img.shields.io/badge/LICENSE-MIT-bd00ff?style=for-the-badge)](LICENSE)
-[![Uptime](https://img.shields.io/badge/UPTIME-99.9%25-00c8ff?style=for-the-badge)](https://vectoraai.vercel.app)
+[![Uptime](https://img.shields.io/badge/UPTIME-99.9%25-00c8ff?style=for-the-badge)](https://vectora-plus.vercel.app)
 [![Version](https://img.shields.io/badge/VERSION-2.5.0-667eea?style=for-the-badge)](https://github.com/namandhakad712/vectora)
 
-**🚀 [Live Demo](https://vectoraai.vercel.app) • 📦 [Chrome Extension](#-chrome-extension) • 📚 [Documentation](#-features) • 🎨 [Design](#-design-philosophy)**
+**🚀 [Live Demo](https://vectora-plus.vercel.app) • 📦 [Chrome Extension](#-chrome-extension) • 📚 [Documentation](#-features) • 🎨 [Design](#-design-philosophy)**
 
 </div>
 
@@ -44,7 +44,7 @@ We live in a synthetic reality. **Deepfakes**, **hallucinatory text**, and **inf
 │  └─ Advanced Dashboard     └─ Auto API Key Sync            │
 │                                                             │
 │  🎨 3D GLASSMORPHIC UI     🤖 TRIPLE AI ENGINE             │
-│  ├─ Liquid Gradient BG     ├─ Google Gemini 2.0            │
+│  ├─ Liquid Gradient BG     ├─ Google gemini 3.0            │
 │  ├─ Floating Orbs          ├─ Groq LPU (500+ tok/s)        │
 │  ├─ Dynamic Particles      ├─ Cerebras Wafer-Scale         │
 │  └─ Responsive Design      └─ Multi-Provider Fallback      │
@@ -274,7 +274,7 @@ vercel --prod
 │                                                        │
 │  ┌──────────────────────────────────────────────────┐ │
 │  │  🧠 SELECT AI PROVIDER                           │ │
-│  │  [Gemini 2.0] [Groq Llama] [Cerebras]           │ │
+│  │  [gemini 3.0] [Groq Llama] [Cerebras]           │ │
 │  └──────────────────────────────────────────────────┘ │
 │                                                        │
 │  ┌──────────────────────────────────────────────────┐ │
@@ -347,7 +347,7 @@ Minimalist design
 ### **Extension API Endpoint**
 
 ```javascript
-GET https://vectoraai.vercel.app/api/extension/keys
+GET https://vectora-plus.vercel.app/api/extension/keys
 
 Response:
 {
@@ -360,7 +360,7 @@ Response:
 ### **Check API Endpoint**
 
 ```javascript
-POST https://vectoraai.vercel.app/check
+POST https://vectora-plus.vercel.app/check
 
 Request:
 {
@@ -456,7 +456,7 @@ copies or substantial portions of the Software.
 
 **REDEFINING THE FUTURE | © 2026 VECTORA AI**
 
-[![Website](https://img.shields.io/badge/Website-vectora.vercel.app-667eea?style=for-the-badge)](https://vectoraai.vercel.app)
+[![Website](https://img.shields.io/badge/Website-vectora.vercel.app-667eea?style=for-the-badge)](https://vectora-plus.vercel.app)
 [![GitHub](https://img.shields.io/badge/GitHub-namandhakad712-000?style=for-the-badge&logo=github)](https://github.com/namandhakad712)
 
 *In a world where seeing is no longer believing, verification is the new currency of trust.*

@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VECTORA | INSTRUCTIONS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* DARK MODE (Default) */
+            --bg: #0b0b0b;
+            --surface: #0a0a0a;
+            --primary: #00f3ff;
+            --secondary: #ff0055;
+            --text: #e0e0e0;
+            --muted: #555;
+            --border: rgba(255, 255, 255, 0.1);
+            --console-bg: rgba(0, 0, 0, 0.5);
+            --nav-bg: rgba(0, 0, 0, 0.8);
+            --modal-bg: rgba(10, 10, 10, 0.95);
+
+            --font-head: 'Funnel Display', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg: #f4f4f5;
+            --surface: #ffffff;
+            --primary: #0051ff;
+            --secondary: #ff0055;
+            --text: #111;
+            --muted: #555;
+            --border: rgba(0, 0, 0, 0.1);
+            --console-bg: rgba(255, 255, 255, 0.8);
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --modal-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        @font-face {
+            font-family: 'AquireFont';
+            src: url('/static/aquire.woff') format('woff');
+        }
+
+        @font-face {
+            font-family: 'HeroFont';
+            src: url('/static/hero.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 5vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 900;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .nav-brand {
+            font-family: 'HeroFont', var(--font-head);
+            font-size: 1.5rem;
+            color: var(--text);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-link {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 5px;
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--primary);
+            transition: 0.3s;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+
+        /* MOB NAV */
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .bar {
+            width: 25px;
+            height: 2px;
+            background: var(--text);
+            transition: 0.3s;
+        }
+
+        @media(max-width: 900px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+                transform: translateY(-150%);
+                transition: 0.5s ease;
+            }
+
+            .nav-menu.active {
+                transform: translateY(0);
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+        }
+
+        /* --- MAIN CONTENT --- */
+        .content-wrapper {
+            padding: 120px 5vw 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-family: 'AquireFont', var(--font-head);
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .page-subtitle {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        /* --- SECTIONS --- */
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-family: 'AquireFont', var(--font-head);
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+            padding-left: 20px;
+        }
+
+        .section-subtitle {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            color: var(--text);
+            margin: 30px 0 15px;
+        }
+
+        .section p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        /* --- STEP CARDS --- */
+        .step-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .step-card {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            padding: 25px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .step-card:hover {
+            background: rgba(0, 243, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            font-family: 'AquireFont';
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .step-title {
+            font-family: var(--font-head);
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .step-desc {
+            font-family: var(--font-body);
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* --- LEGEND TABLE --- */
+        .legend-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .legend-table th,
+        .legend-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .legend-table th {
+            font-family: var(--font-mono);
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .legend-table td {
+            font-family: var(--font-body);
+        }
+
+        .icon-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cap-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        /* --- COMPARISON TABLE --- */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            font-family: var(--font-mono);
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .comparison-table td {
+            font-family: var(--font-body);
+        }
+
+        .check-mark {
+            color: #0f0;
+            font-size: 1.2rem;
+        }
+
+        .cross-mark {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+
+        /* --- IMAGE PLACEHOLDERS --- */
+        .image-placeholder {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            font-family: var(--font-mono);
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .screenshot-box {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .screenshot-box img {
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 4px 20px rgba(0, 243, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .screenshot-box img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 243, 255, 0.2);
+        }
+
+        .highlight-box {
+            background: rgba(255, 0, 85, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight-box strong {
+            color: var(--secondary);
+        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media(max-width: 900px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+
+    <script>window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <link rel="stylesheet" href="/static/mobile-responsive.css">
+</head>
+
+<body>
+
+    <div class="noise"></div>
+    <div id="cursor"></div>
+
+    <nav>
+        <a href="/" class="nav-brand">VECTORA</a>
+        <button class="mobile-toggle" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </button>
+        <ul class="nav-menu">
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/extension" class="nav-link">Extension</a></li>
+            <li><a href="/guide" class="nav-link">Guide</a></li>
+            <li><a href="/check" class="nav-link">Checker</a></li>
+            <li><a href="/instructions" class="nav-link active">Instructions</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+            <li><button class="theme-btn" id="theme-toggle">☀</button></li>
+        </ul>
+    </nav>
+
+    <main class="content-wrapper">
+        <h1 class="page-title">VECTORA INSTRUCTIONS</h1>
+        <p class="page-subtitle">Your Complete Guide to Using the AI Detection Terminal</p>
+
+        <!-- WHAT IS VECTORA -->
+        <section class="section">
+            <h2 class="section-title">What is VECTORA?</h2>
+            <p>
+                <strong>VECTORA</strong> is a cutting-edge AI detection platform designed to verify the authenticity of
+                digital
+                content in the post-truth era. It's a neural firewall that helps you identify AI-generated text, images,
+                and
+                documents with high accuracy.
+            </p>
+            <p>
+                Our project combines <strong>three powerful AI providers</strong> (Google Gemini, Groq, and Cerebras) to
+                give
+                you the most comprehensive analysis possible. Whether you're checking a news article, verifying an
+                image's
+                authenticity, or analyzing a PDF document, VECTORA has you covered.
+            </p>
+
+            <div class="highlight-box">
+                <strong>🎯 Core Mission:</strong> In a world where seeing is no longer believing, verification is the
+                new
+                currency of trust. VECTORA empowers you to distinguish truth from synthetic reality.
+            </div>
+        </section>
+
+        <!-- STEP-BY-STEP GUIDE -->
+        <section class="section">
+            <h2 class="section-title">Step-by-Step Guide to Using the Checker</h2>
+
+            <div class="step-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <h3 class="step-title">Navigate to the Checker</h3>
+                    <p class="step-desc">
+                        Click on the <strong>"Checker"</strong> link in the navigation bar at the top of the page, or
+                        visit
+                        <code>/check</code> directly.
+                    </p>
+                </div>
+
+                <div class="screenshot-box">
+                    <img src="/static/extension-step/1.png" alt="Navigation bar with Checker highlighted"
+                        style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <h3 class="step-title">Choose Your AI Provider & Model</h3>
+                    <p class="step-desc">
+                        On the left sidebar, you'll see your current configuration. Click the <strong>"[ CHANGE CONFIG
+                            ]"</strong>
+                        button to open the settings modal.
+                    </p>
+                </div>
+
+                <div class="screenshot-box">
+                    <img src="/static/extension-step/2.png" alt="Sidebar showing CHANGE CONFIG button"
+                        style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <h3 class="step-title">Select Provider in Settings Modal</h3>
+                    <p class="step-desc">
+                        In the settings modal, use the <strong>"AI_PROVIDER"</strong> dropdown to choose between:
+                        <br>• <strong>Google Gemini</strong> - Best for all-purpose analysis
+                        <br>• <strong>Groq</strong> - Ultra-fast real-time processing
+                        <br>• <strong>Cerebras</strong> - Specialized for text analysis
+                    </p>
+                </div>
+
+                <div class="screenshot-box">
+                    <img src="/static/extension-step/3.png" alt="Settings modal showing provider dropdown"
+                        style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <h3 class="step-title">Select AI Model</h3>
+                    <p class="step-desc">
+                        Click the <strong>"AI Model"</strong> dropdown to see available models. Each model displays
+                        capability icons:
+                        <br>📝 <strong>Text</strong> - Can analyze text content
+                        <br>📷 <strong>Image/Vision</strong> - Can analyze images
+                        <br>🌐 <strong>Docs/Web</strong> - Can search web and analyze documents
+                    </p>
+                </div>
+
+                <div class="screenshot-box">
+                    <img src="/static/extension-step/4.png" alt="Model dropdown with capability icons"
+                        style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">05</div>
+                    <h3 class="step-title">Apply Configuration</h3>
+                    <p class="step-desc">
+                        After selecting your preferred provider and model, click <strong>"APPLY CONFIG"</strong> to save
+                        your
+                        settings. The sidebar will update to show your active configuration.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">06</div>
+                    <h3 class="step-title">Input Your Content</h3>
+                    <p class="step-desc">
+                        In the main console area, you have three options:
+                        <br>• <strong>Text Input:</strong> Type or paste text directly into the textarea
+                        <br>• <strong>File Upload:</strong> Click "[ UPLOAD DOC/IMG ]" to select an image or PDF
+                        <br>• <strong>URL:</strong> Paste a URL to an image or web page
+                    </p>
+                </div>
+
+                <div class="screenshot-box">
+                    <img src="/static/extension-step/5.png" alt="Input area with textarea and upload button"
+                        style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">07</div>
+                    <h3 class="step-title">Configure Web Search (Optional)</h3>
+                    <p class="step-desc">
+                        Toggle the <strong>"ENABLE WEB SEARCH"</strong> switch if you want the AI to perform live
+                        fact-checking
+                        against online sources. This is especially useful for verifying claims and detecting
+                        misinformation.
+                        <br><br>
+                        <strong>Note:</strong> If your selected model doesn't support web search, you'll receive a
+                        warning.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">08</div>
+                    <h3 class="step-title">Execute Analysis</h3>
+                    <p class="step-desc">
+                        Click the <strong>"EXECUTE ANALYSIS"</strong> button to start the verification process. The
+                        system will:
+                        <br>• Validate your input
+                        <br>• Check model compatibility
+                        <br>• Process your content
+                        <br>• Stream results in real-time
+                    </p>
+                </div>
+
+                <div class="screenshot-box">
+                    <img src="/static/extension-step/6.png" alt="Execute Analysis button"
+                        style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">09</div>
+                    <h3 class="step-title">Review Results</h3>
+                    <p class="step-desc">
+                        Results appear in an animated HUD (Heads-Up Display) below your input. You'll see:
+                        <br>• <strong>AI Probability Score:</strong> Percentage likelihood the content is AI-generated
+                        <br>• <strong>Detailed Analysis:</strong> In-depth reasoning and evidence
+                        <br>• <strong>Source Links:</strong> References to external verification sources (if web search
+                        enabled)
+                        <br>• <strong>SynthID Detection:</strong> Digital watermark analysis (Gemini models only)
+                    </p>
+                </div>
+
+                <div class="screenshot-box">
+                    <img src="/static/extension-step/9.png" alt="Analysis results HUD with completed analysis"
+                        style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">10</div>
+                    <h3 class="step-title">Clear Buffer (Optional)</h3>
+                    <p class="step-desc">
+                        To start a new analysis, click <strong>"[ CLEAR BUFFER ]"</strong> to reset all inputs and
+                        results.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODEL CAPABILITIES LEGEND -->
+        <section class="section">
+            <h2 class="section-title">Model Capabilities Legend</h2>
+            <p>Understanding the icons you see in the model selection dropdown:</p>
+
+            <table class="legend-table">
+                <thead>
+                    <tr>
+                        <th>Icon</th>
+                        <th>Capability</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="icon-cell">
+                                <img src="/static/icons/notepad.png" class="cap-icon" alt="Text">
+                                <strong>TEXT</strong>
+                            </div>
+                        </td>
+                        <td>Text Analysis</td>
+                        <td>Model can analyze and verify text content, including articles, paragraphs, and documents.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="icon-cell">
+                                <img src="/static/icons/image-camera.png" class="cap-icon" alt="Image">
+                                <strong>IMAGE</strong>
+                            </div>
+                        </td>
+                        <td>Vision/Image Analysis</td>
+                        <td>Model can analyze images for AI-generation markers, deepfakes, and visual manipulation.</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="icon-cell">
+                                <img src="/static/icons/web-search.png" class="cap-icon" alt="Web">
+                                <strong>WEB</strong>
+                            </div>
+                        </td>
+                        <td>Web Search & Documents</td>
+                        <td>Model can search the web for fact-checking and analyze PDF documents natively.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box">
+                <strong>💡 Pro Tip:</strong> Choose models with all three icons (📝📷🌐) for the most comprehensive
+                analysis!
+            </div>
+        </section>
+
+
+
+
+
+        <!-- TIPS & BEST PRACTICES -->
+        <section class="section">
+            <h2 class="section-title">Tips & Best Practices</h2>
+
+            <div class="step-grid">
+                <div class="step-card">
+                    <h3 class="step-title">✅ For Best Results</h3>
+                    <p class="step-desc">
+                        • Provide sufficient context (at least 50-100 words for text analysis)<br>
+                        • Use high-quality images (avoid heavily compressed files)<br>
+                        • Enable web search for fact-checking news and claims<br>
+                        • Try multiple models if you get uncertain results<br>
+                        • Check the status bar for real-time processing updates
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <h3 class="step-title">🔍 Understanding Results</h3>
+                    <p class="step-desc">
+                        • Scores above 70% indicate high likelihood of AI generation<br>
+                        • Scores below 30% suggest likely human-created content<br>
+                        • 30-70% range indicates uncertainty - consider context<br>
+                        • Always read the detailed reasoning, not just the score<br>
+                        • Cross-reference with external sources when possible
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <h3 class="step-title">⚠️ Important Warnings</h3>
+                    <p class="step-desc">
+                        • AI detection is probabilistic, not definitive proof<br>
+                        • Always verify critical information independently<br>
+                        • Some models show compatibility warnings - heed them!<br>
+                        • External links show a warning modal for your safety<br>
+                        • Results can be inaccurate or hallucinatory - use judgment
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TROUBLESHOOTING -->
+        <section class="section">
+            <h2 class="section-title">Troubleshooting</h2>
+
+            <h3 class="section-subtitle">Common Issues</h3>
+
+            <p><strong>Q: Why am I getting "MODEL INCOMPATIBLE" error?</strong></p>
+            <p>A: You're trying to upload an image/PDF with a text-only model. Switch to a model with the 📷 icon (like
+                Gemini
+                2.0 or Llama Vision).</p>
+            <br>
+
+            <p><strong>Q: The analysis is taking too long. What should I do?</strong></p>
+            <p>A: Try switching to Groq or Cerebras for faster processing. Large files and web search enabled will take
+                longer
+                with Gemini.</p>
+            <br>
+
+            <p><strong>Q: My web search results seem irrelevant.</strong></p>
+            <p>A: Web search works best with Gemini. Other providers may have limited or no web search capabilities.
+                Check the
+                warning message.</p>
+            <br>
+
+            <p><strong>Q: What does "NO WEB INTELLIGENCE" warning mean?</strong></p>
+            <p>A: The selected model cannot access live web data and is limited to its training data. Results may be
+                outdated
+                for recent events.</p>
+            <br>
+
+            <p><strong>Q: Can I analyze multiple files at once?</strong></p>
+            <p>A: Currently, VECTORA processes one file at a time. Clear the buffer between analyses using "[ CLEAR
+                BUFFER ]".
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <div
+            style="text-align: center; border-top: 1px solid var(--border); padding: 40px; margin-top: 80px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted);">
+            <div>
+                <p>&copy; 2026 VECTORA INTELLIGENCE. ALL RIGHTS RESERVED.</p>
+                <div style="margin-top: 15px;">
+                    <a href="https://github.com/namandhakad712/Vectora" target="_blank"
+                        style="color:var(--text); text-decoration:none; margin:0 10px;">GITHUB [↗]</a>
+                    <a href="/terms" style="color:var(--text); text-decoration:none; margin:0 10px;">TERMS OF PROTOCOL
+                        [T]</a>
+                    <a href="mailto:contact@vectora.ai"
+                        style="color:var(--text); text-decoration:none; margin:0 10px;">ENCRYPTED MAIL [@]</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- GSAP -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script>
+        // --- THEME LOGIC ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        root.setAttribute('data-theme', savedTheme);
+        themeBtn.textContent = savedTheme === 'dark' ? '☀' : '☾';
+
+        themeBtn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            themeBtn.textContent = next === 'dark' ? '☀' : '☾';
+        });
+
+        // --- MOBILE NAV ---
+        function toggleMenu() {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        }
+
+        // --- ANIMATIONS ---
+        gsap.from(".page-title", { y: -50, opacity: 0, duration: 1, ease: "power2.out" });
+        gsap.from(".page-subtitle", { y: -30, opacity: 0, duration: 1, delay: 0.2, ease: "power2.out" });
+        gsap.from(".section", {
+            scrollTrigger: {
+                trigger: ".section",
+                start: "top 80%",
+            },
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: "power2.out"
+        });
+
+        // --- CUSTOM CURSOR ---
+        const cursor = document.getElementById('cursor');
+        gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+
+        const cursorX = gsap.quickTo(cursor, "x", { duration: 0.4, ease: "power3.out" });
+        const cursorY = gsap.quickTo(cursor, "y", { duration: 0.4, ease: "power3.out" });
+
+        window.addEventListener('mousemove', (e) => {
+            cursorX(e.clientX);
+            cursorY(e.clientY);
+        });
+
+        document.querySelectorAll('a, button, .step-card').forEach(el => {
+            el.addEventListener('mouseenter', () => gsap.to(cursor, { scale: 2.5, duration: 0.3 }));
+            el.addEventListener('mouseleave', () => gsap.to(cursor, { scale: 1, duration: 0.3 }));
+        });
+    </script>
+
+    <style>
+        #cursor {
+            display: block !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            pointer-events: none;
+            mix-blend-mode: difference;
+            z-index: 2147483647;
+        }
+
+        [data-theme="light"] #cursor {
+            background: #ffffff;
+            mix-blend-mode: difference;
+        }
+
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 1;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E");
+        }
+    </style>
+    <script src="/static/mobile-menu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+    </script>
+</body>
+
+</html>

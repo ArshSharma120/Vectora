@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Protocol | VECTORA</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/mobile-responsive.css">
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #0a0a0a;
+            --primary: #00f3ff;
+            --secondary: #ff0055;
+            --text: #e0e0e0;
+            --muted: #666;
+            --border: #333;
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --nav-bg: rgba(5, 5, 5, 0.8);
+        }
+
+        [data-theme="light"] {
+            --bg: #f4f4f5;
+            --surface: #ffffff;
+            --primary: #0051ff;
+            --secondary: #ff0055;
+            --text: #111;
+            --muted: #555;
+            --border: #ddd;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+        }
+
+        @font-face {
+            font-family: 'Aquire';
+            src: url('/static/hero.ttf') format('truetype');
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* GRID BACKGROUND */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* NAV */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            font-family: 'Aquire', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-link {
+            font-family: var(--font-mono);
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .theme-btn:hover {
+            background: var(--border);
+        }
+
+        /* MOBILE MENU */
+        .mobile-toggle {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+        }
+
+        .bar {
+            width: 25px;
+            height: 3px;
+            background: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                flex-direction: column;
+                padding: 20px;
+                transform: translateY(-150%);
+                transition: 0.3s;
+            }
+
+            .nav-menu.active {
+                transform: translateY(0);
+            }
+        }
+
+        /* MAIN CONTENT */
+        main {
+            flex: 1;
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-family: 'Aquire', sans-serif;
+            font-size: 3rem;
+            color: var(--text);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-family: var(--font-mono);
+            color: var(--primary);
+            margin-bottom: 50px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            border-left: 3px solid var(--secondary);
+            padding-left: 15px;
+        }
+
+        /* LEGAL SECTIONS */
+        .legal-section {
+            margin-bottom: 50px;
+            border-left: 1px solid var(--border);
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .legal-section::before {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: 0;
+            width: 5px;
+            height: 5px;
+            background: var(--primary);
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-number {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .terms-text {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            color: var(--text);
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 15px;
+            opacity: 0.8;
+        }
+
+        li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+
+        .warning-box {
+            background: rgba(255, 0, 85, 0.05);
+            border: 1px solid rgba(255, 0, 85, 0.2);
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 50px;
+        }
+
+        footer a {
+            color: var(--text);
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="grid-bg"></div>
+
+    <nav>
+        <a href="/" class="nav-brand">VECTORA</a>
+        <button class="mobile-toggle" onclick="document.querySelector('.nav-menu').classList.toggle('active')">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </button>
+        <ul class="nav-menu">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/check" class="nav-link">Checker</a></li>
+            <li><a href="/terms" class="nav-link active">Protocol</a></li>
+            <li><button class="theme-btn" id="theme-toggle">☀</button></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Operating Protocol</h1>
+        <div class="subtitle">TERMS OF SERVICE // LIABILITY DISCLAIMER // DATA COMPLIANCE</div>
+
+        <div class="legal-section">
+            <div class="section-title"><span class="section-number">01.</span> Service Definition</div>
+            <p class="terms-text">
+                VECTORA ("The System") is an advanced AI-powered intelligence aggregation interface. It utilizes
+                third-party Large Language Models (LLMs) including but not limited to Google Gemini, Groq
+                (Llama/Mixtral), and Cerebras to process user queries.
+            </p>
+            <p class="terms-text">
+                By accessing or using VECTORA, you acknowledge that you are interacting with non-deterministic
+                probabilistic models, not a human expert.
+            </p>
+        </div>
+
+        <div class="legal-section">
+            <div class="section-title"><span class="section-number">02.</span> Accuracy & Hallucination</div>
+            <div class="warning-box">
+                <strong style="color:var(--secondary)">CRITICAL WARNING:</strong> AI models may produce
+                hallucinations—plausible-sounding but factually incorrect information.
+            </div>
+            <p class="terms-text">
+                VECTORA explicitly disclaims any liability for errors, inaccuracies, or misleading outputs generated by
+                the underlying AI models. System outputs should NOT be used as the sole basis for:
+            </p>
+            <ul>
+                <li>Medical diagnoses or treatment advice.</li>
+                <li>Legal counsel or binding agreements.</li>
+                <li>Financial investment decisions.</li>
+                <li>Life-critical safety operations.</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <div class="section-title"><span class="section-number">03.</span> Data Privacy & Processing</div>
+            <p class="terms-text">
+                VECTORA operates on a stateless architecture for privacy:
+            </p>
+            <ul>
+                <li>We do not permanently store your queries or uploaded documents on VECTORA servers.</li>
+                <li>Data is transiently passed to respective API providers (Google, Groq, Cerebras) for processing.</li>
+                <li>By using the service, you consent to your inputs being processed by these third-party entities in
+                    accordance with their respective privacy policies.</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <div class="section-title"><span class="section-number">04.</span> User Obligations</div>
+            <p class="terms-text">
+                You agree NOT to use VECTORA for:
+            </p>
+            <ul>
+                <li>Generating illegal, hate speech, or malicious content.</li>
+                <li>Reverse engineering the prompt injection defenses.</li>
+                <li>Uploading confidential, classified, or sensitive Personal Identifiable Information (PII).</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <div class="section-title"><span class="section-number">05.</span> Intellectual Property</div>
+            <p class="terms-text">
+                The interface, design system, and "VECTORA" branding are proprietary assets. Content generated by the AI
+                is subject to the terms of the underlying model providers, generally granting the user ownership of the
+                output, subject to fair use and non-infringement laws.
+            </p>
+        </div>
+
+        <div class="legal-section" style="border:none;">
+            <div class="section-title"><span class="section-number">06.</span> Usage Limits</div>
+            <p class="terms-text">
+                Access to VECTORA is a privilege, not a right. We reserve the right to rate-limit, block, or terminate
+                access for any IP address suspected of abuse, DDoS attacks, or violation of these terms.
+            </p>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 VECTORA INTELLIGENCE. ALL RIGHTS RESERVED.</p>
+        <div style="margin-top: 15px;">
+            <a href="/">Home</a> •
+            <a href="/terms">Terms & Protocol</a> •
+            <a href="/contact">Contact</a>
+        </div>
+    </footer>
+
+    <!-- JS FOR THEME -->
+    <script>
+        const themeBtn = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        root.setAttribute('data-theme', savedTheme);
+        themeBtn.textContent = savedTheme === 'dark' ? '☀' : '☾';
+
+        themeBtn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            themeBtn.textContent = next === 'dark' ? '☀' : '☾';
+        });
+    </script>
+</body>
+
+</html>

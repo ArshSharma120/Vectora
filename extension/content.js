@@ -77,15 +77,39 @@ function createSelectionPopup() {
   document.body.appendChild(selectionPopup);
 
   // Add click handler
-  document.getElementById('vectora-check-btn').addEventListener('click', () => {
+  const checkBtn = document.getElementById('vectora-check-btn');
+  checkBtn.addEventListener('click', () => {
     const selectedText = window.getSelection().toString().trim();
     if (selectedText) {
+      // Show loading state
+      checkBtn.disabled = true;
+      checkBtn.innerHTML = `
+        <span style="display: inline-block; width: 12px; height: 12px; border: 2px solid #00f3ff; border-top-color: transparent; border-radius: 50%; animation: vectora-spin 1s linear infinite; margin-right: 6px;"></span>
+        Checking...
+      `;
+
+      // Inject spin style locally if needed (though inline works mostly, better add style tag)
+      if (!document.getElementById('vectora-spin-style')) {
+        const s = document.createElement('style');
+        s.id = 'vectora-spin-style';
+        s.textContent = `@keyframes vectora-spin { 100% { transform: rotate(360deg); } }`;
+        document.head.appendChild(s);
+      }
+
       console.log('Sending text to background:', selectedText.substring(0, 50) + '...');
+
       chrome.runtime.sendMessage({
         action: 'analyzeText',
         text: selectedText
       });
-      selectionPopup.style.display = 'none';
+
+      // Hide popup after short delay (let user see interaction)
+      setTimeout(() => {
+        selectionPopup.style.display = 'none';
+        // Reset button for next time
+        checkBtn.disabled = false;
+        checkBtn.innerHTML = `<img src="${chrome.runtime.getURL('icons/notepad.png')}" alt="Check" style="width: 16px; height: 16px; filter: brightness(0) invert(1);"> Check AI`;
+      }, 1500);
     }
   });
 }
@@ -397,18 +421,24 @@ function captureSelectedArea() {
     height: rect.height
   });
 
-  // Just send the coordinates - let background.js handle everything
-  chrome.runtime.sendMessage({
-    action: 'captureVisibleTab',
-    crop: {
-      x: Math.round(rect.left),
-      y: Math.round(rect.top),
-      width: Math.round(rect.width),
-      height: Math.round(rect.height)
-    }
-  });
-
+  // 1. Remove overlay FIRST to ensure clean screenshot
   deactivateScreenCropper();
+
+  // 2. Wait for repaint (critical to avoid capturing the overlay)
+  setTimeout(() => {
+    chrome.runtime.sendMessage({
+      action: 'captureVisibleTab',
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+      devicePixelRatio: window.devicePixelRatio,
+      crop: {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height
+      }
+    });
+  }, 350); // 350ms delay to ensure overlay is gone and paint is stable
 }
 
 function deactivateScreenCropper() {

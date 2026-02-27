@@ -7,7 +7,7 @@ let selectedModels = { cerebras: '', gemini: '', groq: '' };
 // UI Elements
 const tabs = document.querySelectorAll('.tab');
 const sections = document.querySelectorAll('.config-section');
-const saveBtn = document.getElementById('save-btn');
+// saveBtn removed
 const testBtn = document.getElementById('test-btn');
 const status = document.getElementById('status');
 
@@ -15,6 +15,18 @@ const status = document.getElementById('status');
 const cerebrasKey = document.getElementById('cerebras-key');
 const geminiKey = document.getElementById('gemini-key');
 const groqKey = document.getElementById('groq-key');
+
+// Auto-Save Listeners
+[cerebrasKey, geminiKey, groqKey].forEach(input => {
+    input.addEventListener('input', debouncedSave);
+});
+
+let saveTimeout;
+function debouncedSave() {
+    clearTimeout(saveTimeout);
+    showStatus('Saving...', 'success');
+    saveTimeout = setTimeout(() => saveSettings(true), 1000);
+}
 
 // Model Dropdowns
 const providers = ['cerebras', 'gemini', 'groq'];
@@ -53,6 +65,9 @@ function switchProvider(provider) {
     document.querySelector(`[data-provider="${provider}"]`).classList.add('active');
     sections.forEach(s => s.classList.remove('active'));
     document.getElementById(`${provider}-section`).classList.add('active');
+
+    // Auto-save selection
+    saveSettings(true);
 }
 
 // Load saved settings
@@ -368,6 +383,8 @@ function selectModel(provider, modelId) {
     if (model) {
         updateSelectedDisplay(provider, model);
     }
+    // Auto-save selection
+    saveSettings(true);
 }
 
 function updateSelectedDisplay(provider, model) {
@@ -419,7 +436,8 @@ function updateCapabilitiesDisplay(provider, capabilities) {
 }
 
 // Save settings
-saveBtn.addEventListener('click', () => {
+// Save settings function (Auto-Save)
+function saveSettings(silent = false) {
     const settings = {
         provider: currentProvider,
         cerebras_api_key: cerebrasKey.value.trim(),
@@ -430,28 +448,11 @@ saveBtn.addEventListener('click', () => {
         groq_model: selectedModels.groq
     };
 
-    const currentKey = settings[`${currentProvider}_api_key`];
-    if (!currentKey) {
-        showStatus(`Please enter an API key for ${currentProvider}`, 'error');
-        return;
-    }
-
-    if (!selectedModels[currentProvider]) {
-        showStatus('Please select a model', 'error');
-        return;
-    }
-
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving...';
-
     chrome.storage.sync.set(settings, () => {
-        showStatus('✓ Settings saved', 'success');
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save';
-
+        if (!silent) showStatus('✓ Saved', 'success');
         chrome.runtime.sendMessage({ action: 'settingsUpdated' });
     });
-});
+}
 
 // Test connection and fetch models
 testBtn.addEventListener('click', async () => {
@@ -513,18 +514,24 @@ document.getElementById('clear-history-btn').addEventListener('click', async () 
 
 // Vectora API Toggle
 const vectoraToggle = document.getElementById('use-vectora-api');
+const selectionToggle = document.getElementById('selection-mode-toggle');
 
-// Load toggle state
-chrome.storage.sync.get('use_vectora_api', (result) => {
+// Load toggle states
+chrome.storage.sync.get(['use_vectora_api', 'selection_mode'], (result) => {
+    // Vectora API Toggle
     vectoraToggle.checked = result.use_vectora_api || false;
     if (vectoraToggle.checked) {
         fetchVectoraAPIKeys();
     }
+
+    // Selection Mode Toggle (Default: Auto)
+    const mode = result.selection_mode || 'auto';
+    selectionToggle.checked = (mode === 'auto');
+    updateSelectionModeUI(selectionToggle.checked);
 });
 
 vectoraToggle.addEventListener('change', async () => {
     const enabled = vectoraToggle.checked;
-
     await chrome.storage.sync.set({ use_vectora_api: enabled });
 
     if (enabled) {
@@ -535,9 +542,59 @@ vectoraToggle.addEventListener('change', async () => {
     }
 });
 
+selectionToggle.addEventListener('change', async () => {
+    const isAuto = selectionToggle.checked;
+    const mode = isAuto ? 'auto' : 'manual';
+    await chrome.storage.sync.set({ selection_mode: mode });
+    updateSelectionModeUI(isAuto);
+
+    // Feedback
+    if (isAuto) {
+        showStatus('Mode set to Auto-Optimized', 'success');
+    } else {
+        showStatus('Mode set to Manual Selection', 'success');
+    }
+});
+
+function updateSelectionModeUI(isAuto) {
+    const selectors = document.querySelectorAll('.model-selector');
+
+    selectors.forEach(selector => {
+        if (isAuto) {
+            selector.style.display = 'none';
+            // Check if placeholder exists
+            let placeholder = selector.parentNode.querySelector('.auto-mode-placeholder');
+            if (!placeholder) {
+                placeholder = document.createElement('div');
+                placeholder.className = 'auto-mode-placeholder';
+                placeholder.style.padding = '12px';
+                placeholder.style.background = '#ecfdf5';
+                placeholder.style.color = '#047857';
+                placeholder.style.borderRadius = '10px';
+                placeholder.style.fontSize = '0.85rem';
+                placeholder.style.border = '1px solid #10b98130';
+                placeholder.innerHTML = '✨ <strong>Auto-Managed:</strong> Vectora selects the best model.';
+                selector.parentNode.appendChild(placeholder);
+            } else {
+                placeholder.style.display = 'block';
+            }
+        } else {
+            selector.style.display = 'block';
+            const placeholder = selector.parentNode.querySelector('.auto-mode-placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+        }
+    });
+
+    // Also update "Selected Capabilities" visibility
+    const capDivs = document.querySelectorAll('.selected-capabilities');
+    capDivs.forEach(div => {
+        div.style.display = isAuto ? 'none' : (div.innerHTML ? 'block' : 'none');
+    });
+}
+
 async function fetchVectoraAPIKeys() {
     try {
-        const response = await fetch('https://vectoraai.vercel.app/api/extension/keys');
+        const response = await fetch('https://vectora-plus.vercel.app/api/extension/keys');
 
         if (!response.ok) {
             throw new Error('Failed to fetch API keys');
@@ -559,7 +616,7 @@ async function fetchVectoraAPIKeys() {
         showStatus('API keys fetched from Vectora successfully!', 'success');
 
         // Auto-save
-        saveBtn.click();
+        saveSettings();
 
     } catch (error) {
         console.error('Error fetching Vectora API keys:', error);

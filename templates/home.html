@@ -1142,15 +1142,6 @@
       margin: 0;
     }
 
-    .feature-icon {
-      width: 24px;
-      height: 24px;
-      stroke: var(--primary);
-      fill: none;
-      stroke-width: 2;
-      opacity: 0.6;
-      transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-    }
 
     .feature-article p {
       font-size: 0.95rem;
@@ -1159,11 +1150,15 @@
       opacity: 0;
       transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
       margin: 0;
+      margin-top: 60px;
+      margin-bottom: 40px;
+      z-index: 1;
     }
 
     .feature-link {
       position: absolute;
       bottom: 1.5rem;
+      left: 1.5rem;
       height: 20px;
       color: var(--primary);
       text-decoration: none;
@@ -1171,6 +1166,7 @@
       transition: opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1);
       font-weight: 600;
       font-size: 0.9rem;
+      z-index: 2;
     }
 
     .feature-link:hover {
@@ -1586,6 +1582,7 @@
   </style>
   <script>window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };</script>
   <script defer src="/_vercel/insights/script.js"></script>
+  <link rel="stylesheet" href="/static/mobile-responsive.css">
 </head>
 
 <body>
@@ -1742,12 +1739,6 @@
           <h3>Manifest V3</h3>
           <p>Chrome Extension architecture engineered for maximum stealth and velocity. Built on the latest web
             standards.</p>
-          <svg class="feature-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M6 3h12l4 6-10 13L2 9Z" />
-            <path d="M11 3 8 9l4 13 4-13-3-6" />
-            <path d="M2 9h20" />
-          </svg>
           <a href="#" class="feature-link">Learn more →</a>
           <img class="feature-img" src="https://picsum.photos/720/720?random=12" alt="Manifest V3" />
         </article>
@@ -1856,46 +1847,48 @@
       Deploy VECTORA's AI-powered fact-checking directly in your browser. Real-time protection against misinformation.
     </p>
     <div class="btn-wrapper">
-      <button class="btn">
-        <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z">
-          </path>
-        </svg>
+      <a href="/extension" style="text-decoration: none;">
+        <button class="btn">
+          <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z">
+            </path>
+          </svg>
 
-        <div class="txt-wrapper">
-          <div class="txt-1">
-            <span class="btn-letter">G</span>
-            <span class="btn-letter">e</span>
-            <span class="btn-letter">t</span>
-            <span class="btn-letter" style="margin: 0 0.4em;">&nbsp;</span>
-            <span class="btn-letter">E</span>
-            <span class="btn-letter">x</span>
-            <span class="btn-letter">t</span>
-            <span class="btn-letter">e</span>
-            <span class="btn-letter">n</span>
-            <span class="btn-letter">s</span>
-            <span class="btn-letter">i</span>
-            <span class="btn-letter">o</span>
-            <span class="btn-letter">n</span>
+          <div class="txt-wrapper">
+            <div class="txt-1">
+              <span class="btn-letter">G</span>
+              <span class="btn-letter">e</span>
+              <span class="btn-letter">t</span>
+              <span class="btn-letter" style="margin: 0 0.4em;">&nbsp;</span>
+              <span class="btn-letter">E</span>
+              <span class="btn-letter">x</span>
+              <span class="btn-letter">t</span>
+              <span class="btn-letter">e</span>
+              <span class="btn-letter">n</span>
+              <span class="btn-letter">s</span>
+              <span class="btn-letter">i</span>
+              <span class="btn-letter">o</span>
+              <span class="btn-letter">n</span>
+            </div>
+            <div class="txt-2">
+              <span class="btn-letter">I</span>
+              <span class="btn-letter">n</span>
+              <span class="btn-letter">s</span>
+              <span class="btn-letter">t</span>
+              <span class="btn-letter">a</span>
+              <span class="btn-letter">l</span>
+              <span class="btn-letter">l</span>
+              <span class="btn-letter">i</span>
+              <span class="btn-letter">n</span>
+              <span class="btn-letter">g</span>
+              <span class="btn-letter">.</span>
+              <span class="btn-letter">.</span>
+              <span class="btn-letter">.</span>
+            </div>
           </div>
-          <div class="txt-2">
-            <span class="btn-letter">I</span>
-            <span class="btn-letter">n</span>
-            <span class="btn-letter">s</span>
-            <span class="btn-letter">t</span>
-            <span class="btn-letter">a</span>
-            <span class="btn-letter">l</span>
-            <span class="btn-letter">l</span>
-            <span class="btn-letter">i</span>
-            <span class="btn-letter">n</span>
-            <span class="btn-letter">g</span>
-            <span class="btn-letter">.</span>
-            <span class="btn-letter">.</span>
-            <span class="btn-letter">.</span>
-          </div>
-        </div>
-      </button>
+        </button>
+      </a>
     </div>
   </section>
 
@@ -1916,14 +1909,15 @@
           <li><a href="/about">About</a></li>
           <li><a href="/extension">Extension</a></li>
           <li><a href="/guide">Guide</a></li>
+          <li><a href="/terms">Terms & Protocol</a></li>
         </ul>
       </div>
 
       <div class="footer-column">
         <h3>Get Started</h3>
         <ul class="footer-links">
-          <li><a href="#extension">Install Extension</a></li>
-          <li><a href="#docs">Documentation</a></li>
+          <li><a href="/guide">Install Extension</a></li>
+          <li><a href="/instructions">Instructions</a></li>
           <li><a href="#api">API Access</a></li>
           <li><a href="#support">Support</a></li>
         </ul>
@@ -2092,6 +2086,7 @@
       "Global Warming is <span class='text-red'>A HOAX</span>",
       "Moon Landing was <span class='text-red'>STAGED</span>",
       "Network Status: <span class='text-red'>UNSECURED</span>",
+      "Maker Check: <span class='text-red'>MADE-BY-WHOM?</span>",
       "Identity Verification: <span class='text-red'>FAILED</span>",
       "System Integrity: <span class='text-red'>0%</span>",
     ];
@@ -2107,6 +2102,7 @@
       "Global Warming is <span class='text-green'>SCIENTIFIC FACT</span>",
       "Moon Landing was <span class='text-green'>REAL (1969)</span>",
       "Network Status: <span class='text-green'>PROTECTED</span>",
+      "Maker Check: <span class='text-green'>MADE-BY-NAMAN</span>",
       "Identity Verification: <span class='text-green'>CONFIRMED</span>",
       "System Integrity: <span class='text-green'>100%</span>",
     ];
@@ -2595,6 +2591,7 @@
       console.warn("Vanta.js failed to load:", e);
     }
   </script>
+  <script src="/static/mobile-menu.js"></script>
 </body>
 
 </html>

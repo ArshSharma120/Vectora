@@ -141,9 +141,9 @@ def stream_gemini(prompt, model, file_uri=None, mime_type=None, web_search=False
                                     if uri and uri.startswith("http"):
                                         links_md += f"- [{title}]({uri})\n"
                                         found_links = True
-                            if found_links:
-                                # Yield formatted source block
-                                yield "\n\n**Verified Sources:**\n" + links_md.replace("- [", "- ").replace("](", ": ").replace(")", "")
+                                if found_links:
+                                    # Yield formatted source block as Markdown
+                                    yield "\n\n**Verified Sources:**\n" + links_md
                     except Exception as e:
                         pass
 
@@ -174,7 +174,7 @@ def convert_doc_to_images(doc_path):
         if i >= 4: break # Limit to first 5 pages for API limits
     return img_paths
 
-def stream_groq(prompt, model, file_path=None, mime_type=None):
+def stream_groq(prompt, model, file_path=None, mime_type=None, web_search=False):
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
@@ -185,7 +185,6 @@ def stream_groq(prompt, model, file_path=None, mime_type=None):
     
     if file_path and mime_type:
         # Check if model supports vision (managed by frontend selection normally, but backend check is good)
-        # Assuming frontend passes correct model.
         if mime_type.startswith("image/"):
             b64_img = encode_image(file_path)
             content_list.append({
@@ -213,8 +212,28 @@ def stream_groq(prompt, model, file_path=None, mime_type=None):
         "stream": True,
         "temperature": 0.2
     }
+
+    # Enable tools for relevant models if web_search is requested
+    if web_search:
+        if "gpt-oss" in model:
+            # GPT-OSS supports browser_search
+            data["tools"] = [{"type": "browser_search"}]
+        elif "compound" in model:
+            # Compound requires compound_custom to enable tools
+            data["compound_custom"] = {"tools": {"enabled_tools": ["web_search", "code_interpreter", "visit_website"]}}
+
     
     with requests.post(f"{GROQ_BASE_URL}/chat/completions", headers=headers, json=data, stream=True) as resp:
+        # Check for immediate API errors
+        if resp.status_code != 200:
+            try:
+                err_blob = resp.json()
+                err_msg = err_blob.get('error', {}).get('message', resp.text)
+            except:
+                err_msg = resp.text
+            yield f"\n[API ERROR ({resp.status_code}): {err_msg}]"
+            return
+
         for line in resp.iter_lines():
             if line:
                 decoded_line = line.decode('utf-8')
@@ -225,6 +244,14 @@ def stream_groq(prompt, model, file_path=None, mime_type=None):
                         chunk = json.loads(json_str)
                         content = chunk["choices"][0]["delta"].get("content", "")
                         if content: yield content
+                    except:
+                        pass
+                else:
+                    # Capture non-SSE errors if any appear in stream
+                    try:
+                        err_chunk = json.loads(decoded_line)
+                        if "error" in err_chunk:
+                            yield f"\n[Stream Error: {err_chunk['error'].get('message', decoded_line)}]"
                     except:
                         pass
 
@@ -277,67 +304,123 @@ def contact_page(): return render_template('contact.html')
 @app.route('/guide')
 def guide_page(): return render_template('guide.html')
 
+@app.route('/instructions')
+def instructions_page(): return render_template('instructions.html')
+
+@app.route('/terms')
+def terms_page(): return render_template('terms.html')
+
+@app.route('/extension-v2.6.zip')
+def download_extension():
+    """Serve the extension ZIP file for download"""
+    from flask import send_file
+    extension_zip_path = os.path.join(os.path.dirname(__file__), 'extension-v2.6.zip')
+    if os.path.exists(extension_zip_path):
+        return send_file(extension_zip_path, as_attachment=True, download_name='extension-v2.6.zip')
+    else:
+        return jsonify({"error": "Extension file not found"}), 404
+
+
+# CURATED MODELS - Final Selection
+CURATED_MODELS = {
+    "gemini": [
+        "gemini-3-flash-preview",
+        "gemini-2.5-flash", 
+        "gemini-2.5-flash-lite"
+    ],
+    "groq": [
+        "groq/compound",
+        "groq/compound-mini", 
+        "openai/gpt-oss-120b",
+        "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "meta-llama/llama-4-scout-17b-16e-instruct"
+    ],
+    "cerebras": [
+        "zai-glm-4.7" 
+    ]
+}
+
+MODEL_METADATA = {
+    # IMAGES
+    "meta-llama/llama-4-maverick-17b-128e-instruct": {
+        "category": "image", "badge": "DEFAULT", "badge_color": "primary",
+        "description": "Best default for image analysis - 128K context", "capabilities": ["text", "image"]
+    },
+    "meta-llama/llama-4-scout-17b-16e-instruct": {
+        "category": "image", "badge": "FAST", "badge_color": "success",
+        "description": "Fast image analysis alternative", "capabilities": ["text", "image"]
+    },
+    
+    # GEMINI (Images, Text, PDF)
+    "gemini-3-flash-preview": {
+        "category": "image,text,pdf", "badge": "PREMIUM", "badge_color": "warning",
+        "description": "Latest Gemini - SynthID, PDF support, Web Grounding", "capabilities": ["text", "image", "pdf", "web_search"]
+    },
+    "gemini-2.5-flash": {
+        "category": "image,text,pdf", "badge": "FALLBACK", "badge_color": "tertiary",
+        "description": "Gemini fallback - balanced", "capabilities": ["text", "image", "pdf", "web_search"]
+    },
+    "gemini-2.5-flash-lite": {
+        "category": "image,text,pdf", "badge": "LITE", "badge_color": "muted",
+        "description": "Faster, lighter Gemini fallback", "capabilities": ["text", "image", "pdf", "web_search"]
+    },
+    
+    # TEXT
+    "groq/compound": {
+        "category": "text", "badge": "DEFAULT", "badge_color": "primary",
+        "description": "Fact-checking with multiple web searches", "capabilities": ["text", "web_search"]
+    },
+    "groq/compound-mini": {
+        "category": "text", "badge": "FAST", "badge_color": "success",
+        "description": "Faster single web search", "capabilities": ["text", "web_search"]
+    },
+    "openai/gpt-oss-120b": {
+        "category": "text", "badge": "LONG DOCS", "badge_color": "tertiary",
+        "description": "131K context with web search", "capabilities": ["text", "web_search"]
+    },
+    "zai-glm-4.7": {
+        "category": "text", "badge": "REASONING", "badge_color": "secondary",
+        "description": "Complex reasoning - No Web Search", "capabilities": ["text"]
+    }
+}
+
 @app.route("/api/models", methods=["GET"])
 def get_models():
-    """Fetch available models with capabilities."""
+    """Fetch available models with curated metadata."""
     models = {"gemini": [], "groq": [], "cerebras": []}
     
     # 1. Gemini
-    try:
-        url = f"{GEMINI_BASE_URL}/models"
-        params = {"key": GEMINI_API_KEY}
-        resp = requests.get(url, params=params)
-        if resp.status_code == 200:
-            data = resp.json()
-            for m in data.get("models", []):
-                if "generateContent" in m.get("supportedGenerationMethods", []):
-                    name = m["name"].replace("models/", "")
-                    models["gemini"].append({
-                        "id": name,
-                        "capabilities": ["text", "image", "web_search"] # Gemini 1.5+ generally supports all
-                    })
-    except Exception as e:
-        print(f"Error fetching Gemini models: {e}", file=sys.stderr)
-        models["gemini"] = [
-            {"id": "gemini-2.0-flash", "capabilities": ["text", "image", "web_search"]},
-            {"id": "gemini-1.5-flash", "capabilities": ["text", "image", "web_search"]},
-            {"id": "gemini-1.5-pro", "capabilities": ["text", "image", "web_search"]}
-        ]
+    for mid in CURATED_MODELS["gemini"]:
+        meta = MODEL_METADATA.get(mid, {})
+        models["gemini"].append({
+            "id": mid,
+            "name": mid.upper() if "preview" not in mid else "GEMINI 3 FLASH", 
+            **meta
+        })
 
-    # 2. Groq (Hardcoded as per user request for specific model set)
-    models["groq"] = [
-        # TEXT + IMAGE
-        {"id": "meta-llama/llama-guard-4-12b", "capabilities": ["text", "image"]},
-        {"id": "meta-llama/llama-4-maverick-17b-128e-instruct", "capabilities": ["text", "image"]},
-        {"id": "meta-llama/llama-4-scout-17b-16e-instruct", "capabilities": ["text", "image"]},
-        # TEXT + WEB SEARCH (Compound & OSS)
-        {"id": "openai/gpt-oss-120b", "capabilities": ["text", "web_search"]},
-        {"id": "openai/gpt-oss-20b", "capabilities": ["text", "web_search"]},
-        {"id": "groq/compound", "capabilities": ["text", "web_search"]},
-        {"id": "groq/compound-mini", "capabilities": ["text", "web_search"]},
-        {"id": "openai/gpt-oss-safeguard-20b", "capabilities": ["text", "web_search"]}
-    ]
+    # 2. Groq
+    for mid in CURATED_MODELS["groq"]:
+        meta = MODEL_METADATA.get(mid, {})
+        # Friendly Name Logic
+        name = mid.split('/')[-1].upper()
+        if "compound" in mid: name = "GROQ COMPOUND" if "mini" not in mid else "GROQ MINI"
+        elif "llama" in mid: name = "LLAMA 4 MAVERICK" if "maverick" in mid else "LLAMA 4 SCOUT"
+        elif "gpt" in mid: name = "GPT-OSS 120B"
+        
+        models["groq"].append({
+            "id": mid,
+            "name": name,
+            **meta
+        })
 
-    # 3. Cerebras (Live Fetch)
-    try:
-        url = f"{CEREBRAS_BASE_URL}/models"
-        headers = {"Authorization": f"Bearer {CEREBRAS_API_KEY}"}
-        resp = requests.get(url, headers=headers)
-        if resp.status_code == 200:
-            data = resp.json()
-            # Cerebras API response format: {"data": [{"id": "..."}, ...]}
-            for m in data.get("data", []):
-                models["cerebras"].append({
-                    "id": m["id"],
-                    "capabilities": ["text"] # Assume text-only for inference endpoints
-                })
-    except Exception as e:
-        print(f"Error fetching Cerebras models: {e}", file=sys.stderr)
-        # Fallback if fetch fails
-        models["cerebras"] = [
-            {"id": "llama3.1-8b", "capabilities": ["text"]},
-            {"id": "llama3.1-70b", "capabilities": ["text"]}
-        ]
+    # 3. Cerebras
+    for mid in CURATED_MODELS["cerebras"]:
+        meta = MODEL_METADATA.get(mid, {})
+        models["cerebras"].append({
+            "id": mid,
+            "name": "ZAI GLM 4.7", # Updated name
+            **meta
+        })
     
     return jsonify(models)
 
@@ -369,21 +452,39 @@ def process():
             elif provider == "groq": model = "llama3-70b-8192"
             else: model = "llama3.1-70b"
 
-        # DETAILED SYSTEM PROMPT
+        # DETAILED SYSTEM PROMPT (Compact Mode V3)
         sys_prompt = (
-            "You are Vectora, an elite fact-checking AI Agent. "
-            "Your mission is to analyze the provided input (text, image, or document) "
-            "and verify its truthfulness with high precision.\n\n"
-            "## OUTPUT PROTOCOL:\n"
-            "1. **VERDICT**: [TRUE / FALSE / MISLEADING / SATIRE / UNVERIFIED]\n"
-            "2. **RISK SCORE**: [0-100%] (Probability of Misinformation)\n"
-            "3. **ANALYSIS**: Provide a crisp, evidence-based explanation. "
-            "Cite known facts and point out logical fallacies or manipulation tactics.\n"
-            "4. **SOURCES**: List credible sources with their direct **URL links** to verify your claims. \n"
-            "   - **FORMAT**: Use the format `- Source Name: https://full.url.here` (Do NOT use markdown links like `[text](url)`). \n"
-            "   - **CRITICAL**: Only list sources if you have a VALID, non-empty URL. \n"
-            "   - **VERIFICATION**: Ensure every link provided is a valid, accessible URL.\n\n"
-            "Maintain an objective, professional, and authoritative tone."
+            "You are Vectora, an elite All-Rounder AI Intelligence Analyst. \n"
+            "Your mandate is to provide accurate, deep, and verifiable answers across Fact-Checking, Deep Research, and Technical Analysis.\n\n"
+            "## 1. THE \"SEARCH-FIRST\" DOCTRINE (MANDATORY)\n"
+            "- **ALWAYS SEARCH**: Use the `Web Search` tool immediately. Do not rely on internal memory.\n"
+            "- **IGNORE MEMORY**: Verify everything live against current search data.\n\n"
+            "## 2. THE CITATION PROTOCOL (CRITICAL)\n"
+            "- **RAW URLS ONLY**: You must extract the `source_url` from the search tool's JSON output.\n"
+            "- **NO MASKING**: Never use `[Link](url)`. Always use `[Source Name](https://full.url...)`.\n"
+            "- **ERROR CHECK**: If no URL is found, explicitly state \"No live source found.\"\n\n"
+            "## 3. RESPONSE ARCHITECTURE (Compact Mode)\n"
+            "To avoid data overflow errors, you must use this exact structure:\n\n"
+            "### PHASE 1: INTELLIGENCE SUMMARY (BLUF)\n"
+            "- Provide a single, high-impact paragraph summarizing the direct answer.\n"
+            "- Get straight to the point. Zero filler.\n\n"
+            "### PHASE 2: DEEP ANALYSIS (Bullet Points Required)\n"
+            "- **Constraint**: Use bullet points for this section to maximize information density and reduce token count.\n"
+            "- **Detail**: Cite specific numbers, dates, and technical specs.\n"
+            "- **Evidence**: Every claim must map to a search result.\n\n"
+            "### PHASE 3: VERIFICATION BLOCK (Mandatory)\n"
+            "(End every response with this exact block)\n"
+            "---\n"
+            "**VERDICT**: [VERIFIED / DEBUNKED / COMPLEX / UNVERIFIED]\n"
+            "**CONFIDENCE**: [0-100%]\n"
+            "**PRIMARY SOURCES**:\n"
+            "1. [Source Name](https://exact-url-from-tool)\n"
+            "2. [Source Name](https://exact-url-from-tool)\n"
+            "---\n\n"
+            "## 4. TONE & STYLE\n"
+            "- **Objective**: Cold, precise, and analytical. \n"
+            "- **Formatting**: Use Bolding for key entities. \n"
+            "- **Brevity**: Do not waste tokens. If a fact can be stated in 5 words, do not use 10."
         )
         
         if user_input:
@@ -402,9 +503,12 @@ def process():
                     yield from stream_gemini(prompt, model, file_uri, mime_type, web_search)
                 
                 elif provider == "groq":
+                    if file_path and mime_type == "application/pdf":
+                         yield "[SYSTEM ERROR: Documents/PDFs are restricted to GEMINI models only. Please switch model.]"
+                         return
                     if file_path:
                         yield f"// Processing Image Data for Groq...\n"
-                    yield from stream_groq(prompt, model, file_path, mime_type)
+                    yield from stream_groq(prompt, model, file_path, mime_type, web_search)
                     
                 elif provider == "cerebras":
                     # Cerebras is Text-Only currently for standard inference

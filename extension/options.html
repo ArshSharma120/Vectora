@@ -648,7 +648,22 @@
                     </label>
                     <div class="toggle-info">
                         <div class="toggle-title">Use Vectora API</div>
-                        <div class="toggle-desc">Fetch API keys from vectoraai.vercel.app (no manual setup needed)</div>
+                        <div class="toggle-desc">Fetch API keys from vectora-plus.vercel.app (no manual setup needed)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selection Mode Toggle -->
+                <div class="vectora-api-toggle"
+                    style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #10b98130;">
+                    <label class="toggle-container">
+                        <input type="checkbox" id="selection-mode-toggle" checked>
+                        <span class="toggle-slider" style="background-color: #cbd5e0;"></span>
+                    </label>
+                    <div class="toggle-info">
+                        <div class="toggle-title" style="color: #047857;">Auto-Optimized Mode</div>
+                        <div class="toggle-desc" style="color: #065f46;">Automatically select the best model for each
+                            task (Recommended)</div>
                     </div>
                 </div>
 
@@ -741,7 +756,6 @@
                 <!-- Actions -->
                 <div class="actions">
                     <button type="button" class="btn-test" id="test-btn">Test Connection</button>
-                    <button type="button" class="btn-save" id="save-btn">Save Settings</button>
                 </div>
 
                 <div class="status" id="status"></div>

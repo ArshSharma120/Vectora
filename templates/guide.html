@@ -404,6 +404,7 @@
       font-family: var(--font-mono);
     }
   </style>
+  <link rel="stylesheet" href="/static/mobile-responsive.css">
 </head>
 
 <body>
@@ -423,6 +424,7 @@
       <li><a href="/extension" class="nav-link">Extension</a></li>
       <li><a href="/guide" class="nav-link active">Guide</a></li>
       <li><a href="/check" class="nav-link">Checker</a></li>
+      <li><a href="/instructions" class="nav-link">Instructions</a></li>
       <li><a href="/contact" class="nav-link">Contact</a></li>
       <li><button class="theme-btn" id="theme-toggle">☀</button></li>
     </ul>
@@ -438,42 +440,92 @@
     <div class="step-item">
       <div class="step-num">01</div>
       <div class="step-content">
-        <h3>ACQUIRE PAYLOAD</h3>
-        <p>Download the latest encryption package. This contains the packed extension logic.</p>
-        <a href="/static/vectora-extension.zip" class="btn-dl" download>DOWNLOAD .ZIP</a>
-        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--secondary);">IMPORTANT: Unzip the folder completely
-          after downloading.</p>
+        <h3>DOWNLOAD THE EXTENSION</h3>
+        <p>Click the button below to download <strong>extension-v2.6.zip</strong> to your computer.</p>
+        <a href="/extension-v2.6.zip" class="btn-dl" download>DOWNLOAD extension-v2.6.ZIP</a>
+        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--muted);">
+          📁 The file will be saved to your Downloads folder (typically <code
+            style="padding: 2px 6px; background: rgba(255,255,255,0.1); border-radius: 3px;">C:\Users\YourName\Downloads</code>)
+        </p>
       </div>
     </div>
 
     <div class="step-item">
       <div class="step-num">02</div>
       <div class="step-content">
-        <h3>ACCESS EXTENSIONS</h3>
-        <p>Open your browser's control panel. Navigate to the extensions management interface.</p>
-        <div class="code-snippet">chrome://extensions</div>
-        <img
-          src="https://developer.chrome.com/static/docs/extensions/get-started/tutorial/hello-world/image/extensions-page.png"
-          class="step-img" alt="Chrome Extensions">
+        <h3>UNZIP THE FILE</h3>
+        <p><strong>Windows:</strong> Right-click on <code>extension-v2.6.zip</code> → Select "Extract All..." → Choose a
+          location (e.g., Desktop or Documents) → Click "Extract"</p>
+        <p style="margin-top: 10px;"><strong>macOS:</strong> Simply double-click <code>extension-v2.6.zip</code> and it
+          will auto-extract to the same folder</p>
+        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--secondary);">
+          ⚠️ IMPORTANT: Make sure you have a folder named <code>extension</code> after unzipping (not a ZIP file!)
+        </p>
       </div>
     </div>
 
     <div class="step-item">
       <div class="step-num">03</div>
       <div class="step-content">
-        <h3>DEVELOPER MODE</h3>
-        <p>Locate the toggle in the top-right corner. Activate "Developer mode" to enable sideloading capabilities.</p>
+        <h3>OPEN CHROME EXTENSIONS PAGE</h3>
+        <p>Open Google Chrome browser and navigate to the extensions management page:</p>
+        <div class="code-snippet">chrome://extensions</div>
+        <p style="margin-top: 10px; color: var(--muted); font-size: 0.95rem;">
+          💡 <strong>Alternative methods:</strong><br>
+          • Menu (⋮) → "Extensions" → "Manage Extensions"<br>
+          • Or press <code
+            style="padding: 2px 6px; background: rgba(255,255,255,0.1); border-radius: 3px;">Ctrl+Shift+E</code>
+          (Windows) or <code
+            style="padding: 2px 6px; background: rgba(255,255,255,0.1); border-radius: 3px;">Cmd+Shift+E</code> (Mac)
+        </p>
+        <img
+          src="https://developer.chrome.com/static/docs/extensions/get-started/tutorial/hello-world/image/extensions-page.png"
+          class="step-img" alt="Chrome Extensions Page">
       </div>
     </div>
 
     <div class="step-item">
       <div class="step-num">04</div>
       <div class="step-content">
-        <h3>INJECT SYSTEM</h3>
-        <p>Click "Load unpacked" and select the <strong>unzipped Vectora folder</strong>.</p>
-        <img src="https://developer.chrome.com/static/docs/extensions/get-started/tutorial/hello-world/image/icon.png"
-          class="step-img" style="width: 100px;" alt="Vectora Icon">
-        <p style="margin-top: 15px; color: var(--primary);">// INSTALLATION COMPLETE</p>
+        <h3>ENABLE DEVELOPER MODE</h3>
+        <p>In the top-right corner of the Extensions page, find the toggle labeled <strong>"Developer mode"</strong> and
+          turn it ON (it should turn blue/active).</p>
+        <p style="margin-top: 10px; color: var(--primary);">
+          ✅ Once enabled, you'll see new buttons appear: "Load unpacked", "Pack extension", and "Update"
+        </p>
+      </div>
+    </div>
+
+    <div class="step-item">
+      <div class="step-num">05</div>
+      <div class="step-content">
+        <h3>LOAD THE EXTENSION</h3>
+        <p>Click the <strong>"Load unpacked"</strong> button that appeared after enabling Developer mode.</p>
+        <p style="margin-top: 10px;">A file browser dialog will open. Navigate to where you unzipped the extension (Step
+          2) and select the <strong>extension</strong> folder (the one containing manifest.json, popup.html, etc.).</p>
+        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--secondary);">
+          ⚠️ Select the FOLDER itself, not the files inside it!
+        </p>
+        <p style="margin-top: 15px; color: var(--primary);">
+          ✅ If successful, you'll see "Vectora AI Check" appear in your extensions list with a puzzle piece icon.
+        </p>
+      </div>
+    </div>
+
+    <div class="step-item">
+      <div class="step-num">06</div>
+      <div class="step-content">
+        <h3>START USING VECTORA</h3>
+        <p>The extension is now ready! You can use it in three ways:</p>
+        <ul style="margin-top: 15px; margin-left: 20px; line-height: 1.8; color: var(--muted);">
+          <li><strong>Text Analysis:</strong> Select any text → Right-click → "Check AI Authenticity"</li>
+          <li><strong>Image Analysis:</strong> Right-click on any image → "Check AI Authenticity"</li>
+          <li><strong>Popup Interface:</strong> Click the extension icon to analyze text, images, or screen captures
+          </li>
+        </ul>
+        <p style="margin-top: 20px; color: var(--primary); font-weight: bold;">
+          🎉 INSTALLATION COMPLETE — Reality Defense Activated!
+        </p>
       </div>
     </div>
 
@@ -546,6 +598,7 @@
       el.addEventListener('mouseleave', () => gsap.to(cursor, { scale: 1 }));
     });
   </script>
+  <script src="/static/mobile-menu.js"></script>
 </body>
 
 </html>
